@@ -19,11 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="inc\COLOR.h" />
+    <ClInclude Include="inc\common.h" />
     <ClInclude Include="inc\framework.h" />
+    <ClInclude Include="inc\graphic.h" />
     <ClInclude Include="inc\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\COLOR.cpp" />
     <ClCompile Include="src\framework.cpp" />
+    <ClCompile Include="src\graphic.cpp" />
     <ClCompile Include="src\window.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

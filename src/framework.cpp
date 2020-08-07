@@ -4,7 +4,7 @@
 #include<tchar.h>
 #include<Windows.h>
 #include"window.h"
-//#include"graphic.h"
+#include"graphic.h"
 #include"framework.h"
 void gmain();
 
@@ -21,7 +21,7 @@ void window(const char* caption, int width, int height)
         wCaption,
         dataSize);
 	initWindow(wCaption, width, height);
-    //initGraphic(width, height);
+    initGraphic(width, height, true);
     delete[] wCaption;
 #else
     initWindow(caption, width, height);
@@ -31,11 +31,11 @@ void window(const char* caption, int width, int height)
 void window(int width, int height)
 {
 	initWindow(_T("Coding Ocean"), width, height);
-    //initGraphic(width, height);
+    initGraphic(width, height, true);
 }
 
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, INT)
 {
 	gmain();
-    //releaseGraphic();
+    freeGraphic();
 }
