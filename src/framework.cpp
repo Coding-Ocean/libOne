@@ -21,7 +21,7 @@ void window(const char* caption, int width, int height)
         wCaption,
         dataSize);
 	initWindow(wCaption, width, height);
-    initGraphic(width, height, true);
+    initGraphic(width, height);
     delete[] wCaption;
 #else
     initWindow(caption, width, height);
@@ -30,8 +30,8 @@ void window(const char* caption, int width, int height)
 
 void window(int width, int height)
 {
-	initWindow(_T("Coding Ocean"), width, height);
-    initGraphic(width, height, true);
+	initWindow(_T("libOneApp"), width, height);
+    initGraphic(width, height);
 }
 
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, INT)

@@ -38,10 +38,10 @@
     <ClCompile Include="src\framework.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphic.cpp">
+    <ClCompile Include="src\COLOR.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\COLOR.cpp">
+    <ClCompile Include="src\graphic.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

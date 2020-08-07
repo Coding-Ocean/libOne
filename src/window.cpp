@@ -1,10 +1,11 @@
 #include "window.h"
-//#include "graphic.h"
+#include "graphic.h"
 //#include "input.h"
 
 extern LPCTSTR CLASS_NAME = _T("GameWindow");
 extern int ClientWidth = 0;
 extern int ClientHeight = 0;
+extern bool Windowed = true;
 extern float Aspect = 0;
 extern unsigned ActiveWindow = 0;
 extern int MouseDelta = 0;
@@ -17,7 +18,7 @@ LRESULT CALLBACK winProc( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp ) {
         if( wp == SIZE_RESTORED || wp == SIZE_MAXIMIZED ){
             ClientWidth  =  lp & 0xFFFF;
             ClientHeight = (lp >> 16) & 0xFFFF;
-            //changeSize();
+            changeSize();
         }
         return 0;
     case WM_KEYDOWN:
@@ -111,7 +112,7 @@ unsigned getTime(){
 }
 
 bool msgProc() {
-    //present();
+    present();
     MSG msg;
     if( PeekMessage( &msg, 0, 0, 0, PM_REMOVE ) ) {
         TranslateMessage( &msg );

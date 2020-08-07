@@ -1,6 +1,4 @@
-#ifndef COMMON_HD
-#define COMMON_HD
-
+#pragma once
 #include<stdio.h>
 #include<windows.h>
 
@@ -27,6 +25,3 @@
 //#else
 //  #define WARNING(flag,msg1,msg2) {}
 //#endif
-
-
-#endif

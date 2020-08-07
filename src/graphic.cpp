@@ -13,11 +13,16 @@ ID3D11RenderTargetView* RenderTargetView = 0;
 ID3D11DepthStencilView* DepthStencilView = 0;
 ID3D11DepthStencilState* DepthStencilState = 0;
 
-void initGraphic(int baseWidth, int baseHeight, bool windowed) {
+void initGraphic(int baseWidth, int baseHeight) {
     //基準となる幅と高さ
     BaseWidth = (float)baseWidth;
     BaseHeight = (float)baseHeight;
+    createDevice();
+    createRenderTarget();
+    setViewport();
+}
 
+void createDevice() {
     HRESULT hr = S_OK;
 
     // Create Direct3D device and swap chain
@@ -51,7 +56,7 @@ void initGraphic(int baseWidth, int baseHeight, bool windowed) {
     swapChainDesc.OutputWindow = hWnd;
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.SampleDesc.Quality = 0;
-    swapChainDesc.Windowed = windowed;
+    swapChainDesc.Windowed = true;
 
     for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++) {
         hr = D3D11CreateDeviceAndSwapChain(
@@ -62,13 +67,7 @@ void initGraphic(int baseWidth, int baseHeight, bool windowed) {
         }
     }
     WARNING(FAILED(hr), "グラフィックデバイスが作れません", "");
-
-    createRenderTarget();
-
-    // Setup the viewport
-    setViewport();
 }
-
 void createRenderTarget() {
     // Create a render target view
     ID3D11Texture2D* backBuffer = NULL;
@@ -191,7 +190,7 @@ void freeGraphic() {
     SAFE_RELEASE(Dev);
 }
 
-void clearTarget(const COLOR& c) {
+void clear(const COLOR& c) {
     // Clear the back buffer
     float clearColor[4] = { c.r, c.g, c.b, c.a };
     ImmediateContext->ClearRenderTargetView(RenderTargetView, clearColor);
