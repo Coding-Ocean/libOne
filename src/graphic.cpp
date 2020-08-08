@@ -74,17 +74,19 @@ struct TEXTURE {
 std::vector<TEXTURE>* Textures = NULL;
 
 void freeGraphic() {
-    //if (Images) {
-    //    for (unsigned i = 0; i < Images->size(); i++) {
-    //        SAFE_RELEASE(Images->at(i).vertexBuffer);
-    //        if (!Images->at(i).dividedImageFlag) {
-    //            SAFE_RELEASE(Images->at(i).texture);
-    //        }
-    //    }
-    //    SAFE_DELETE(Images);
-    //}
-    //SAFE_DELETE(UltraBasicImg);
-    //SAFE_DELETE(FontMap);
+    if (Context) Context->ClearState();
+
+    if (Textures) {
+        if (Textures->size() > 0) {
+            for (int i = Textures->size() - 1; i >= 0; i--) {
+                if (Textures->at(i).texCoord == 0)Textures->at(i).obj->Release();
+                if (Textures->at(i).texCoord)Textures->at(i).texCoord->Release();
+                Textures->pop_back();
+            }
+        }
+        delete Textures;
+    }
+
     SAFE_RELEASE(SamplerLinear);
     SAFE_RELEASE(TexCoordBuffer);
     SAFE_RELEASE(RectVertexPosBuffer);
@@ -132,7 +134,6 @@ void initGraphic(int baseWidth, int baseHeight) {
     createTexCoordBuffer();
 
     Textures = new std::vector<TEXTURE>;
-
 }
 
 

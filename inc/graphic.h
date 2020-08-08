@@ -19,5 +19,8 @@ extern float Width;
 extern float Height;
 enum RECT_MODE { CENTER, LEFTTOP };
 void rectMode(RECT_MODE mode);
-
+int loadImage(const char* filename);
+int divideImage(int img, float left, float top, float width, float height);
+void image(int img, float x, float y);
+void image(int img, float x, float y, float r);
 
