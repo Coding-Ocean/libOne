@@ -20,8 +20,8 @@ struct PS_INPUT {
 
 PS_INPUT main(VS_INPUT input) {
     PS_INPUT output = (PS_INPUT)0;
-    output.pos = mul(Proj, input.pos);
-    output.pos = mul(World, output.pos);
+    output.pos = mul(World, input.pos);
+    output.pos = mul(Proj, output.pos);
     output.tex = input.tex;
     return output;
 }

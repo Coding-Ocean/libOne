@@ -13,7 +13,11 @@ void meshColor(float r, float g, float b, float a=255);
 void strokeWeight(float weight);
 void line(float sx, float sy, float ex, float ey);
 void point(float x, float y);
-
-
+void rect(float x, float y, float w, float h);
+void circle(float x, float y, float diameter);
+extern float Width;
+extern float Height;
+enum RECT_MODE { CENTER, LEFTTOP };
+void rectMode(RECT_MODE mode);
 
 

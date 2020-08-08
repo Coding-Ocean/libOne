@@ -25,6 +25,7 @@
     <ClInclude Include="inc\graphic.h" />
     <ClInclude Include="inc\MAT.h" />
     <ClInclude Include="inc\MATRIX.h" />
+    <ClInclude Include="inc\stb_image_reader.h" />
     <ClInclude Include="inc\VECTOR2.h" />
     <ClInclude Include="inc\VECTOR3.h" />
     <ClInclude Include="inc\window.h" />
@@ -35,6 +36,7 @@
     <ClCompile Include="src\graphic.cpp" />
     <ClCompile Include="src\MAT.cpp" />
     <ClCompile Include="src\MATRIX.cpp" />
+    <ClCompile Include="src\stb_image_reader.cpp" />
     <ClCompile Include="src\VECTOR2.cpp" />
     <ClCompile Include="src\VECTOR3.cpp" />
     <ClCompile Include="src\window.cpp" />
