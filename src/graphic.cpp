@@ -4,6 +4,9 @@
 #include"window.h"
 #include"graphic.h"
 #include"MAT.h"
+void createDevice();
+void createRenderTarget();
+void setViewport();
 void createDepthStencielState();
 void createBlendState();
 void createRasterizerState();
@@ -14,14 +17,14 @@ void createCircleVertexPosBuffer();
 
 static float BaseWidth = 0;
 static float BaseHeight = 0;
-D3D_FEATURE_LEVEL FeatureLevel = D3D_FEATURE_LEVEL_11_0;
+DXGI_SAMPLE_DESC MSAA = { 0,0 };
 ID3D11Device* Dev = 0;
 ID3D11DeviceContext* ImmediateContext = 0;
 IDXGISwapChain* SwapChain = 0;
 ID3D11RenderTargetView* RenderTargetView = 0;
 ID3D11DepthStencilView* DepthStencilView = 0;
-ID3D11DepthStencilState* DepthStencilState = 0;
 //
+ID3D11DepthStencilState* DepthStencilState = 0;
 ID3D11BlendState* BlendState = NULL;
 ID3D11RasterizerState* RasterizerState = NULL;
 //line,rect,circle用シェーダ
@@ -108,54 +111,63 @@ void initGraphic(int baseWidth, int baseHeight) {
     createRectVertexPosBuffer();
 }
 
+
 void createDevice() {
-    HRESULT hr = S_OK;
+    //マルチサンプリング対応
+    //デバイスの生成
+    HRESULT hr;
+    hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL,
+        0, NULL, 0, D3D11_SDK_VERSION, &Dev, NULL, &ImmediateContext);
+    WARNING(FAILED(hr), "D3D11CreateDevice","");
 
-    // Create Direct3D device and swap chain
-    HWND hWnd = FindWindow(CLASS_NAME, 0);
-
-    UINT createDeviceFlags = 0;
-
-    D3D_DRIVER_TYPE driverTypes[] = {
-        D3D_DRIVER_TYPE_HARDWARE,
-        D3D_DRIVER_TYPE_WARP,
-        D3D_DRIVER_TYPE_REFERENCE,
-    };
-    UINT numDriverTypes = ARRAYSIZE(driverTypes);
-
-    D3D_FEATURE_LEVEL featureLevels[] = {
-        D3D_FEATURE_LEVEL_11_0,
-        D3D_FEATURE_LEVEL_10_1,
-        D3D_FEATURE_LEVEL_10_0,
-    };
-    UINT numFeatureLevels = ARRAYSIZE(featureLevels);
-
-    DXGI_SWAP_CHAIN_DESC swapChainDesc;
-    ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-    swapChainDesc.BufferCount = 1;
-    swapChainDesc.BufferDesc.Width = ClientWidth;
-    swapChainDesc.BufferDesc.Height = ClientHeight;
-    swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
-    swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDesc.OutputWindow = hWnd;
-    swapChainDesc.SampleDesc.Count = 1;
-    swapChainDesc.SampleDesc.Quality = 0;
-    swapChainDesc.Windowed = true;
-
-    for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++) {
-        hr = D3D11CreateDeviceAndSwapChain(
-            NULL, driverTypes[driverTypeIndex], NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-            D3D11_SDK_VERSION, &swapChainDesc, &SwapChain, &Dev, &FeatureLevel, &ImmediateContext);
-        if (SUCCEEDED(hr)) {
-            break;
+    //使用可能なMSAAを取得
+    for (int i = 0; i <= D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT; i++) {
+        UINT Quality;
+        if (SUCCEEDED( Dev->CheckMultisampleQualityLevels(DXGI_FORMAT_D24_UNORM_S8_UINT, i, &Quality) ) ){
+            if (0 < Quality) {
+                MSAA.Count = i;
+                MSAA.Quality = Quality - 1;
+            }
         }
     }
-    WARNING(FAILED(hr), "グラフィックデバイスが作れません", "");
-}
 
+    //インターフェース取得
+    IDXGIDevice1* hpDXGI = NULL;
+    hr = Dev->QueryInterface(__uuidof(IDXGIDevice1), (void**)&hpDXGI);
+    WARNING(FAILED(hr), "QueryInterface","");
+    //アダプター取得
+    IDXGIAdapter* hpAdapter = NULL;
+    hr = hpDXGI->GetAdapter(&hpAdapter);
+    WARNING(FAILED(hr), "GetAdapter","");
+    //ファクトリー取得
+    IDXGIFactory* hpDXGIFactory = NULL;
+    hr = hpAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&hpDXGIFactory);
+    WARNING(FAILED(hr), "GetParent","");
+    //スワップチェイン作成
+    DXGI_SWAP_CHAIN_DESC hDXGISwapChainDesc;
+    hDXGISwapChainDesc.BufferCount = 1;
+    hDXGISwapChainDesc.BufferDesc.Width = ClientWidth;
+    hDXGISwapChainDesc.BufferDesc.Height = ClientHeight;
+    hDXGISwapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    hDXGISwapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+    hDXGISwapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+    hDXGISwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    hDXGISwapChainDesc.OutputWindow = HWnd;
+    hDXGISwapChainDesc.Windowed = TRUE;
+    hDXGISwapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+    hDXGISwapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+    hDXGISwapChainDesc.SampleDesc = MSAA;
+    hDXGISwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+    hDXGISwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+    hr = hpDXGIFactory->CreateSwapChain(Dev, &hDXGISwapChainDesc, &SwapChain);
+    WARNING(FAILED(hr), "CreateSwapChain","");
+
+    hpDXGI->Release();
+    hpAdapter->Release();
+    hpDXGIFactory->Release();
+}
 void createRenderTarget() {
+    //マルチサンプリング対応
     // Create a render target view
     ID3D11Texture2D* backBuffer = NULL;
     HRESULT hr = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
@@ -172,8 +184,7 @@ void createRenderTarget() {
     depthStencilTextureDesc.MipLevels = 1;
     depthStencilTextureDesc.ArraySize = 1;
     depthStencilTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    depthStencilTextureDesc.SampleDesc.Count = 1;
-    depthStencilTextureDesc.SampleDesc.Quality = 0;
+    depthStencilTextureDesc.SampleDesc = MSAA;
     depthStencilTextureDesc.Usage = D3D11_USAGE_DEFAULT;
     depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
     depthStencilTextureDesc.CPUAccessFlags = 0;
@@ -186,7 +197,7 @@ void createRenderTarget() {
     D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
     ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
     depthStencilViewDesc.Format = depthStencilTextureDesc.Format;
-    depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
     depthStencilViewDesc.Texture2D.MipSlice = 0;
     hr = Dev->CreateDepthStencilView(depthStencilTexture, &depthStencilViewDesc, &DepthStencilView);
     WARNING(FAILED(hr), "can't Create DepthStencilView", "");
