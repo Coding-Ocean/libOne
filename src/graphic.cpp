@@ -1,4 +1,6 @@
 #include<vector>
+#include<map>
+#include<string>
 #include<cmath>
 #include<d3d11.h>
 #include"common.h"
@@ -28,7 +30,7 @@ ID3D11DeviceContext* Context = 0;
 IDXGISwapChain* SwapChain = 0;
 ID3D11RenderTargetView* RenderTargetView = 0;
 ID3D11DepthStencilView* DepthStencilView = 0;
-//
+//各種ステートオブジェクト
 ID3D11DepthStencilState* DepthStencilState = 0;
 ID3D11BlendState* BlendState = NULL;
 ID3D11RasterizerState* RasterizerState = NULL;
@@ -50,42 +52,106 @@ ID3D11Buffer* RectVertexPosBuffer = NULL;
 ID3D11Buffer* CircleVertexPosBuffer = NULL;
 ID3D11Buffer* TexCoordBuffer = NULL;
 
+//共通使用マトリックス
 MAT Proj;
 MAT World;
+//デフォルト値
 COLOR StrokeColor(0.0f, 0.0f, 0.0f, 1.0f);
 COLOR FillColor(1.0f, 1.0f, 1.0f, 1.0f);
 COLOR MeshColor(1.0f, 1.0f, 1.0f, 1.0f);
 float StrokeWeight = 1;
 int TextSize = 20;
 
-struct VERTEX_T {
-    VECTOR2 texCoord;
-};
-struct TEXTURE {
-    ID3D11ShaderResourceView* obj;
-    ID3D11Buffer* texCoord;
-    float width;
-    float height;
-    TEXTURE(ID3D11ShaderResourceView* obj, float width, float height, ID3D11Buffer* texCoord)
-    {
-        this->obj = obj; this->width = width; this->height = height; this->texCoord = texCoord;
+struct CNTNR {
+    //テクスチャ
+    struct TEXTURE {
+        ID3D11ShaderResourceView* obj;
+        ID3D11Buffer* texCoord;
+        float width;
+        float height;
+        TEXTURE(ID3D11ShaderResourceView* obj, float width, float height, ID3D11Buffer* texCoord) {
+            this->obj = obj; this->width = width; this->height = height; this->texCoord = texCoord;
+        }
+    };
+    std::vector<TEXTURE> textures;
+
+    //フォント
+    struct FONT {
+        ID3D11ShaderResourceView* texObj;
+        GLYPHMETRICS gm;
+        int size;
+        FONT(ID3D11ShaderResourceView* texObj, GLYPHMETRICS gm, int size) {
+            this->texObj = texObj; this->gm = gm; this->size = size;
+        }
+    };
+    struct CURRENT_FONT {
+        std::string name;
+        int id;
+    };
+    class KEY {
+    public:
+        int fontId;
+        int fontSize;
+        wchar_t c;
+        bool operator<(const KEY& key) const {
+            bool b;
+            if (this->fontId < key.fontId)
+                b = true;
+            else if (this->fontId > key.fontId)
+                b = false;
+            else if (this->fontSize < key.fontSize)
+                b = true;
+            else if (this->fontSize > key.fontSize)
+                b = false;
+            else if (this->c < key.c)
+                b = true;
+            else
+                b = false;
+
+            return b;
+        }
+    };
+    CURRENT_FONT currentFont;
+    std::vector<FONT> fonts;
+    std::map<std::string, int> fontIdMap;
+    std::map<KEY, int> fontMap;
+    ~CNTNR() {
+        if (textures.size() > 0) {
+            for (int i = textures.size() - 1; i >= 0; i--) {
+                if (textures.at(i).texCoord == 0)textures.at(i).obj->Release();
+                if (textures.at(i).texCoord)textures.at(i).texCoord->Release();
+                textures.pop_back();
+            }
+        }
+        if (fonts.size() > 0) {
+            for (int i = fonts.size() - 1; i >= 0; i--) {
+                fonts.at(i).texObj->Release();
+                fonts.pop_back();
+            }
+        }
     }
 };
-std::vector<TEXTURE>* Textures = NULL;
+CNTNR* Cntnr = 0;
 
 void freeGraphic() {
     if (Context) Context->ClearState();
 
-    if (Textures) {
-        if (Textures->size() > 0) {
-            for (int i = Textures->size() - 1; i >= 0; i--) {
-                if (Textures->at(i).texCoord == 0)Textures->at(i).obj->Release();
-                if (Textures->at(i).texCoord)Textures->at(i).texCoord->Release();
-                Textures->pop_back();
-            }
-        }
-        delete Textures;
-    }
+    //if (Cntnr->textures.size() > 0) {
+    //    for (int i = Cntnr->textures.size() - 1; i >= 0; i--) {
+    //        if (Cntnr->textures.at(i).texCoord == 0)Cntnr->textures.at(i).obj->Release();
+    //        if (Cntnr->textures.at(i).texCoord)Cntnr->textures.at(i).texCoord->Release();
+    //        Cntnr->textures.pop_back();
+    //    }
+    //}
+
+    //if (Cntnr->fonts.size() > 0) {
+    //    for (int i = Cntnr->fonts.size() - 1; i >= 0; i--) {
+    //        Cntnr->fonts.at(i).texObj->Release();
+    //        Cntnr->fonts.pop_back();
+    //    }
+    //}
+
+    SAFE_DELETE(Cntnr);
 
     SAFE_RELEASE(SamplerLinear);
     SAFE_RELEASE(TexCoordBuffer);
@@ -133,7 +199,12 @@ void initGraphic(int baseWidth, int baseHeight) {
     createRectVertexPosBuffer();
     createTexCoordBuffer();
 
-    Textures = new std::vector<TEXTURE>;
+    //FontIdMap = new std::map<std::string, int>;
+    //FontMap = new std::map<KEY, int>;
+    //CurrentFont = new CURRENT_FONT;
+
+    Cntnr = new CNTNR;
+    font("BIZ UDGothic");
 }
 
 
@@ -201,7 +272,7 @@ void createRenderTarget() {
     backBuffer->Release();
     WARNING(FAILED(hr), "can't Create RenderTargetView", "");
 
-    // Create depth stencil texture
+    // Create a depth stencil texture
     D3D11_TEXTURE2D_DESC depthStencilTextureDesc;
     ZeroMemory(&depthStencilTextureDesc, sizeof(depthStencilTextureDesc));
     depthStencilTextureDesc.Width = ClientWidth;
@@ -218,7 +289,7 @@ void createRenderTarget() {
     hr = Device->CreateTexture2D(&depthStencilTextureDesc, NULL, &depthStencilTexture);
     WARNING(FAILED(hr), "can't Create depth stencil texture", "");
 
-    // Create the depth stencil view
+    // Create a depth stencil view
     D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
     ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
     depthStencilViewDesc.Format = depthStencilTextureDesc.Format;
@@ -231,7 +302,6 @@ void createRenderTarget() {
     // Set RenderTarget
     Context->OMSetRenderTargets(1, &RenderTargetView, DepthStencilView);
 }
-
 void setViewport() {
     D3D11_VIEWPORT vp;
     float aspect = Width / Height;
@@ -258,7 +328,6 @@ void setViewport() {
         Context->RSSetViewports(1, &vp);
     }
 }
-
 void changeSize() {
     if (Context) {
         ID3D11RenderTargetView* renderTargetView = NULL;
@@ -318,8 +387,7 @@ void createRasterizerState() {
     Device->CreateRasterizerState(&rasterizerDesc, &RasterizerState);
     Context->RSSetState(RasterizerState);
 }
-void createSamplerState()
-{
+void createSamplerState(){
     HRESULT hr;
     // Create the sample state
     D3D11_SAMPLER_DESC samplerDesc;
@@ -355,14 +423,10 @@ void clear(float r, float g, float b) {
     float clearColor[4] = { r/255, g/255, b/255, 1.0f };
     clear(clearColor);
 }
-
 void present() {
     SwapChain->Present(1, 0);
 }
-
-
-void createConstantBuffer()
-{
+void createConstantBuffer(){
     HRESULT hr;
 
     // Create the constant buffers
@@ -394,8 +458,7 @@ void createVertexShaderAndInputLayoutFromRes(
     LPCTSTR resName,
     ID3D11VertexShader** vertexShader,
     VERTEX_TYPE vertexType,
-    ID3D11InputLayout** inputLayout
-) {
+    ID3D11InputLayout** inputLayout) {
     HINSTANCE hInst = GetModuleHandle(0);
     HRSRC hRes = FindResource(hInst, resName, _T("SHADER"));
     WARNING(hRes == 0, "リソースがみつからない","");
@@ -460,7 +523,6 @@ void createVertexShaderAndInputLayoutFromRes(
     //開放
     FreeResource(HMem);
 }
-
 void createPixelShaderFromRes(LPCTSTR resName, ID3D11PixelShader** pixelShader) {
     HINSTANCE hInst = GetModuleHandle(0);
     HRSRC hRes = FindResource(hInst, resName, _T("SHADER"));
@@ -483,23 +545,16 @@ void createPixelShaderFromRes(LPCTSTR resName, ID3D11PixelShader** pixelShader) 
     //開放
     FreeResource(hMem);
 }
-
-void createShaderFromRes()
-{
+void createShaderFromRes(){
     createVertexShaderAndInputLayoutFromRes(_T("SHAPE_VS"), &ShapeVertexShader, VERTEX_TYPE::P, &ShapeVertexLayout);
     createPixelShaderFromRes(_T("SHAPE_PS"), &ShapePixelShader);
     createVertexShaderAndInputLayoutFromRes(_T("IMAGE_VS"), &ImageVertexShader, VERTEX_TYPE::PT, &ImageVertexLayout);
     createPixelShaderFromRes(_T("IMAGE_PS"), &ImagePixelShader);
 }
-
-struct VERTEX_P {
-    VECTOR3 pos;
-};
-void createRectVertexPosBuffer()
-{
+void createRectVertexPosBuffer(){
     //vertex for rect or line
     //rectと兼用だがline用に最適化した位置を設定する
-    VERTEX_P vertices[] =  {
+    VECTOR3 vertices[] =  {
         VECTOR3(0.0f,  0.5f, 0.0f),
         VECTOR3(0.0f, -0.5f, 0.0f),
         VECTOR3(1.0f,  0.5f, 0.0f),
@@ -508,7 +563,7 @@ void createRectVertexPosBuffer()
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(VERTEX_P) * 4;
+    bd.ByteWidth = sizeof(VECTOR3) * 4;
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -517,21 +572,20 @@ void createRectVertexPosBuffer()
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &RectVertexPosBuffer);
     WARNING(FAILED(hr), "CreateVertexBuffer Rect","");
 }
-void createCircleVertexPosBuffer()
-{
+void createCircleVertexPosBuffer(){
     const int num = 64;
-    float rad = 3.141592f * 2 / num;
-    VERTEX_P circleVertices[num];
-    circleVertices[0].pos = VECTOR3(0.5f, 0, 0.0f);
+    float rad = 3.141592 * 2 / num;
+    VECTOR3 circleVertices[num];
+    circleVertices[0] = VECTOR3(0.5f, 0, 0.0f);
     for (int i = 1, j = 1; i <= num / 2 - 1; i++){
-        circleVertices[j++].pos = VECTOR3(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
-        circleVertices[j++].pos = VECTOR3(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+        circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
+        circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
     }
-    circleVertices[num - 1].pos = VECTOR3(-0.5f, 0, 0.0f);
+    circleVertices[num - 1] = VECTOR3(-0.5f, 0, 0.0f);
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(VERTEX_P) * (num);
+    bd.ByteWidth = sizeof(VECTOR3) * (num);
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -540,10 +594,8 @@ void createCircleVertexPosBuffer()
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &CircleVertexPosBuffer);
     WARNING(FAILED(hr), "CreateVertexBuffer Circle","");
 }
-void createTexCoordBuffer()
-{
-    VERTEX_T vertices[] =
-    {
+void createTexCoordBuffer(){
+    VECTOR2 vertices[] =  {
         VECTOR2(0.0f, 1.0f),
         VECTOR2(0.0f, 0.0f),
         VECTOR2(1.0f, 1.0f),
@@ -552,7 +604,7 @@ void createTexCoordBuffer()
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(VERTEX_T) * 4;
+    bd.ByteWidth = sizeof(VECTOR2) * 4;
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -561,33 +613,29 @@ void createTexCoordBuffer()
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &TexCoordBuffer);
     WARNING(FAILED(hr), "CreateVertexBuffer Image","");
 }
-void stroke(float r, float g, float b, float a)
-{
+void stroke(float r, float g, float b, float a){
     StrokeColor.r = r / 255;
     StrokeColor.g = g / 255;
     StrokeColor.b = b / 255;
     StrokeColor.a = a / 255;
 }
-void fill(float r, float g, float b, float a)
-{
+void fill(float r, float g, float b, float a){
     FillColor.r = r / 255;
     FillColor.g = g / 255;
     FillColor.b = b / 255;
     FillColor.a = a / 255;
 }
-void meshColor(float r, float g, float b, float a)
-{
+void meshColor(float r, float g, float b, float a){
     MeshColor.r = r / 255;
     MeshColor.g = g / 255;
     MeshColor.b = b / 255;
     MeshColor.a = a / 255;
 }
-void strokeWeight(float weight)
-{
+void strokeWeight(float weight){
     StrokeWeight = weight;
 }
-void line(float sx, float sy, float ex, float ey)
-{
+bool DrawEndPointFlag = true;
+void line(float sx, float sy, float ex, float ey){
     float dx = ex - sx;
     float dy = ey - sy;
     float length = sqrt(dx * dx + dy * dy);
@@ -596,28 +644,26 @@ void line(float sx, float sy, float ex, float ey)
     World.mulTranslate(sx, sy, 0);
     World.mulRotateZ(r);
     World.mulScale(length, StrokeWeight, 1);
-
     // Update constant buffer
     Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
     Context->UpdateSubresource(CbColor, 0, NULL, &StrokeColor, 0, 0);
     Context->VSSetConstantBuffers(0, 1, &CbWorld);
     Context->PSSetConstantBuffers(3, 1, &CbColor);
-
     // Set vertex buffer
-    UINT stride = sizeof(VERTEX_P), offset = 0;
+    UINT stride = sizeof(VECTOR3), offset = 0;
     Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
     Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-    
     Context->VSSetShader(ShapeVertexShader, NULL, 0);
     Context->PSSetShader(ShapePixelShader, NULL, 0);
     Context->Draw(4, 0);
-
-    point(sx, sy);
-    point(ex, ey);
+    if (StrokeWeight > 2) 
+    {
+        point(sx, sy);
+        if (DrawEndPointFlag)point(ex, ey);
+    }
 }
-void point(float x, float y)
-{
+void point(float x, float y){
     World.identity();
     World.mulTranslate(x, y, 0);
     World.mulScale(StrokeWeight, StrokeWeight, 1);
@@ -629,7 +675,7 @@ void point(float x, float y)
     Context->PSSetConstantBuffers(3, 1, &CbColor);
 
     // Set vertex buffer
-    UINT stride = sizeof(VERTEX_P), offset = 0;
+    UINT stride = sizeof(VECTOR3), offset = 0;
     Context->IASetVertexBuffers(0, 1, &CircleVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
 
@@ -638,12 +684,10 @@ void point(float x, float y)
     Context->Draw(64, 0);
 }
 RECT_MODE RectMode = LEFTTOP;
-void rectMode(RECT_MODE mode)
-{
+void rectMode(RECT_MODE mode){
     RectMode = mode;
 }
-void rect(float x, float y, float w, float h)
-{
+void rect(float x, float y, float w, float h){
     if (RectMode == LEFTTOP) {
         World.identity();
         World.mulTranslate(x, y, 0);
@@ -656,22 +700,19 @@ void rect(float x, float y, float w, float h)
         World.mulScale(w, h, 1);
         World.mulTranslate(-0.5f, 0, 0);
     }
-
     // Update variables that change once per frame
     Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
     Context->UpdateSubresource(CbColor, 0, NULL, &FillColor, 0, 0);
     Context->VSSetConstantBuffers(0, 1, &CbWorld);
     Context->PSSetConstantBuffers(3, 1, &CbColor);
-
     // Set vertex buffer
-    UINT stride = sizeof(VERTEX_P), offset = 0;
+    UINT stride = sizeof(VECTOR3), offset = 0;
     Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
-
     Context->VSSetShader(ShapeVertexShader, NULL, 0);
     Context->PSSetShader(ShapePixelShader, NULL, 0);
     Context->Draw(4, 0);
-
+    DrawEndPointFlag = false;
     if (RectMode == LEFTTOP) {
         float r = x + w;
         float b = y + h;
@@ -690,6 +731,7 @@ void rect(float x, float y, float w, float h)
         line(r, b, r, t);
         line(r, t, l, t);
     }
+    DrawEndPointFlag = true;
 }
 void circle(float x, float y, float diameter)
 {
@@ -704,17 +746,17 @@ void circle(float x, float y, float diameter)
     Context->PSSetConstantBuffers(3, 1, &CbColor);
 
     // Set vertex buffer
-    UINT stride = sizeof(VERTEX_P), offset = 0;
+    UINT stride = sizeof(VECTOR3), offset = 0;
     Context->IASetVertexBuffers(0, 1, &CircleVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
 
     Context->VSSetShader(ShapeVertexShader, NULL, 0);
     Context->PSSetShader(ShapePixelShader, NULL, 0);
     Context->Draw(64, 0);
-
     int numAngles = 64;
     float rad = 3.141592f * 2 / numAngles;
     float radius = diameter / 2;
+    DrawEndPointFlag = false;
     for (int i = 0; i < numAngles; i++) {
         float sx = x + cosf(rad * i) * radius;
         float sy = y + sinf(rad * i) * radius;
@@ -722,6 +764,7 @@ void circle(float x, float y, float diameter)
         float ey = y + sinf(rad * (i + 1)) * radius;
         line(sx, sy, ex, ey);
     }
+    DrawEndPointFlag = true;
 }
 
 int loadImage(const char* filename)
@@ -762,20 +805,20 @@ int loadImage(const char* filename)
     pTexture->Release();
     stbi_image_free(pixels);
     ID3D11Buffer* texCoord = 0;
-    Textures->emplace_back(obj, texWidth, texHeight, texCoord);
-    return int(Textures->size()) - 1;
+    Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
+    return int(Cntnr->textures.size()) - 1;
 }
 int divideImage(int img, float left, float top, float width, float height)
 {
-    ID3D11ShaderResourceView* texObj = Textures->at(img).obj;
-    float texWidth = Textures->at(img).width;
-    float texHeight = Textures->at(img).height;
+    ID3D11ShaderResourceView* texObj = Cntnr->textures.at(img).obj;
+    float texWidth = Cntnr->textures.at(img).width;
+    float texHeight = Cntnr->textures.at(img).height;
 
     float l = left / texWidth;
     float t = top / texHeight;
     float r = (left + width) / texWidth;
     float b = (top + height) / texHeight;
-    VERTEX_T vertices[] =
+    VECTOR2 vertices[] =
     {
         VECTOR2(l, b),
         VECTOR2(l, t),
@@ -785,7 +828,7 @@ int divideImage(int img, float left, float top, float width, float height)
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(VERTEX_T) * 4;
+    bd.ByteWidth = sizeof(VECTOR2) * 4;
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -795,19 +838,15 @@ int divideImage(int img, float left, float top, float width, float height)
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &texCoord);
     WARNING(FAILED(hr), "CreateVertexBuffer Image","");
 
-    Textures->emplace_back(texObj, width, height, texCoord);
-    return int(Textures->size()) - 1;
+    Cntnr->textures.emplace_back(texObj, width, height, texCoord);
+    return int(Cntnr->textures.size()) - 1;
 }
 void image(int img, float x, float y)
 {
-    WARNING((size_t)img >= Textures->size(), "画像番号オーバー","");
+    WARNING((size_t)img >= Cntnr->textures.size(), "画像番号オーバー","");
 
-    TEXTURE& texture = Textures->at(img);
+    CNTNR::TEXTURE& texture = Cntnr->textures.at(img);
 
-    //World = XMMatrixTranspose(
-    //    XMMatrixTranslation(0.0f, 0.5f, 0)
-    //    * XMMatrixScaling(texture.width, texture.height, 1)
-    //    * XMMatrixTranslation(x, y, 0));
     World.identity();
     World.mulTranslate(x, y, 0);
     World.mulScale(texture.width, texture.height, 1);
@@ -820,9 +859,9 @@ void image(int img, float x, float y)
     Context->PSSetConstantBuffers(3, 1, &CbColor);
 
     // Set vertex buffer
-    UINT stride = sizeof(VERTEX_P); UINT offset = 0;
+    UINT stride = sizeof(VECTOR3); UINT offset = 0;
     Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
-    stride = sizeof(VERTEX_T);
+    stride = sizeof(VECTOR2);
     if (texture.texCoord == 0)
         Context->IASetVertexBuffers(1, 1, &TexCoordBuffer, &stride, &offset);
     else
@@ -837,20 +876,16 @@ void image(int img, float x, float y)
 }
 void image(int img, float x, float y, float r)
 {
-    WARNING( (size_t)img >= Textures->size(), "画像番号オーバー", "" );
+    WARNING( (size_t)img >= Cntnr->textures.size(), "画像番号オーバー", "" );
 
-    TEXTURE& texture = Textures->at(img);
+    CNTNR::TEXTURE& texture = Cntnr->textures.at(img);
 
-    //World = XMMatrixTranspose(
-    //    XMMatrixTranslation(-0.5f, 0.0f, 0)
-    //    * XMMatrixScaling(texture->width, texture->height, 1)
-    //    * XMMatrixRotationZ(r)
-    //    * XMMatrixTranslation(x, y, 0));
     World.identity();
     World.mulTranslate(x, y, 0);
     World.mulRotateZ(r);
     World.mulScale(texture.width, texture.height, 1);
     World.mulTranslate(-0.5f, 0, 0);
+
     // Update variables that change once per frame
     Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
     Context->UpdateSubresource(CbColor, 0, NULL, &MeshColor, 0, 0);
@@ -858,9 +893,9 @@ void image(int img, float x, float y, float r)
     Context->PSSetConstantBuffers(3, 1, &CbColor);
 
     // Set vertex buffer
-    UINT stride = sizeof(VERTEX_P); UINT offset = 0;
+    UINT stride = sizeof(VECTOR3); UINT offset = 0;
     Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
-    stride = sizeof(VERTEX_T);
+    stride = sizeof(VECTOR2);
     if (texture.texCoord == 0)
         Context->IASetVertexBuffers(1, 1, &TexCoordBuffer, &stride, &offset);
     else
@@ -874,3 +909,156 @@ void image(int img, float x, float y, float r)
     Context->PSSetShader(ImagePixelShader, NULL, 0);
     Context->Draw(4, 0);
 }
+
+
+//----------------------------------------------------------------------------------------------------
+//１文字のフォントテクスチャを作る
+int createFont(const wchar_t* c)
+{
+    // フォントの生成
+    int fontWeight = 0;
+    LOGFONTA lf = { TextSize, 0, 0, 0, fontWeight, 0, 0, 0,
+        SHIFTJIS_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS, PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, 0 };
+    strcpy_s(lf.lfFaceName, Cntnr->currentFont.name.c_str());
+    HFONT hFont = CreateFontIndirectA(&lf);
+    //if (hFont == NULL) { g_pD3DDev->Release(); g_pD3D->Release(); return 0; }
+    // デバイスにフォントを持たせないとGetGlyphOutline関数はエラーとなる
+    HDC hdc = GetDC(NULL);
+    HFONT oldFont = (HFONT)SelectObject(hdc, hFont);
+    // フォントビットマップ取得
+    UINT code = (UINT)c[0];
+    const int gradFlag = GGO_GRAY4_BITMAP; // GGO_GRAY2_BITMAP or GGO_GRAY4_BITMAP or GGO_GRAY8_BITMAP
+    UINT grad = 0; // 階調の最大値
+    switch (gradFlag) {
+    case GGO_GRAY2_BITMAP: grad = 4; break;
+    case GGO_GRAY4_BITMAP: grad = 16; break;
+    case GGO_GRAY8_BITMAP: grad = 64; break;
+    }
+    TEXTMETRIC tm;
+    GetTextMetrics(hdc, &tm);
+    GLYPHMETRICS gm;
+    CONST MAT2 mat = { {0,1},{0,0},{0,0},{0,1} };
+    DWORD size = GetGlyphOutlineW(hdc, code, gradFlag, &gm, 0, NULL, &mat);
+    BYTE* pMono = new BYTE[size];
+    GetGlyphOutlineW(hdc, code, gradFlag, &gm, size, pMono, &mat);
+    // デバイスコンテキストとフォントハンドルはもういらないので解放
+    SelectObject(hdc, oldFont);
+    ReleaseDC(NULL, hdc);
+
+    // テクスチャ作成
+    gm.gmBlackBoxX = (gm.gmBlackBoxX + 3) / 4 * 4;
+    D3D11_TEXTURE2D_DESC desc;
+    memset(&desc, 0, sizeof(desc));
+    desc.Width = gm.gmBlackBoxX;
+    desc.Height = gm.gmBlackBoxY;
+    desc.MipLevels = 1;
+    desc.ArraySize = 1;
+    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;	// RGBA(255,255,255,255)タイプ
+    desc.SampleDesc.Count = 1;
+    desc.Usage = D3D11_USAGE_DYNAMIC;			// 動的（書き込みするための必須条件）
+    desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;	// シェーダリソースとして使う
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	// CPUからアクセスして書き込みOK
+    ID3D11Texture2D* pTexture;
+    Device->CreateTexture2D(&desc, 0, &pTexture);
+
+    // フォントの書き込み
+    D3D11_MAPPED_SUBRESOURCE mapped;
+    HRESULT hr = Context->Map(pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+    BYTE* pData = (BYTE*)mapped.pData;
+    DWORD iBmp_w = gm.gmBlackBoxX;
+    DWORD iBmp_h = gm.gmBlackBoxY;
+    DWORD x, y;
+    DWORD Alpha, Color;
+    for (y = 0; y < iBmp_h; y++) {
+        for (x = 0; x < iBmp_w; x++) {
+            Alpha = pMono[x + iBmp_w * y] * 255 / grad;
+            if (code == 0x20 || code == 0x3000)//半角全角スペースは左下に線が入るので、Colorを0にする
+                Color = 0x0;
+            else
+                Color = 0x00ffffff | (Alpha << 24);
+            memcpy((BYTE*)pData + mapped.RowPitch * y + 4 * x, &Color, sizeof(DWORD));
+        }
+    }
+    Context->Unmap(pTexture, 0);
+    gm.gmptGlyphOrigin.y += tm.tmDescent;
+    
+    ID3D11ShaderResourceView* obj = 0;
+    Device->CreateShaderResourceView(pTexture, 0, &obj);
+    Cntnr->fonts.emplace_back(obj, gm, TextSize);
+    pTexture->Release();
+    delete[] pMono;
+
+    return Cntnr->fonts.size() - 1;
+}
+//FONTデータを使って、１文字表示する
+void drawFont(CNTNR::FONT* font, float x, float y){
+    World.identity();
+    World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, y - (float)font->gm.gmptGlyphOrigin.y, 0.0f);
+    World.mulScale((float)font->gm.gmBlackBoxX, (float)font->gm.gmBlackBoxY, 1.0f);
+    World.mulTranslate(0, 0.5f, 0);
+    // Update variables that change once per frame
+    Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
+    Context->UpdateSubresource(CbColor, 0, NULL, &FillColor, 0, 0);
+    Context->VSSetConstantBuffers(0, 1, &CbWorld);
+    Context->PSSetConstantBuffers(3, 1, &CbColor);
+    // Set vertex buffer
+    UINT stride = sizeof(VECTOR3); UINT offset = 0;
+    Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
+    stride = sizeof(VECTOR2);
+    Context->IASetVertexBuffers(1, 1, &TexCoordBuffer, &stride, &offset);
+    Context->IASetInputLayout(ImageVertexLayout);
+    Context->PSSetShaderResources(0, 1, &font->texObj);
+    Context->VSSetShader(ImageVertexShader, NULL, 0);
+    Context->PSSetShader(ImagePixelShader, NULL, 0);
+    Context->Draw(4, 0);
+}
+
+int FontIdCnt = -1;
+void font(const char* fontname) {
+    auto itr = Cntnr->fontIdMap.find(fontname);
+    if (itr != Cntnr->fontIdMap.end()) {
+        Cntnr->currentFont.name = fontname;
+        Cntnr->currentFont.id = itr->second;
+    }
+    else {
+        FontIdCnt++;
+        Cntnr->fontIdMap[fontname] = FontIdCnt;
+        Cntnr->currentFont.name = fontname;
+        Cntnr->currentFont.id = FontIdCnt;
+    }
+}
+void textSize(int size) {
+    TextSize = size;
+}
+void text(const char* str, float x, float y){
+    size_t l = strlen(str);
+    int num = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str, (DWORD)l, 0, 0);
+    wchar_t c[128] = L"";
+    int ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str, (DWORD)l, c, num);
+
+    CNTNR::KEY key;
+    key.fontId = Cntnr->currentFont.id;
+    key.fontSize = TextSize;
+    for (int i = 0; i < num; i++) {
+        key.c = c[i];
+        //keyでFONTを検索してあったら表示、なかったらFONTを作って表示
+        auto itr = Cntnr->fontMap.find(key);
+        if (itr != Cntnr->fontMap.end()) {
+            itr->second;
+            drawFont(&Cntnr->fonts.at(itr->second), x, y);
+            x += Cntnr->fonts.at(itr->second).gm.gmCellIncX;
+        }
+        else {
+            int j = createFont(&c[i]);
+            Cntnr->fontMap[key] = j;
+            drawFont(&Cntnr->fonts.at(j), x, y);
+            x += Cntnr->fonts.at(j).gm.gmCellIncX;
+        }
+    }
+}
+void text(int n, float x, float y){
+    char str[128];
+    _itoa_s(n, str, 10);
+    text(str, x, y);
+}
+

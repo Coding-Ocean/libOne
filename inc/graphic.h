@@ -23,4 +23,7 @@ int loadImage(const char* filename);
 int divideImage(int img, float left, float top, float width, float height);
 void image(int img, float x, float y);
 void image(int img, float x, float y, float r);
-
+void font(const char* fontname);
+void textSize(int size);
+void text(const char* str, float x, float y);
+void text(int n, float x, float y);
