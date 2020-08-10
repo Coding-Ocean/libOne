@@ -1,5 +1,4 @@
 #include <math.h>
-#include "VECTOR3.h"
 #include "MAT.h"
 
 MAT::MAT(){

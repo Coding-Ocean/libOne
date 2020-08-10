@@ -7,6 +7,7 @@
 #include"window.h"
 #include"MAT.h"
 #include"VECTOR2.h"
+#include"VECTOR3.h"
 #include"stb_image_reader.h"
 #include"graphic.h"
 void createDevice();
@@ -180,9 +181,14 @@ void freeGraphic() {
 
 void initGraphic(int baseWidth, int baseHeight) {
     //基準となる幅と高さ
-    Width = (float)baseWidth;
-    Height = (float)baseHeight;
-    
+    if (baseWidth == 0 || baseHeight == 0) {
+        Width = (float)ClientWidth;
+        Height = (float)ClientHeight;
+    }
+    else {
+        Width = (float)baseWidth;
+        Height = (float)baseHeight;
+    }
     createDevice();
     createRenderTarget();
     setViewport();
@@ -215,18 +221,18 @@ void createDevice() {
     hr = D3D11CreateDevice(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL,
         0, NULL, 0, D3D11_SDK_VERSION, &Device, NULL, &Context);
     WARNING(FAILED(hr), "D3D11CreateDevice","");
-
     //使用可能なMSAAを取得
     for (int i = 0; i <= D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT; i++) {
         UINT Quality;
-        if (SUCCEEDED( Device->CheckMultisampleQualityLevels(DXGI_FORMAT_D24_UNORM_S8_UINT, i, &Quality) ) ){
+        hr = Device->CheckMultisampleQualityLevels(DXGI_FORMAT_D24_UNORM_S8_UINT, i, &Quality);
+        if (SUCCEEDED( hr ) ){
             if (0 < Quality) {
                 MSAA.Count = i;
                 MSAA.Quality = Quality - 1;
             }
         }
     }
-
+    //MSAA.Count = 1;
     //インターフェース取得
     IDXGIDevice1* hpDXGI = NULL;
     hr = Device->QueryInterface(__uuidof(IDXGIDevice1), (void**)&hpDXGI);
@@ -247,11 +253,11 @@ void createDevice() {
     hDXGISwapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     hDXGISwapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
     hDXGISwapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+    hDXGISwapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+    hDXGISwapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
     hDXGISwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     hDXGISwapChainDesc.OutputWindow = HWnd;
     hDXGISwapChainDesc.Windowed = TRUE;
-    hDXGISwapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-    hDXGISwapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
     hDXGISwapChainDesc.SampleDesc = MSAA;
     hDXGISwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
     hDXGISwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
@@ -634,6 +640,9 @@ void meshColor(float r, float g, float b, float a){
 void strokeWeight(float weight){
     StrokeWeight = weight;
 }
+void noStroke() {
+    StrokeWeight = 0;
+}
 bool DrawEndPointFlag = true;
 void line(float sx, float sy, float ex, float ey){
     float dx = ex - sx;
@@ -678,7 +687,7 @@ void point(float x, float y){
     UINT stride = sizeof(VECTOR3), offset = 0;
     Context->IASetVertexBuffers(0, 1, &CircleVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
-
+    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
     Context->VSSetShader(ShapeVertexShader, NULL, 0);
     Context->PSSetShader(ShapePixelShader, NULL, 0);
     Context->Draw(64, 0);
@@ -687,7 +696,7 @@ RECT_MODE RectMode = LEFTTOP;
 void rectMode(RECT_MODE mode){
     RectMode = mode;
 }
-void rect(float x, float y, float w, float h){
+void rect(float x, float y, float w, float h) {
     if (RectMode == LEFTTOP) {
         World.identity();
         World.mulTranslate(x, y, 0);
@@ -709,32 +718,73 @@ void rect(float x, float y, float w, float h){
     UINT stride = sizeof(VECTOR3), offset = 0;
     Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
+    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
     Context->VSSetShader(ShapeVertexShader, NULL, 0);
     Context->PSSetShader(ShapePixelShader, NULL, 0);
     Context->Draw(4, 0);
-    DrawEndPointFlag = false;
+    //draw stroke
+    if (StrokeWeight > 0) {
+        DrawEndPointFlag = false;
+        if (RectMode == LEFTTOP) {
+            float r = x + w;
+            float b = y + h;
+            line(x, y, x, b);
+            line(x, b, r, b);
+            line(r, b, r, y);
+            line(x, y, r, y);
+        }
+        else {
+            float l = x - w / 2;
+            float t = y - h / 2;
+            float r = x + w / 2;
+            float b = y + h / 2;
+            line(l, t, l, b);
+            line(l, b, r, b);
+            line(r, b, r, t);
+            line(r, t, l, t);
+        }
+        DrawEndPointFlag = true;
+    }
+}
+void rect(float x, float y, float w, float h, float r) {
+    World.identity();
     if (RectMode == LEFTTOP) {
-        float r = x + w;
-        float b = y + h;
-        line(x, y, x, b);
-        line(x, b, r, b);
-        line(r, b, r, y);
-        line(x, y, r, y);
+        World.mulTranslate(x + w / 2, y + h / 2, 0);
     }
     else {
-        float l = x - w / 2;
-        float t = y - h / 2;
-        float r = x + w / 2;
-        float b = y + h / 2;
-        line(l, t, l, b);
-        line(l, b, r, b);
-        line(r, b, r, t);
-        line(r, t, l, t);
+        World.mulTranslate(x, y, 0);
     }
-    DrawEndPointFlag = true;
+    World.mulRotateZ(r);
+    World.mulScale(w, h, 1);
+    World.mulTranslate(-0.5f, 0, 0);
+    // Update variables that change once per frame
+    Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
+    Context->UpdateSubresource(CbColor, 0, NULL, &FillColor, 0, 0);
+    Context->VSSetConstantBuffers(0, 1, &CbWorld);
+    Context->PSSetConstantBuffers(3, 1, &CbColor);
+    // Set vertex buffer
+    UINT stride = sizeof(VECTOR3), offset = 0;
+    Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
+    Context->IASetInputLayout(ShapeVertexLayout);
+    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    Context->VSSetShader(ShapeVertexShader, NULL, 0);
+    Context->PSSetShader(ShapePixelShader, NULL, 0);
+    Context->Draw(4, 0);
+    if (StrokeWeight > 0) {
+        DrawEndPointFlag = false;
+        VECTOR3 lt = World * VECTOR3(0.0f, 0.5f, 0.0f);
+        VECTOR3 lb = World * VECTOR3(0.0f, -0.5f, 0.0f);
+        VECTOR3 rt = World * VECTOR3(1.0f, 0.5f, 0.0f);
+        VECTOR3 rb = World * VECTOR3(1.0f, -0.5f, 0.0f);
+        line(lt.x, lt.y, lb.x, lb.y);
+        line(lb.x, lb.y, rb.x, rb.y);
+        line(rb.x, rb.y, rt.x, rt.y);
+        line(rt.x, rt.y, lt.x, lt.y);
+        //}
+        DrawEndPointFlag = true;
+    }
 }
-void circle(float x, float y, float diameter)
-{
+void circle(float x, float y, float diameter){
     World.identity();
     World.mulTranslate(x, y, 0);
     World.mulScale(diameter, diameter, 1);
@@ -749,26 +799,29 @@ void circle(float x, float y, float diameter)
     UINT stride = sizeof(VECTOR3), offset = 0;
     Context->IASetVertexBuffers(0, 1, &CircleVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
+    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
     Context->VSSetShader(ShapeVertexShader, NULL, 0);
     Context->PSSetShader(ShapePixelShader, NULL, 0);
     Context->Draw(64, 0);
-    int numAngles = 64;
-    float rad = 3.141592f * 2 / numAngles;
-    float radius = diameter / 2;
-    DrawEndPointFlag = false;
-    for (int i = 0; i < numAngles; i++) {
-        float sx = x + cosf(rad * i) * radius;
-        float sy = y + sinf(rad * i) * radius;
-        float ex = x + cosf(rad * (i + 1)) * radius;
-        float ey = y + sinf(rad * (i + 1)) * radius;
-        line(sx, sy, ex, ey);
+
+    if (StrokeWeight > 0) {
+        int numAngles = 64;
+        float rad = 3.141592f * 2 / numAngles;
+        float radius = diameter / 2;
+        DrawEndPointFlag = false;
+        for (int i = 0; i < numAngles; i++) {
+            float sx = x + cosf(rad * i) * radius;
+            float sy = y + sinf(rad * i) * radius;
+            float ex = x + cosf(rad * (i + 1)) * radius;
+            float ey = y + sinf(rad * (i + 1)) * radius;
+            line(sx, sy, ex, ey);
+        }
+        DrawEndPointFlag = true;
     }
-    DrawEndPointFlag = true;
 }
 
-int loadImage(const char* filename)
-{
+int loadImage(const char* filename){
     //stb_imageで画像をメモリに読み込む
     unsigned char* pixels = 0;
     int texWidth = 0;
@@ -808,8 +861,7 @@ int loadImage(const char* filename)
     Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
     return int(Cntnr->textures.size()) - 1;
 }
-int divideImage(int img, float left, float top, float width, float height)
-{
+int cutImage(int img, int left, int top, int width, int height){
     ID3D11ShaderResourceView* texObj = Cntnr->textures.at(img).obj;
     float texWidth = Cntnr->textures.at(img).width;
     float texHeight = Cntnr->textures.at(img).height;
@@ -818,8 +870,7 @@ int divideImage(int img, float left, float top, float width, float height)
     float t = top / texHeight;
     float r = (left + width) / texWidth;
     float b = (top + height) / texHeight;
-    VECTOR2 vertices[] =
-    {
+    VECTOR2 vertices[] = {
         VECTOR2(l, b),
         VECTOR2(l, t),
         VECTOR2(r, b),
@@ -841,47 +892,18 @@ int divideImage(int img, float left, float top, float width, float height)
     Cntnr->textures.emplace_back(texObj, width, height, texCoord);
     return int(Cntnr->textures.size()) - 1;
 }
-void image(int img, float x, float y)
-{
-    WARNING((size_t)img >= Cntnr->textures.size(), "画像番号オーバー","");
-
-    CNTNR::TEXTURE& texture = Cntnr->textures.at(img);
-
-    World.identity();
-    World.mulTranslate(x, y, 0);
-    World.mulScale(texture.width, texture.height, 1);
-    World.mulTranslate(0, 0.5f, 0);
-
-    // Update variables that change once per frame
-    Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
-    Context->UpdateSubresource(CbColor, 0, NULL, &MeshColor, 0, 0);
-    Context->VSSetConstantBuffers(0, 1, &CbWorld);
-    Context->PSSetConstantBuffers(3, 1, &CbColor);
-
-    // Set vertex buffer
-    UINT stride = sizeof(VECTOR3); UINT offset = 0;
-    Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
-    stride = sizeof(VECTOR2);
-    if (texture.texCoord == 0)
-        Context->IASetVertexBuffers(1, 1, &TexCoordBuffer, &stride, &offset);
-    else
-        Context->IASetVertexBuffers(1, 1, &texture.texCoord, &stride, &offset);
-    Context->IASetInputLayout(ImageVertexLayout);
-
-    Context->PSSetShaderResources(0, 1, &texture.obj);
-
-    Context->VSSetShader(ImageVertexShader, NULL, 0);
-    Context->PSSetShader(ImagePixelShader, NULL, 0);
-    Context->Draw(4, 0);
-}
-void image(int img, float x, float y, float r)
-{
+void image(int img, float x, float y, float r){
     WARNING( (size_t)img >= Cntnr->textures.size(), "画像番号オーバー", "" );
 
     CNTNR::TEXTURE& texture = Cntnr->textures.at(img);
 
     World.identity();
-    World.mulTranslate(x, y, 0);
+    if (RectMode == LEFTTOP) {
+        World.mulTranslate(x + texture.width / 2, y + texture.height / 2, 0);
+    }
+    else {
+        World.mulTranslate(x, y, 0);
+    }
     World.mulRotateZ(r);
     World.mulScale(texture.width, texture.height, 1);
     World.mulTranslate(-0.5f, 0, 0);
@@ -901,6 +923,7 @@ void image(int img, float x, float y, float r)
     else
         Context->IASetVertexBuffers(1, 1, &texture.texCoord, &stride, &offset);
     Context->IASetInputLayout(ImageVertexLayout);
+    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
     // Set texture
     Context->PSSetShaderResources(0, 1, &texture.obj);
@@ -1007,6 +1030,7 @@ void drawFont(CNTNR::FONT* font, float x, float y){
     stride = sizeof(VECTOR2);
     Context->IASetVertexBuffers(1, 1, &TexCoordBuffer, &stride, &offset);
     Context->IASetInputLayout(ImageVertexLayout);
+    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
     Context->PSSetShaderResources(0, 1, &font->texObj);
     Context->VSSetShader(ImageVertexShader, NULL, 0);
     Context->PSSetShader(ImagePixelShader, NULL, 0);

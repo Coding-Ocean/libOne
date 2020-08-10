@@ -1,6 +1,4 @@
-#ifndef MAT_HD
-#define MAT_HD
-
+#pragma once
 #include"VECTOR3.h"
 
 class MAT{
@@ -17,6 +15,3 @@ public:
     void ortho( float l, float r, float b, float t, float n, float f );
     VECTOR3 operator*( const VECTOR3& v ) const;
 };
-
-
-#endif
