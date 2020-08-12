@@ -82,7 +82,7 @@ void initWindow( LPCTSTR caption, int clientWidth, int clientHeight ){
         int desktopWidth = GetSystemMetrics(SM_CXSCREEN);//デスクトップの幅
         int desktopHeight = GetSystemMetrics(SM_CYSCREEN);//デスクトップの高さ
         int wx = (desktopWidth - ClientWidth) / 2;//ウィンドウ表示位置x
-        int wy = (desktopHeight - ClientHeight) / 2;//ウィンドウ表示位置y
+        int wy = (desktopHeight - ClientHeight) / 2 - 32;//ウィンドウ表示位置y
         //クライアント領域の大きさがclientWidth,clientHeightになるようなwwとwhを計算する。
         RECT rect;
         GetWindowRect(HWnd, &rect);

@@ -932,7 +932,46 @@ void image(int img, float x, float y, float r){
     Context->PSSetShader(ImagePixelShader, NULL, 0);
     Context->Draw(4, 0);
 }
+void image(int img, float x, float y, float z, float r, float s) {
+    WARNING((size_t)img >= Cntnr->textures.size(), "画像番号オーバー", "");
 
+    CNTNR::TEXTURE& texture = Cntnr->textures.at(img);
+
+    World.identity();
+    if (RectMode == LEFTTOP) {
+        World.mulTranslate(x + texture.width *s/ 2, y + texture.height*s / 2, 0);
+    }
+    else {
+        World.mulTranslate(x, y, 0);
+    }
+    World.mulRotateZ(r);
+    World.mulScale(texture.width*s, texture.height*s, 1);
+    World.mulTranslate(-0.5f, 0, 0);
+
+    // Update variables that change once per frame
+    Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
+    Context->UpdateSubresource(CbColor, 0, NULL, &MeshColor, 0, 0);
+    Context->VSSetConstantBuffers(0, 1, &CbWorld);
+    Context->PSSetConstantBuffers(3, 1, &CbColor);
+
+    // Set vertex buffer
+    UINT stride = sizeof(VECTOR3); UINT offset = 0;
+    Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
+    stride = sizeof(VECTOR2);
+    if (texture.texCoord == 0)
+        Context->IASetVertexBuffers(1, 1, &TexCoordBuffer, &stride, &offset);
+    else
+        Context->IASetVertexBuffers(1, 1, &texture.texCoord, &stride, &offset);
+    Context->IASetInputLayout(ImageVertexLayout);
+    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+    // Set texture
+    Context->PSSetShaderResources(0, 1, &texture.obj);
+
+    Context->VSSetShader(ImageVertexShader, NULL, 0);
+    Context->PSSetShader(ImagePixelShader, NULL, 0);
+    Context->Draw(4, 0);
+}
 
 //----------------------------------------------------------------------------------------------------
 //１文字のフォントテクスチャを作る
@@ -1080,9 +1119,15 @@ void text(const char* str, float x, float y){
         }
     }
 }
-void text(int n, float x, float y){
+void text(float n, float x, float y){
+    int w = n;
     char str[128];
-    _itoa_s(n, str, 10);
+    if (w == n) {
+        sprintf_s(str, "%d", w);
+    }
+    else {
+        sprintf_s(str, "%f", n);
+    }
     text(str, x, y);
 }
 
