@@ -56,12 +56,14 @@ void initWindow( LPCTSTR caption, int clientWidth, int clientHeight ){
         ClientHeight = clientHeight;
         Aspect = (float)ClientWidth / ClientHeight;
         style = WS_OVERLAPPEDWINDOW;
+        Windowed = true;
     }
     else {
         ClientWidth = GetSystemMetrics(SM_CXSCREEN);
         ClientHeight = GetSystemMetrics(SM_CYSCREEN);
         Aspect = (float)ClientWidth / ClientHeight;
         style = WS_POPUP;
+        Windowed = false;
     }
     HWnd = CreateWindow(
         CLASS_NAME, // “o˜^‚³‚ê‚Ä‚¢‚éƒNƒ‰ƒX–¼

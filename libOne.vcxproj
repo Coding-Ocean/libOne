@@ -23,8 +23,11 @@
     <ClInclude Include="inc\common.h" />
     <ClInclude Include="inc\framework.h" />
     <ClInclude Include="inc\graphic.h" />
+    <ClInclude Include="inc\input.h" />
     <ClInclude Include="inc\MAT.h" />
+    <ClInclude Include="inc\mathUtil.h" />
     <ClInclude Include="inc\MATRIX.h" />
+    <ClInclude Include="inc\rand.h" />
     <ClInclude Include="inc\stb_image_reader.h" />
     <ClInclude Include="inc\VECTOR2.h" />
     <ClInclude Include="inc\VECTOR3.h" />
@@ -34,8 +37,11 @@
     <ClCompile Include="src\COLOR.cpp" />
     <ClCompile Include="src\framework.cpp" />
     <ClCompile Include="src\graphic.cpp" />
+    <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\MAT.cpp" />
+    <ClCompile Include="src\mathUtil.cpp" />
     <ClCompile Include="src\MATRIX.cpp" />
+    <ClCompile Include="src\rand.cpp" />
     <ClCompile Include="src\stb_image_reader.cpp" />
     <ClCompile Include="src\VECTOR2.cpp" />
     <ClCompile Include="src\VECTOR3.cpp" />

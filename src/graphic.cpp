@@ -1,10 +1,10 @@
 #include<vector>
 #include<map>
 #include<string>
-#include<cmath>
 #include<d3d11.h>
 #include"common.h"
 #include"window.h"
+#include"mathUtil.h"
 #include"MAT.h"
 #include"VECTOR2.h"
 #include"VECTOR3.h"
@@ -692,12 +692,12 @@ void point(float x, float y){
     Context->PSSetShader(ShapePixelShader, NULL, 0);
     Context->Draw(64, 0);
 }
-RECT_MODE RectMode = LEFTTOP;
+RECT_MODE RectMode = CORNER;
 void rectMode(RECT_MODE mode){
     RectMode = mode;
 }
 void rect(float x, float y, float w, float h) {
-    if (RectMode == LEFTTOP) {
+    if (RectMode == CORNER) {
         World.identity();
         World.mulTranslate(x, y, 0);
         World.mulScale(w, h, 1);
@@ -725,13 +725,13 @@ void rect(float x, float y, float w, float h) {
     //draw stroke
     if (StrokeWeight > 0) {
         DrawEndPointFlag = false;
-        if (RectMode == LEFTTOP) {
+        if (RectMode == CORNER) {
             float r = x + w;
             float b = y + h;
             line(x, y, x, b);
             line(x, b, r, b);
             line(r, b, r, y);
-            line(x, y, r, y);
+            line(r, y, x, y);
         }
         else {
             float l = x - w / 2;
@@ -747,8 +747,11 @@ void rect(float x, float y, float w, float h) {
     }
 }
 void rect(float x, float y, float w, float h, float r) {
+    if (AngleMode == DEGREES) {
+        r = r * 3.141592f / 180.0f;
+    }
     World.identity();
-    if (RectMode == LEFTTOP) {
+    if (RectMode == CORNER) {
         World.mulTranslate(x + w / 2, y + h / 2, 0);
     }
     else {
@@ -780,7 +783,6 @@ void rect(float x, float y, float w, float h, float r) {
         line(lb.x, lb.y, rb.x, rb.y);
         line(rb.x, rb.y, rt.x, rt.y);
         line(rt.x, rt.y, lt.x, lt.y);
-        //}
         DrawEndPointFlag = true;
     }
 }
@@ -896,9 +898,11 @@ void image(int img, float x, float y, float r){
     WARNING( (size_t)img >= Cntnr->textures.size(), "画像番号オーバー", "" );
 
     CNTNR::TEXTURE& texture = Cntnr->textures.at(img);
-
+    if (AngleMode == DEGREES) {
+        r = r * 3.141592f / 180.0f;
+    }
     World.identity();
-    if (RectMode == LEFTTOP) {
+    if (RectMode == CORNER) {
         World.mulTranslate(x + texture.width / 2, y + texture.height / 2, 0);
     }
     else {
@@ -938,7 +942,7 @@ void image(int img, float x, float y, float z, float r, float s) {
     CNTNR::TEXTURE& texture = Cntnr->textures.at(img);
 
     World.identity();
-    if (RectMode == LEFTTOP) {
+    if (RectMode == CORNER) {
         World.mulTranslate(x + texture.width *s/ 2, y + texture.height*s / 2, 0);
     }
     else {

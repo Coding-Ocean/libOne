@@ -19,7 +19,7 @@ void rect(float x, float y, float w, float h, float r);
 void circle(float x, float y, float diameter);
 extern float Width;
 extern float Height;
-enum RECT_MODE { CENTER, LEFTTOP };
+enum RECT_MODE { CENTER, CORNER };
 void rectMode(RECT_MODE mode);
 int loadImage(const char* filename);
 int cutImage(int img, int left, int top, int width, int height);
