@@ -28,7 +28,7 @@ class WSTR {
 public:
     WSTR(const char* str)
     {
-        int dataSize = strlen(str) + 1;
+        int dataSize = (int)strlen(str) + 1;
         Wstr = new wchar_t[dataSize];
         int ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED,
             str, dataSize,
