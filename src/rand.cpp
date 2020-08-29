@@ -36,12 +36,12 @@ int getRandInt(){
 }
 int getRandInt( int a ){
 	int x = getRandInt() & 0x7fffffff; //符号ビット切捨て。精度は落ちるがこうしないと範囲に入らない
-	x %= a;
+	x %= a + 1;
 	return x;
 }
 int getRandInt( int a, int b ){
 	int x = getRandInt() & 0x7fffffff; //符号ビット切捨て。精度は落ちるがこうしないと範囲に入らない
-	x %= b - a;
+	x %= b + 1 - a;
 	x += a;
 	return x;
 }
