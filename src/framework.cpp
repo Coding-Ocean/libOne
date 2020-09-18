@@ -5,10 +5,12 @@
 #include<Windows.h>
 #include"window.h"
 #include"graphic.h"
+#include"rand.h"
 #include"framework.h"
 
 void gmain();
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, INT) {
+    setRandSeed();
     gmain();
     freeGraphic();
 }

@@ -1,32 +1,37 @@
-#pragma once
+#ifndef VECTOR3_HD
+#define VECTOR3_HD
+
+#include "VECTOR2.h"
 
 class VECTOR3{
 public:
-    float   x;
-    float   y;
-    float   z;
+    float x, y, z;
     VECTOR3( float x=0.0f, float y=0.0f, float z=0.0f );
-    //以下、コメントを外しながら一つ一つ作っていこう
-    //VECTOR3 operator+( const VECTOR3& v ) const;
-    //VECTOR3 operator-( const VECTOR3& v ) const;
-    //VECTOR3 operator*( float f ) const;
-    //VECTOR3 operator/( float f ) const;
-    //VECTOR3 operator-() const;
-    //void operator+=( const VECTOR3& v );
-    //void operator-=( const VECTOR3& v );
-    //void operator*=( float f );
-    //void operator/=( float f );
+    VECTOR3 operator+( const VECTOR3& v ) const;
+    VECTOR3 operator-( const VECTOR3& v ) const;
+    VECTOR3 operator*( float f ) const;
+    VECTOR3 operator/( float f ) const;
+    VECTOR3 operator-() const;
+    void operator+=( const VECTOR3& v );
+    void operator-=( const VECTOR3& v );
+    void operator*=( float f );
+    void operator/=( float f );
+    VECTOR2 xy(){ return VECTOR2( x, y ); }
+    VECTOR2 xz(){ return VECTOR2( x, z ); }
 };
 
-//VECTOR3を使用する一般関数　ここも一つ一つ作っていこう
-//内積を求める
-float dot( const VECTOR3& a, const VECTOR3& b );
-//外積ベクトルを求める
-VECTOR3 cross( const VECTOR3& a, const VECTOR3& b );
-//ベクトルを正規化する
-VECTOR3 normalize( const VECTOR3& a );
-//ベクトルの大きさを求める
 float length( const VECTOR3& a );
+
+float sqLength(const VECTOR3& a);
+float length2(const VECTOR3& a);
+
+VECTOR3 normalize( const VECTOR3& a );
+
+float dot( const VECTOR3& a, const VECTOR3& b );
+
+VECTOR3 cross( const VECTOR3& a, const VECTOR3& b );
+
+#endif
 
 
 

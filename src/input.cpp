@@ -20,7 +20,7 @@ void initInput(){
     }
 }
 
-void getInput(){
+void getInputState(){
     
     Now = !Now;
 
@@ -94,6 +94,9 @@ void getInput(){
     //コントローラー
     getJoy();
     //getJoyXbox();
+}
+void getInput(){
+    getInputState();
 }
 
 void getJoy(){
