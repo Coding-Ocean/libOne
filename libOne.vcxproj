@@ -24,6 +24,7 @@
     <ClInclude Include="inc\framework.h" />
     <ClInclude Include="inc\graphic.h" />
     <ClInclude Include="inc\input.h" />
+    <ClInclude Include="inc\let.h" />
     <ClInclude Include="inc\MAT.h" />
     <ClInclude Include="inc\mathUtil.h" />
     <ClInclude Include="inc\MATRIX.h" />
@@ -38,6 +39,7 @@
     <ClCompile Include="src\framework.cpp" />
     <ClCompile Include="src\graphic.cpp" />
     <ClCompile Include="src\input.cpp" />
+    <ClCompile Include="src\let.cpp" />
     <ClCompile Include="src\MAT.cpp" />
     <ClCompile Include="src\mathUtil.cpp" />
     <ClCompile Include="src\MATRIX.cpp" />

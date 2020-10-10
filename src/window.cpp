@@ -1,6 +1,6 @@
 #include "window.h"
 #include "graphic.h"
-//#include "input.h"
+#include "input.h"
 
 extern LPCTSTR CLASS_NAME = _T("GameWindow");
 extern int ClientWidth = 0;
@@ -115,6 +115,7 @@ unsigned getTime(){
 
 bool msgProc() {
     present();
+    getInput();
     MSG msg;
     if( PeekMessage( &msg, 0, 0, 0, PM_REMOVE ) ) {
         TranslateMessage( &msg );
