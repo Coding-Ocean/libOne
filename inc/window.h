@@ -7,7 +7,6 @@ extern int ClientHeight;
 extern unsigned ActiveWindow;
 extern int MouseDelta;
 extern bool Windowed;
-bool msgProc();
 unsigned getTime();
 //clientWidthとclientHeightを省略するとフルスクリーンモードになる
 void initWindow(LPCTSTR caption, int clientWidth = 0, int clientHeight = 0);

@@ -5,6 +5,7 @@
 #include<Windows.h>
 #include"window.h"
 #include"graphic.h"
+#include"input.h"
 #include"rand.h"
 #include"framework.h"
 
@@ -63,6 +64,17 @@ void window(const char* caption, int width, int height, bool fullscreen) {
     }
     initGraphic(width, height);
 #endif
+}
+
+bool msgProc() {
+    present();
+    getInputState();
+    MSG msg;
+    if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    return (msg.message != WM_QUIT);
 }
 
 
