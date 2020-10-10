@@ -115,7 +115,6 @@ unsigned getTime(){
 
 bool msgProc() {
     present();
-    getInput();
     MSG msg;
     if( PeekMessage( &msg, 0, 0, 0, PM_REMOVE ) ) {
         TranslateMessage( &msg );

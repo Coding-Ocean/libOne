@@ -17,3 +17,4 @@ void angleMode(ANGLE_MODE angleMode);
 float sin(float angle); 
 float cos(float angle);
 float sqrt(float square);
+float acos(float cosTheta);

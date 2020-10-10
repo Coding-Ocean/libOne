@@ -30,6 +30,7 @@
     <ClInclude Include="inc\MATRIX.h" />
     <ClInclude Include="inc\rand.h" />
     <ClInclude Include="inc\stb_image_reader.h" />
+    <ClInclude Include="inc\var.h" />
     <ClInclude Include="inc\VECTOR2.h" />
     <ClInclude Include="inc\VECTOR3.h" />
     <ClInclude Include="inc\window.h" />
@@ -45,6 +46,7 @@
     <ClCompile Include="src\MATRIX.cpp" />
     <ClCompile Include="src\rand.cpp" />
     <ClCompile Include="src\stb_image_reader.cpp" />
+    <ClCompile Include="src\var.cpp" />
     <ClCompile Include="src\VECTOR2.cpp" />
     <ClCompile Include="src\VECTOR3.cpp" />
     <ClCompile Include="src\window.cpp" />
@@ -222,6 +224,7 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>inc</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>

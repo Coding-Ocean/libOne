@@ -26,6 +26,7 @@ enum INPUT_CODE {
 };
 void initInput();
 void getInput();
+void getInputState();
 void getJoy();
 void getJoyXbox();
 int inValue( INPUT_CODE inCode );

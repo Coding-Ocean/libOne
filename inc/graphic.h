@@ -21,6 +21,7 @@ extern float Width;
 extern float Height;
 enum RECT_MODE { CENTER, CORNER };
 void rectMode(RECT_MODE mode);
+extern RECT_MODE RectMode;
 int loadImage(const char* filename);
 int cutImage(int img, int left, int top, int width, int height);
 void image(int img, float x, float y, float r = 0);

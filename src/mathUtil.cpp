@@ -1,3 +1,4 @@
+#include<math.h>
 #include"graphic.h"
 #include"window.h"
 #include"input.h"
@@ -100,7 +101,6 @@ void mathText(const char* s, float x, float y) {
 }
 
 
-#include<math.h>
 extern ANGLE_MODE AngleMode = RADIANS;
 void angleMode(ANGLE_MODE angleMode) {
     AngleMode = angleMode;
@@ -119,5 +119,8 @@ float cos(float angle) {
 }
 float sqrt(float square) {
     return sqrtf(square);
+}
+float acos(float cosTheta) {
+    return acosf(cosTheta);
 }
 
