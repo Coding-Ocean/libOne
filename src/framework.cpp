@@ -1,6 +1,7 @@
 #pragma comment(lib, "winmm.lib" )
 #pragma comment(lib, "imm32.lib" )
 #pragma comment(lib, "d3d11.lib") 
+#include<crtdbg.h>
 #include<tchar.h>
 #include<Windows.h>
 #include"window.h"
@@ -10,20 +11,21 @@
 #include"framework.h"
 
 void gmain();
+
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, INT) {
-    setRandSeed();
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);    setRandSeed();
     gmain();
     freeGraphic();
 }
 
-void window(int width, int height, bool fullscreen){
+void window(float width, float height, bool fullscreen){
     if (fullscreen) {
         initWindow(_T("Game"));
     }
     else {
-        initWindow(_T("Game"), width, height);
+        initWindow(_T("Game"), (int)width, (int)height);
     }
-    initGraphic(width, height);
+    initGraphic((int)width, (int)height);
 }
 
 class WSTR {
@@ -45,24 +47,24 @@ public:
     }
 };
 
-void window(const char* caption, int width, int height, bool fullscreen) {
+void window(const char* caption, float width, float height, bool fullscreen) {
 #ifdef _UNICODE
     WSTR wCaption(caption);
     if (fullscreen) {
         initWindow(wCaption.wstr());
     }
     else {
-        initWindow(wCaption.wstr(), width, height);
+        initWindow(wCaption.wstr(), (int)width, (int)height);
     }
-    initGraphic(width, height);
+    initGraphic((int)width, (int)height);
 #else
     if (fullscreen) {
         initWindow(caption);
     }
     else {
-        initWindow(caption, width, height);
+        initWindow(caption, (int)width, (int)height);
     }
-    initGraphic(width, height);
+    initGraphic((int)width, (int)height);
 #endif
 }
 

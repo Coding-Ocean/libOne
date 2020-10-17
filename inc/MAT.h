@@ -9,8 +9,8 @@ public:
             _41,_42,_43,_44;
     MAT();
     void identity();
-    void mulTranslate( float x, float y, float z );
-    void mulScale( float x, float y, float z );
+    void mulTranslate( float x, float y, float z=0 );
+    void mulScale( float x, float y, float z=1 );
     void mulRotateZ( float r );
     void ortho( float l, float r, float b, float t, float n, float f );
     VECTOR3 operator*( const VECTOR3& v ) const;

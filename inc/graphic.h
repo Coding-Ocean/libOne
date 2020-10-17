@@ -17,6 +17,11 @@ void point(float x, float y);
 void rect(float x, float y, float w, float h);
 void rect(float x, float y, float w, float h, float r);
 void circle(float x, float y, float diameter);
+int createShape(float* vertices, int numVertices,
+    int* indices, int numIndices);
+int createShape(class VECTOR3* vertices, int num,
+    WORD* indices,int numIndices);
+void shape(int idx, float x, float y, float r=0, float size=1);
 extern float Width;
 extern float Height;
 enum RECT_MODE { CENTER, CORNER };

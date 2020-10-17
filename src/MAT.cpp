@@ -51,9 +51,6 @@ VECTOR3 MAT::operator*( const VECTOR3& v ) const{
     tmp.x   = _11 * v.x + _12 * v.y + _13 * v.z + _14;
     tmp.y   = _21 * v.x + _22 * v.y + _23 * v.z + _24;
     tmp.z   = _31 * v.x + _32 * v.y + _33 * v.z + _34;
-    //float w = _41 * v.x + _42 * v.y + _43 * v.z + _44;
-    //if( w < 0 ){ tmp.z=-1; w=1; }
-    //tmp = tmp / w;
     return  tmp;
 }
 
