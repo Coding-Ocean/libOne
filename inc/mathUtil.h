@@ -16,5 +16,7 @@ extern ANGLE_MODE AngleMode;
 void angleMode(ANGLE_MODE angleMode);
 float sin(float angle); 
 float cos(float angle);
+float acos(float cosAngle);
+float atan2(float y, float x);
 float sqrt(float square);
-float acos(float cosTheta);
+float pow(float a, float b);

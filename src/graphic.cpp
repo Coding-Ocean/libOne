@@ -439,7 +439,7 @@ void clear(float* clearColor){
 }
 void clear(const COLOR& c) {
     // Clear the back buffer
-    float clearColor[4] = { c.r, c.g, c.b, c.a };
+    float clearColor[4] = { c.r/255, c.g/255, c.b/255, 1.0f };
     clear(clearColor);
 }
 void clear(float r, float g, float b) {
@@ -734,6 +734,13 @@ void fill(float r, float g, float b, float a){
     FillColor.b = b / 255;
     FillColor.a = a / 255;
 }
+void fill(const COLOR& c) {
+    FillColor.r = c.r / 255;
+    FillColor.g = c.g / 255;
+    FillColor.b = c.b / 255;
+    FillColor.a = c.a / 255;
+}
+
 void meshColor(float r, float g, float b, float a){
     MeshColor.r = r / 255;
     MeshColor.g = g / 255;
@@ -927,7 +934,6 @@ void circle(float x, float y, float diameter){
 }
 void shape(int idx, float x, float y, float r, float size) {
     CNTNR::SHAPE& sh = Cntnr->shapes.at(idx);
-
     if (AngleMode == DEGREES) {
         r = r * 3.141592f / 180.0f;
     }

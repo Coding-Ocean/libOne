@@ -3,7 +3,7 @@
 
 struct COLOR{
     float r, g, b, a;
-    COLOR( float r=1, float g=1, float b=1, float a=1 ){
+    COLOR( float r=255, float g=255, float b=255, float a=255 ){
         this->r = r; this->g = g; this->b = b; this->a = a;
     }
     COLOR( unsigned c ){
