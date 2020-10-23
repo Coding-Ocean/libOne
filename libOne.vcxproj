@@ -26,7 +26,6 @@
     <ClInclude Include="inc\input.h" />
     <ClInclude Include="inc\MAT.h" />
     <ClInclude Include="inc\mathUtil.h" />
-    <ClInclude Include="inc\MATRIX.h" />
     <ClInclude Include="inc\rand.h" />
     <ClInclude Include="inc\stb_image_reader.h" />
     <ClInclude Include="inc\var.h" />
@@ -41,7 +40,6 @@
     <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\MAT.cpp" />
     <ClCompile Include="src\mathUtil.cpp" />
-    <ClCompile Include="src\MATRIX.cpp" />
     <ClCompile Include="src\rand.cpp" />
     <ClCompile Include="src\stb_image_reader.cpp" />
     <ClCompile Include="src\var.cpp" />
@@ -222,7 +220,7 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>inc</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -239,6 +237,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>inc</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>

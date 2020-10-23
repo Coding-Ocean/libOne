@@ -618,18 +618,16 @@ void createCircleVertexPosBuffer(){
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &CircleVertexPosBuffer);
     WARNING(FAILED(hr), "CreateVertexBuffer Circle","");
 }
-//カスタムシェープの頂点バッファを作る
-int createShape(float* vertices, int numVertices,
-    int* indices, int numIndices) {
+//カスタムシェープの頂点バッファを作る。トライアングルファンインデックス
+int createShape(struct SHAPE_VERTEX* vertices, int numVertices) {
     ID3D11Buffer* shapeVertexPosBuffer = 0;
     ID3D11Buffer* shapeIndexBuffer = 0;
     VECTOR3* shapeVertices = 0;
-
     //頂点バッファをつくる
     shapeVertices = new VECTOR3[numVertices];
     for (int i = 0; i < numVertices; i++) {
-        shapeVertices[i].x = vertices[i * 2];
-        shapeVertices[i].y = vertices[i * 2 + 1];
+        shapeVertices[i].x = vertices[i].x;
+        shapeVertices[i].y = vertices[i].y;
         shapeVertices[i].z = 0;
     }
     D3D11_BUFFER_DESC bd;
@@ -644,33 +642,42 @@ int createShape(float* vertices, int numVertices,
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &shapeVertexPosBuffer);
     WARNING(FAILED(hr), "CreateVertexBuffer Circle", "");
     //インデックスバッファをつくる
-    WORD* idx = new WORD[numIndices];
-    for (int j = 0; j < numIndices; j++) {
-        idx[j] = (WORD)indices[j];
+    //　インデックス
+    const int numTriangles = numVertices - 2;
+    const int numIndices = numTriangles * 3;
+    long* indices = new long[numIndices];
+    for (int i = 0; i < numTriangles; i++) {
+        int idx = i * 3;
+        indices[idx + 0] = 0;
+        indices[idx + 1] = i + 1;
+        indices[idx + 2] = i + 2;
     }
     ZeroMemory(&bd, sizeof(bd));
-    bd.ByteWidth = sizeof(WORD) * numIndices;
+    bd.ByteWidth = sizeof(long) * numIndices;
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     ZeroMemory(&InitData, sizeof(InitData));
-    InitData.pSysMem = idx;
+    InitData.pSysMem = indices;
     hr = Device->CreateBuffer(&bd, &InitData, &shapeIndexBuffer);
     Cntnr->shapes.emplace_back(
         shapeVertexPosBuffer, numVertices,
         shapeIndexBuffer, numIndices,
         shapeVertices);
-    delete[] idx;
+    delete[] indices;
     return Cntnr->shapes.size() - 1;
 }
-
-int createShape(class VECTOR3* vertices, int numVertices,
-    WORD* indices, int numIndices) {
-
-    ID3D11Buffer* shapeVertexPosBuffer=0;
-    ID3D11Buffer* shapeIndexBuffer=0;
-    VECTOR3* shapeVertices=0;
-
+int createShape(struct SHAPE_VERTEX* vertices, int numVertices,
+    long* indices, int numIndices) {
+    ID3D11Buffer* shapeVertexPosBuffer = 0;
+    ID3D11Buffer* shapeIndexBuffer = 0;
+    VECTOR3* shapeVertices = 0;
     //頂点バッファをつくる
+    shapeVertices = new VECTOR3[numVertices];
+    for (int i = 0; i < numVertices; i++) {
+        shapeVertices[i].x = vertices[i].x;
+        shapeVertices[i].y = vertices[i].y;
+        shapeVertices[i].z = 0;
+    }
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D11_USAGE_DEFAULT;
@@ -679,29 +686,28 @@ int createShape(class VECTOR3* vertices, int numVertices,
     bd.CPUAccessFlags = 0;
     D3D11_SUBRESOURCE_DATA InitData;
     ZeroMemory(&InitData, sizeof(InitData));
-    InitData.pSysMem = vertices;
+    InitData.pSysMem = shapeVertices;
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &shapeVertexPosBuffer);
     WARNING(FAILED(hr), "CreateVertexBuffer Circle", "");
     //インデックスバッファをつくる
+    //DWORD* idx = new DWORD[numIndices];
+    //for (int j = 0; j < numIndices; j++) {
+    //    idx[j] = (DWORD)indices[j];
+    //}
     ZeroMemory(&bd, sizeof(bd));
-    bd.ByteWidth = sizeof(WORD) * numIndices;
+    bd.ByteWidth = sizeof(long) * numIndices;
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
     ZeroMemory(&InitData, sizeof(InitData));
     InitData.pSysMem = indices;
     hr = Device->CreateBuffer(&bd, &InitData, &shapeIndexBuffer);
-    //lineを引くため頂点データを持ってしまえ
-    shapeVertices = new VECTOR3[numVertices];
-    for (int i = 0; i < numVertices; i++) {
-        shapeVertices[i] = vertices[i];
-    }
     Cntnr->shapes.emplace_back(
         shapeVertexPosBuffer, numVertices,
-        shapeIndexBuffer, numIndices, 
+        shapeIndexBuffer, numIndices,
         shapeVertices);
-    return Cntnr->shapes.size()-1;
+    //delete[] idx;
+    return Cntnr->shapes.size() - 1;
 }
-
 
 void createTexCoordBuffer(){
     VECTOR2 vertices[] =  {
@@ -857,9 +863,6 @@ void rect(float x, float y, float w, float h) {
     }
 }
 void rect(float x, float y, float w, float h, float r) {
-    if (AngleMode == DEGREES) {
-        r = r * 3.141592f / 180.0f;
-    }
     World.identity();
     if (RectMode == CORNER) {
         World.mulTranslate(x + w / 2, y + h / 2, 0);
@@ -934,9 +937,9 @@ void circle(float x, float y, float diameter){
 }
 void shape(int idx, float x, float y, float r, float size) {
     CNTNR::SHAPE& sh = Cntnr->shapes.at(idx);
-    if (AngleMode == DEGREES) {
-        r = r * 3.141592f / 180.0f;
-    }
+    //if (AngleMode == DEGREES) {
+    //    r = r * 3.141592f / 180.0f;
+    //}
     World.identity();
     World.mulTranslate(x, y, 0);
     World.mulRotateZ(r);
@@ -950,7 +953,7 @@ void shape(int idx, float x, float y, float r, float size) {
     UINT stride = sizeof(VECTOR3), offset = 0;
     Context->IASetVertexBuffers(0, 1, &sh.shapeVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
-    Context->IASetIndexBuffer(sh.shapeIndexBuffer, DXGI_FORMAT_R16_UINT, 0); 
+    Context->IASetIndexBuffer(sh.shapeIndexBuffer, DXGI_FORMAT_R32_UINT, 0); 
     Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     Context->VSSetShader(ShapeVertexShader, NULL, 0);
     Context->PSSetShader(ShapePixelShader, NULL, 0);
@@ -959,7 +962,7 @@ void shape(int idx, float x, float y, float r, float size) {
     if (StrokeWeight > 0) {
         DrawEndPointFlag = false;
         MAT world = World;
-        VECTOR3 o,s, e;
+        VECTOR3 o, s, e;
         o = world * sh.shapeVertices[0];
         s = o;
         for (int i = 0; i < sh.numShapeVertices-1; i++) {
@@ -971,7 +974,38 @@ void shape(int idx, float x, float y, float r, float size) {
         DrawEndPointFlag = true;
     }
 }
-
+void shape(int idx, class MAT& world) {
+    CNTNR::SHAPE& sh = Cntnr->shapes.at(idx);
+    // Update variables that change once per frame
+    Context->UpdateSubresource(CbWorld, 0, NULL, &world, 0, 0);
+    Context->UpdateSubresource(CbColor, 0, NULL, &FillColor, 0, 0);
+    Context->VSSetConstantBuffers(0, 1, &CbWorld);
+    Context->PSSetConstantBuffers(3, 1, &CbColor);
+    // Set vertex buffer
+    UINT stride = sizeof(VECTOR3), offset = 0;
+    Context->IASetVertexBuffers(0, 1, &sh.shapeVertexPosBuffer, &stride, &offset);
+    Context->IASetInputLayout(ShapeVertexLayout);
+    Context->IASetIndexBuffer(sh.shapeIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    Context->VSSetShader(ShapeVertexShader, NULL, 0);
+    Context->PSSetShader(ShapePixelShader, NULL, 0);
+    Context->DrawIndexed(sh.numShapeIndices, 0, 0);
+    // Outline of shape
+    if (StrokeWeight > 0) {
+        DrawEndPointFlag = false;
+        //MAT world = World;
+        VECTOR3 o, s, e;
+        o = world * sh.shapeVertices[0];
+        s = o;
+        for (int i = 0; i < sh.numShapeVertices - 1; i++) {
+            e = world * sh.shapeVertices[i + 1];
+            line(s.x, s.y, e.x, e.y);
+            s = e;
+        }
+        line(s.x, s.y, o.x, o.y);
+        DrawEndPointFlag = true;
+    }
+}
 int loadImage(const char* filename){
     //stb_imageで画像をメモリに読み込む
     unsigned char* pixels = 0;

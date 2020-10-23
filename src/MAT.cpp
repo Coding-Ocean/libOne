@@ -1,4 +1,4 @@
-#include <math.h>
+#include "mathUtil.h"
 #include "MAT.h"
 
 MAT::MAT(){
@@ -24,8 +24,8 @@ void MAT::mulScale( float x, float y, float z ){
 	_31 *= x;    _32 *= y;    _33 *= z;
 }
 void MAT::mulRotateZ( float r ){
-    float c = cosf( r );
-    float s = sinf( r );
+    float c = cos( r );
+    float s = sin( r );
     float tmp;
     //1çsñ⁄
     tmp = c * _11 + s * _12;
@@ -52,5 +52,30 @@ VECTOR3 MAT::operator*( const VECTOR3& v ) const{
     tmp.y   = _21 * v.x + _22 * v.y + _23 * v.z + _24;
     tmp.z   = _31 * v.x + _32 * v.y + _33 * v.z + _34;
     return  tmp;
+}
+MAT MAT::operator*(const MAT& m) const {
+    MAT tmp;
+
+    tmp._11 = _11 * m._11 + _12 * m._21 + _13 * m._31 + _14 * m._41;
+    tmp._21 = _21 * m._11 + _22 * m._21 + _23 * m._31 + _24 * m._41;
+    tmp._31 = _31 * m._11 + _32 * m._21 + _33 * m._31 + _34 * m._41;
+    tmp._41 = _41 * m._11 + _42 * m._21 + _43 * m._31 + _44 * m._41;
+
+    tmp._12 = _11 * m._12 + _12 * m._22 + _13 * m._32 + _14 * m._42;
+    tmp._22 = _21 * m._12 + _22 * m._22 + _23 * m._32 + _24 * m._42;
+    tmp._32 = _31 * m._12 + _32 * m._22 + _33 * m._32 + _34 * m._42;
+    tmp._42 = _41 * m._12 + _42 * m._22 + _43 * m._32 + _44 * m._42;
+
+    tmp._13 = _11 * m._13 + _12 * m._23 + _13 * m._33 + _14 * m._43;
+    tmp._23 = _21 * m._13 + _22 * m._23 + _23 * m._33 + _24 * m._43;
+    tmp._33 = _31 * m._13 + _32 * m._23 + _33 * m._33 + _34 * m._43;
+    tmp._43 = _41 * m._13 + _42 * m._23 + _43 * m._33 + _44 * m._43;
+
+    tmp._14 = _11 * m._14 + _12 * m._24 + _13 * m._34 + _14 * m._44;
+    tmp._24 = _21 * m._14 + _22 * m._24 + _23 * m._34 + _24 * m._44;
+    tmp._34 = _31 * m._14 + _32 * m._24 + _33 * m._34 + _34 * m._44;
+    tmp._44 = _41 * m._14 + _42 * m._24 + _43 * m._34 + _44 * m._44;
+
+    return tmp;
 }
 

@@ -18,13 +18,15 @@ void point(float x, float y);
 void rect(float x, float y, float w, float h);
 void rect(float x, float y, float w, float h, float r);
 void circle(float x, float y, float diameter);
-int createShape(float* vertices, int numVertices,
-    int* indices, int numIndices);
-int createShape(class VECTOR3* vertices, int num,
-    WORD* indices,int numIndices);
-void shape(int idx, float x, float y, float r=0, float size=1);
+struct SHAPE_VERTEX { float x, y; };
+int createShape(struct SHAPE_VERTEX* vertices, int numVertices);
+int createShape(struct SHAPE_VERTEX* vertices, int numVertices, long* indices, int numIndices);
+void shape(int idx, float x, float y, float r = 0, float size = 1);
+void shape(int idx, class MAT& m);
 extern float Width;
 extern float Height;
+#define width Width
+#define height Height
 enum RECT_MODE { CENTER, CORNER };
 void rectMode(RECT_MODE mode);
 extern RECT_MODE RectMode;
