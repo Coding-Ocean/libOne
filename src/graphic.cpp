@@ -4,8 +4,7 @@
 #include<d3d11.h>
 #include"common.h"
 #include"window.h"
-#include"mathUtil.h"
-#include"MAT.h"
+#include"MATRIX.h"
 #include"VECTOR2.h"
 #include"VECTOR3.h"
 #include"stb_image_reader.h"
@@ -55,8 +54,8 @@ ID3D11Buffer* TexCoordBuffer = 0;
 
 
 //共通使用マトリックス
-MAT Proj;
-MAT World;
+MATRIX Proj;
+MATRIX World;
 //デフォルト値
 COLOR StrokeColor(0.0f, 0.0f, 0.0f, 1.0f);
 COLOR FillColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -223,10 +222,6 @@ void initGraphic(int baseWidth, int baseHeight) {
     createRectVertexPosBuffer();
     createTexCoordBuffer();
 
-    //FontIdMap = new std::map<std::string, int>;
-    //FontMap = new std::map<KEY, int>;
-    //CurrentFont = new CURRENT_FONT;
-
     Cntnr = new CNTNR;
     font("BIZ UDGothic");
 }
@@ -250,7 +245,6 @@ void createDevice() {
             }
         }
     }
-    //MSAA.Count = 1;
     //インターフェース取得
     IDXGIDevice1* hpDXGI = NULL;
     hr = Device->QueryInterface(__uuidof(IDXGIDevice1), (void**)&hpDXGI);
@@ -447,6 +441,12 @@ void clear(float r, float g, float b) {
     float clearColor[4] = { r/255, g/255, b/255, 1.0f };
     clear(clearColor);
 }
+void clear(float c) {
+    // Clear the back buffer
+    c /= 255;
+    float clearColor[4] = { c, c, c, 1.0f };
+    clear(clearColor);
+}
 void present() {
     SwapChain->Present(1, 0);
 }
@@ -460,7 +460,7 @@ void createConstantBuffer(){
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bd.CPUAccessFlags = 0;
-    bd.ByteWidth = sizeof(MAT);
+    bd.ByteWidth = sizeof(MATRIX);
     hr = Device->CreateBuffer(&bd, NULL, &CbWorld);
     WARNING(FAILED(hr), "Create Constant Buffer CbWorld","");
     // CbProj
@@ -690,10 +690,6 @@ int createShape(struct SHAPE_VERTEX* vertices, int numVertices,
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &shapeVertexPosBuffer);
     WARNING(FAILED(hr), "CreateVertexBuffer Circle", "");
     //インデックスバッファをつくる
-    //DWORD* idx = new DWORD[numIndices];
-    //for (int j = 0; j < numIndices; j++) {
-    //    idx[j] = (DWORD)indices[j];
-    //}
     ZeroMemory(&bd, sizeof(bd));
     bd.ByteWidth = sizeof(long) * numIndices;
     bd.Usage = D3D11_USAGE_DEFAULT;
@@ -705,7 +701,6 @@ int createShape(struct SHAPE_VERTEX* vertices, int numVertices,
         shapeVertexPosBuffer, numVertices,
         shapeIndexBuffer, numIndices,
         shapeVertices);
-    //delete[] idx;
     return Cntnr->shapes.size() - 1;
 }
 
@@ -734,6 +729,13 @@ void stroke(float r, float g, float b, float a){
     StrokeColor.b = b / 255;
     StrokeColor.a = a / 255;
 }
+void stroke(float c) {
+    c /= 255;
+    StrokeColor.r = c;
+    StrokeColor.g = c;
+    StrokeColor.b = c;
+    StrokeColor.a = 1;
+}
 void fill(float r, float g, float b, float a){
     FillColor.r = r / 255;
     FillColor.g = g / 255;
@@ -746,12 +748,25 @@ void fill(const COLOR& c) {
     FillColor.b = c.b / 255;
     FillColor.a = c.a / 255;
 }
-
+void fill(float c) {
+    c /= 255;
+    FillColor.r = c;
+    FillColor.g = c;
+    FillColor.b = c;
+    FillColor.a = 1;
+}
 void meshColor(float r, float g, float b, float a){
     MeshColor.r = r / 255;
     MeshColor.g = g / 255;
     MeshColor.b = b / 255;
     MeshColor.a = a / 255;
+}
+void meshColor(float c){
+    c /= 255;
+    MeshColor.r = c;
+    MeshColor.g = c;
+    MeshColor.b = c;
+    MeshColor.a = 1;
 }
 void strokeWeight(float weight){
     StrokeWeight = weight;
@@ -936,10 +951,8 @@ void circle(float x, float y, float diameter){
     }
 }
 void shape(int idx, float x, float y, float r, float size) {
+    WARNING((size_t)idx >= Cntnr->shapes.size(), "shape番号オーバー", "");
     CNTNR::SHAPE& sh = Cntnr->shapes.at(idx);
-    //if (AngleMode == DEGREES) {
-    //    r = r * 3.141592f / 180.0f;
-    //}
     World.identity();
     World.mulTranslate(x, y, 0);
     World.mulRotateZ(r);
@@ -961,7 +974,8 @@ void shape(int idx, float x, float y, float r, float size) {
     // Outline of shape
     if (StrokeWeight > 0) {
         DrawEndPointFlag = false;
-        MAT world = World;
+        //line内でWorldを変更するためローカルコピーを使用
+        MATRIX world = World;
         VECTOR3 o, s, e;
         o = world * sh.shapeVertices[0];
         s = o;
@@ -974,7 +988,8 @@ void shape(int idx, float x, float y, float r, float size) {
         DrawEndPointFlag = true;
     }
 }
-void shape(int idx, class MAT& world) {
+void shape(int idx, const class MATRIX& world) {
+    WARNING((size_t)idx >= Cntnr->shapes.size(), "shape番号オーバー", "");
     CNTNR::SHAPE& sh = Cntnr->shapes.at(idx);
     // Update variables that change once per frame
     Context->UpdateSubresource(CbWorld, 0, NULL, &world, 0, 0);
@@ -993,7 +1008,6 @@ void shape(int idx, class MAT& world) {
     // Outline of shape
     if (StrokeWeight > 0) {
         DrawEndPointFlag = false;
-        //MAT world = World;
         VECTOR3 o, s, e;
         o = world * sh.shapeVertices[0];
         s = o;
@@ -1046,15 +1060,16 @@ int loadImage(const char* filename){
     Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
     return int(Cntnr->textures.size()) - 1;
 }
-int cutImage(int img, int left, int top, int width, int height){
-    ID3D11ShaderResourceView* texObj = Cntnr->textures.at(img).obj;
-    float texWidth = Cntnr->textures.at(img).width;
-    float texHeight = Cntnr->textures.at(img).height;
+int cutImage(int idx, int left, int top, int w, int h){
+    WARNING((size_t)idx >= Cntnr->textures.size(), "画像番号オーバー", "");
+    ID3D11ShaderResourceView* texObj = Cntnr->textures.at(idx).obj;
+    float texWidth = Cntnr->textures.at(idx).width;
+    float texHeight = Cntnr->textures.at(idx).height;
 
     float l = left / texWidth;
     float t = top / texHeight;
-    float r = (left + width) / texWidth;
-    float b = (top + height) / texHeight;
+    float r = (left + w) / texWidth;
+    float b = (top + h) / texHeight;
     VECTOR2 vertices[] = {
         VECTOR2(l, b),
         VECTOR2(l, t),
@@ -1074,55 +1089,13 @@ int cutImage(int img, int left, int top, int width, int height){
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &texCoord);
     WARNING(FAILED(hr), "CreateVertexBuffer Image","");
 
-    Cntnr->textures.emplace_back(texObj, width, height, texCoord);
+    Cntnr->textures.emplace_back(texObj, w, h, texCoord);
     return int(Cntnr->textures.size()) - 1;
 }
-void image(int img, float x, float y, float r){
-    WARNING( (size_t)img >= Cntnr->textures.size(), "画像番号オーバー", "" );
+void image(int idx, float x, float y, float a, float s) {
+    WARNING((size_t)idx >= Cntnr->textures.size(), "画像番号オーバー", "");
 
-    CNTNR::TEXTURE& texture = Cntnr->textures.at(img);
-    if (AngleMode == DEGREES) {
-        r = r * 3.141592f / 180.0f;
-    }
-    World.identity();
-    if (RectMode == CORNER) {
-        World.mulTranslate(x + texture.width / 2, y + texture.height / 2, 0);
-    }
-    else {
-        World.mulTranslate(x, y, 0);
-    }
-    World.mulRotateZ(r);
-    World.mulScale(texture.width, texture.height, 1);
-    World.mulTranslate(-0.5f, 0, 0);
-
-    // Update variables that change once per frame
-    Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
-    Context->UpdateSubresource(CbColor, 0, NULL, &MeshColor, 0, 0);
-    Context->VSSetConstantBuffers(0, 1, &CbWorld);
-    Context->PSSetConstantBuffers(3, 1, &CbColor);
-
-    // Set vertex buffer
-    UINT stride = sizeof(VECTOR3); UINT offset = 0;
-    Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
-    stride = sizeof(VECTOR2);
-    if (texture.texCoord == 0)
-        Context->IASetVertexBuffers(1, 1, &TexCoordBuffer, &stride, &offset);
-    else
-        Context->IASetVertexBuffers(1, 1, &texture.texCoord, &stride, &offset);
-    Context->IASetInputLayout(ImageVertexLayout);
-    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
-    // Set texture
-    Context->PSSetShaderResources(0, 1, &texture.obj);
-
-    Context->VSSetShader(ImageVertexShader, NULL, 0);
-    Context->PSSetShader(ImagePixelShader, NULL, 0);
-    Context->Draw(4, 0);
-}
-void image(int img, float x, float y, float z, float r, float s) {
-    WARNING((size_t)img >= Cntnr->textures.size(), "画像番号オーバー", "");
-
-    CNTNR::TEXTURE& texture = Cntnr->textures.at(img);
+    CNTNR::TEXTURE& texture = Cntnr->textures.at(idx);
 
     World.identity();
     if (RectMode == CORNER) {
@@ -1131,7 +1104,7 @@ void image(int img, float x, float y, float z, float r, float s) {
     else {
         World.mulTranslate(x, y, 0);
     }
-    World.mulRotateZ(r);
+    World.mulRotateZ(a);
     World.mulScale(texture.width*s, texture.height*s, 1);
     World.mulTranslate(-0.5f, 0, 0);
 
@@ -1170,7 +1143,6 @@ int createFont(const wchar_t* c)
         SHIFTJIS_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS, PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, 0 };
     strcpy_s(lf.lfFaceName, Cntnr->currentFont.name.c_str());
     HFONT hFont = CreateFontIndirectA(&lf);
-    //if (hFont == NULL) { g_pD3DDev->Release(); g_pD3D->Release(); return 0; }
     // デバイスにフォントを持たせないとGetGlyphOutline関数はエラーとなる
     HDC hdc = GetDC(NULL);
     HFONT oldFont = (HFONT)SelectObject(hdc, hFont);

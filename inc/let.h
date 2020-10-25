@@ -1,10 +1,9 @@
 #pragma once
-class var
-{
+class let{
     float V=0;
 public:
-    var();
-    var(float v);
+    let();
+    let(float v);
     operator float();
     float operator+(int v);
     float operator+(float v);
@@ -12,9 +11,9 @@ public:
     int operator/(int);
     void operator+=(float v);
     void operator*=(float v);
-    var& operator++();
-    var operator++(int);
+    let& operator++();
+    let operator++(int);
 };
-char* operator+(const char* str, var v);
+char* operator+(const char* str, let v);
 
 

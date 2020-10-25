@@ -39,5 +39,7 @@ INPUT_CODE getTiltedJoyStickCode();
 INPUT_CODE getPressedButtonCode();
 extern float MouseX;
 extern float MouseY;
+#define mouseX MouseX
+#define mouseY MouseY
 #endif
 

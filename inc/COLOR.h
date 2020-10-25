@@ -3,14 +3,17 @@
 
 struct COLOR{
     float r, g, b, a;
-    COLOR( float r=255, float g=255, float b=255, float a=255 ){
+    COLOR() {
+        r = 255; g = 255; b = 255; a = 255;
+    }
+    COLOR( float r, float g, float b, float a=255 ){
         this->r = r; this->g = g; this->b = b; this->a = a;
     }
     COLOR( unsigned c ){
-	    a = (c>>24)/255.0f;
-	    r = ((c&0x00ff0000)>>16)/255.0f;
-	    g = ((c&0x0000ff00)>> 8)/255.0f;
-	    b = (c&0x000000ff)/255.0f;
+	    a = float(c>>24);
+	    r = float((c&0x00ff0000)>>16);
+	    g = float((c&0x0000ff00)>> 8);
+	    b = float(c&0x000000ff);
     }
     COLOR operator*( float f )const{
         return( COLOR( r * f, g * f, b * f, a ) );

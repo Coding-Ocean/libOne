@@ -1,9 +1,6 @@
-#ifndef Rand_HD
-#define Rand_HD
-
+#pragma once
 void setRandSeed();
 unsigned getRand();
-
 void setRandSeed( int seed );
 int getRandInt();
 int getRandInt( int a );
@@ -12,5 +9,8 @@ float getRandFloat();
 float getRandFloat( float a );
 float getRandFloat( float a, float b );
 
-
-#endif
+unsigned random();
+int random(int a);
+int random(int a, int b);
+float random(float a);
+float random(float a, float b);

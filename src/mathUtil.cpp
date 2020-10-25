@@ -18,9 +18,6 @@ float maxScaleY() {
 void mathMouse() {
     float aspect = Width / Height;
     if ((float)ClientWidth / ClientHeight > aspect){
-    //if (Windowed) {
-    //    MathMouseX = (inValue(MOUSE_X) - Cx) / (Cx / MaxScaleX);
-    //    MathMouseY = -(inValue(MOUSE_Y) - Cy) / (Cy / MaxScaleX);
         MathMouseX =  (inValue(MOUSE_X) - ClientWidth  / 2.0f) / (ClientHeight / 2.0f / (Cy/Unit));
         MathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientHeight / 2.0f / (Cy/Unit));
     }
@@ -107,7 +104,7 @@ void angleMode(ANGLE_MODE angleMode) {
 }
 
 const float TO_RAD = 3.1415926535897932384626433832795f / 180.f;
-const float TO_DEG = 180.f / 3.1415926535897932384626433832795f;
+extern const float TO_DEG = 180.f / 3.1415926535897932384626433832795f;
 
 float sin(float angle) {
     if (AngleMode == DEGREES) {

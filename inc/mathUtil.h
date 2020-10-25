@@ -13,6 +13,7 @@ extern float MathMouseY;
 
 enum ANGLE_MODE { RADIANS, DEGREES };
 extern ANGLE_MODE AngleMode;
+extern const float TO_DEG;
 void angleMode(ANGLE_MODE angleMode);
 float sin(float angle); 
 float cos(float angle);

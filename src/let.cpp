@@ -1,44 +1,44 @@
 #include<stdio.h>
 #include <string.h>
-#include "var.h"
-var::var() {}
-var::var(float v) {
+#include "let.h"
+let::let() {}
+let::let(float v) {
     V = v;
 }
-var::operator float() {
+let::operator float() {
     return V;
 }
-float var::operator+(int v) {
+float let::operator+(int v) {
     return V + v;
 }
-float var::operator+(float v) {
+float let::operator+(float v) {
     return V + v;
 }
-int var::operator%(int i) {
-    return V - (int(V) / i) * i;
+int let::operator%(int i) {
+    return int(V) - (int(V) / i) * i;
 }
-int var::operator/(int i) {
+int let::operator/(int i) {
     return int(V) / i;
 }
-void var::operator+=(float v) {
+void let::operator+=(float v) {
     V += v;
 }
-void var::operator*=(float v) {
+void let::operator*=(float v) {
     V *= v;
 }
-var& var::operator++() {
+let& let::operator++() {
     V++;
     return *this;
 }
-var var::operator++(int) {
-    var pre = *this;
+let let::operator++(int) {
+    let pre = *this;
     V++;
     return pre;
 }
 
 char s1[128];
 char s2[64];
-char* operator+(const char* str, var v) 
+char* operator+(const char* str, let v) 
 {
     int iv = (int)v;
     if (iv == v) {
