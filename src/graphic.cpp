@@ -62,6 +62,7 @@ COLOR FillColor(1.0f, 1.0f, 1.0f, 1.0f);
 COLOR MeshColor(1.0f, 1.0f, 1.0f, 1.0f);
 float StrokeWeight = 1;
 int TextSize = 20;
+COLOR_MODE ColorMode = RGB;
 
 struct CNTNR {
     //テクスチャ
@@ -437,8 +438,20 @@ void clear(const COLOR& c) {
     clear(clearColor);
 }
 void clear(float r, float g, float b) {
-    // Clear the back buffer
-    float clearColor[4] = { r/255, g/255, b/255, 1.0f };
+    float clearColor[4];
+    if (ColorMode == RGB) {
+        clearColor[0] = r / 255;
+        clearColor[1] = g / 255;
+        clearColor[2] = b / 255;
+        clearColor[3] = 1.0f;
+    }
+    else if (ColorMode == HSV) {
+        COLOR c = hsv_to_rgb(r, g, b);
+        clearColor[0] = c.r / 255;
+        clearColor[1] = c.g / 255;
+        clearColor[2] = c.b / 255;
+        clearColor[3] = 1.0f;
+    }
     clear(clearColor);
 }
 void clear(float c) {
@@ -723,11 +736,31 @@ void createTexCoordBuffer(){
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &TexCoordBuffer);
     WARNING(FAILED(hr), "CreateVertexBuffer Image","");
 }
+
+void colorMode(COLOR_MODE mode) {
+    ColorMode = mode;
+}
+
 void stroke(float r, float g, float b, float a){
-    StrokeColor.r = r / 255;
-    StrokeColor.g = g / 255;
-    StrokeColor.b = b / 255;
-    StrokeColor.a = a / 255;
+    if (ColorMode == RGB) {
+        StrokeColor.r = r / 255;
+        StrokeColor.g = g / 255;
+        StrokeColor.b = b / 255;
+        StrokeColor.a = a / 255;
+    }
+    else if (ColorMode == HSV) {
+        COLOR c = hsv_to_rgb(r, g, b);
+        StrokeColor.r = c.r / 255;
+        StrokeColor.g = c.g / 255;
+        StrokeColor.b = c.b / 255;
+        StrokeColor.a = a / 255;
+    }
+}
+void stroke(const COLOR& c) {
+    StrokeColor.r = c.r / 255;
+    StrokeColor.g = c.g / 255;
+    StrokeColor.b = c.b / 255;
+    StrokeColor.a = c.a / 255;
 }
 void stroke(float c) {
     c /= 255;
@@ -737,10 +770,19 @@ void stroke(float c) {
     StrokeColor.a = 1;
 }
 void fill(float r, float g, float b, float a){
-    FillColor.r = r / 255;
-    FillColor.g = g / 255;
-    FillColor.b = b / 255;
-    FillColor.a = a / 255;
+    if (ColorMode == RGB) {
+        FillColor.r = r / 255;
+        FillColor.g = g / 255;
+        FillColor.b = b / 255;
+        FillColor.a = a / 255;
+    }
+    else if (ColorMode == HSV) {
+        COLOR c = hsv_to_rgb(r, g, b);
+        FillColor.r = c.r / 255;
+        FillColor.g = c.g / 255;
+        FillColor.b = c.b / 255;
+        FillColor.a = a / 255;
+    }
 }
 void fill(const COLOR& c) {
     FillColor.r = c.r / 255;

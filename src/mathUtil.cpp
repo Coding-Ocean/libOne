@@ -97,13 +97,13 @@ void mathText(const char* s, float x, float y) {
     text(s, Cx + x * Unit, Cy - y * Unit);
 }
 
-
 extern ANGLE_MODE AngleMode = RADIANS;
-void angleMode(ANGLE_MODE angleMode) {
-    AngleMode = angleMode;
+void angleMode(ANGLE_MODE mode) {
+    AngleMode = mode;
 }
-
-const float TO_RAD = 3.1415926535897932384626433832795f / 180.f;
+extern const float M_PI = 3.1415926535897932384626433832795f;
+extern const float M_2PI = 3.1415926535897932384626433832795f * 2;
+extern const float TO_RAD = 3.1415926535897932384626433832795f / 180.f;
 extern const float TO_DEG = 180.f / 3.1415926535897932384626433832795f;
 
 float sin(float angle) {
@@ -138,6 +138,33 @@ float sqrt(float square) {
 float pow(float a, float b) {
     return powf(a, b);
 }
+
+float map(float v, float a1, float a2, float b1, float b2) {
+    return (b2 - b1) / (a2 - a1) * v + b1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 float sin(float a) {

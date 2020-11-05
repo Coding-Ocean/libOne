@@ -5,7 +5,7 @@
 COLOR hsv_to_rgb( float h, float s, float v ){
     float max = v;
     float min = max  - ( (s / 255) * max );
-    float r=1,g=1,b=1;
+    float r=0,g=0,b=0;
     if (AngleMode == RADIANS) {
         //ラジアン値を角度に変換
         h *= TO_DEG;
@@ -45,7 +45,7 @@ COLOR hsv_to_rgb( float h, float s, float v ){
         b = ( ( 360 - h ) / 60 ) * ( max - min ) + min;
     }
 
-    return COLOR( float( r ),float( g ),float( b ) );
+    return COLOR(r, g, b);
 }
 
 
