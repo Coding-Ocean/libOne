@@ -63,6 +63,7 @@ COLOR MeshColor(1.0f, 1.0f, 1.0f, 1.0f);
 float StrokeWeight = 1;
 int TextSize = 20;
 COLOR_MODE ColorMode = RGB;
+RECT_MODE RectMode = CORNER;
 
 struct CNTNR {
     //テクスチャ
@@ -816,6 +817,7 @@ void strokeWeight(float weight){
 void noStroke() {
     StrokeWeight = 0;
 }
+
 bool DrawEndPointFlag = true;
 void line(float sx, float sy, float ex, float ey){
     float dx = ex - sx;
@@ -865,7 +867,6 @@ void point(float x, float y){
     Context->PSSetShader(ShapePixelShader, NULL, 0);
     Context->Draw(64, 0);
 }
-RECT_MODE RectMode = CORNER;
 void rectMode(RECT_MODE mode){
     RectMode = mode;
 }
@@ -1329,6 +1330,11 @@ void text(float n, float x, float y){
     else {
         sprintf_s(str, "%f", n);
     }
+    text(str, x, y);
+}
+void text(int n, float x, float y) {
+    char str[128];
+    sprintf_s(str, "%d", n);
     text(str, x, y);
 }
 
