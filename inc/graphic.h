@@ -11,6 +11,8 @@ enum COLOR_MODE { RGB, HSV };
 void colorMode(COLOR_MODE mode);
 enum RECT_MODE { CENTER, CORNER };
 void rectMode(RECT_MODE mode);
+enum TEXT_MODE { BOTTOM, TOP };
+void textMode(TEXT_MODE mode);
 void clear(const COLOR& c);
 void clear(float r, float g, float b);
 void clear(float c=0);

@@ -64,6 +64,7 @@ float StrokeWeight = 1;
 int TextSize = 20;
 COLOR_MODE ColorMode = RGB;
 RECT_MODE RectMode = CORNER;
+TEXT_MODE TextMode = TOP;
 
 struct CNTNR {
     //テクスチャ
@@ -1254,10 +1255,16 @@ int createFont(const wchar_t* c)
 
     return Cntnr->fonts.size() - 1;
 }
+void textMode(TEXT_MODE mode) {
+    TextMode = mode;
+}
 //FONTデータを使って、１文字表示する
 void drawFont(CNTNR::FONT* font, float x, float y){
     World.identity();
-    World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, y - (float)font->gm.gmptGlyphOrigin.y, 0.0f);
+    if(TextMode==TOP)
+        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, y - (float)font->gm.gmptGlyphOrigin.y + font->size, 0.0f);
+    else
+        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, y - (float)font->gm.gmptGlyphOrigin.y, 0.0f);
     World.mulScale((float)font->gm.gmBlackBoxX, (float)font->gm.gmBlackBoxY, 1.0f);
     World.mulTranslate(0, 0.5f, 0);
     // Update variables that change once per frame

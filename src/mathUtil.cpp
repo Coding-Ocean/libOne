@@ -63,19 +63,19 @@ void mathAxis(float maxScaleX) {
             float sx = Unit * i;
             line(Cx + sx, Cy - l, Cx + sx, Cy + l);//x>0
             line(Cx - sx, Cy - l, Cx - sx, Cy + l);//x<0
-            text((float)i, Cx + sx - ofst[idx][0], Cy + 25);
-            text((float)-i, Cx - sx - ofst[idx][1], Cy + 25);
+            text((float)i, Cx + sx - ofst[idx][0], Cy+7);
+            text((float)-i, Cx - sx - ofst[idx][1], Cy+7);
         }
         //scale y
         for (int i = inc; i < Cy / Unit; i += inc) {
             float sy = Unit * i;
             line(Cx - l, Cy - sy, Cx + l, Cy - sy);//y>0
             line(Cx - l, Cy + sy, Cx + l, Cy + sy);//y<0
-            text((float)i, Cx - ofst[idx][2], Cy - sy + 10);
-            text((float)-i, Cx - ofst[idx][3], Cy + sy + 10);
+            text((float)i, Cx - ofst[idx][2], Cy - sy -10);
+            text((float)-i, Cx - ofst[idx][3], Cy + sy -10);
         }
     }
-    text("0", Cx - 15, Cy + 25);
+    text("0", Cx - 15, Cy + 7);
     mathMouse();
 }
 void mathPoint(float x, float y) {
