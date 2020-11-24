@@ -64,7 +64,7 @@ float StrokeWeight = 1;
 int TextSize = 20;
 COLOR_MODE ColorMode = RGB;
 RECT_MODE RectMode = CORNER;
-TEXT_MODE TextMode = TOP;
+TEXT_MODE TextMode = BOTTOM;
 
 struct CNTNR {
     //テクスチャ
@@ -799,13 +799,13 @@ void fill(float c) {
     FillColor.b = c;
     FillColor.a = 1;
 }
-void meshColor(float r, float g, float b, float a){
+void imageColor(float r, float g, float b, float a){
     MeshColor.r = r / 255;
     MeshColor.g = g / 255;
     MeshColor.b = b / 255;
     MeshColor.a = a / 255;
 }
-void meshColor(float c){
+void imageColor(float c){
     c /= 255;
     MeshColor.r = c;
     MeshColor.g = c;
@@ -1258,6 +1258,9 @@ int createFont(const wchar_t* c)
 void textMode(TEXT_MODE mode) {
     TextMode = mode;
 }
+TEXT_MODE getTextMode() {
+    return TextMode;
+}
 //FONTデータを使って、１文字表示する
 void drawFont(CNTNR::FONT* font, float x, float y){
     World.identity();
@@ -1299,8 +1302,8 @@ void font(const char* fontname) {
         Cntnr->currentFont.id = FontIdCnt;
     }
 }
-void textSize(int size) {
-    TextSize = size;
+void textSize(float size) {
+    TextSize = (int)size;
 }
 void text(const char* str, float x, float y){
     size_t l = strlen(str);
@@ -1328,7 +1331,7 @@ void text(const char* str, float x, float y){
         }
     }
 }
-void text(float n, float x, float y){
+void text(double n, float x, float y){
     int w = n;
     char str[128];
     if (w == n) {
@@ -1343,5 +1346,11 @@ void text(int n, float x, float y) {
     char str[128];
     sprintf_s(str, "%d", n);
     text(str, x, y);
+}
+void text(let l, float x, float y) {
+    if (l.str())
+        text(l.str(), x, y);
+    else
+        text((double)l, x, y);
 }
 

@@ -26,14 +26,14 @@ void mathMouse() {
         MathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientWidth / 2.0f / MaxScaleX);
     }
 }
-void mathAxis(float maxScaleX) {
+void mathAxis(float maxScaleX, float bright) {
     Cx = Width / 2;
     Cy = Height / 2;
     MaxScaleX = maxScaleX;
     Unit = Cx / MaxScaleX;
     strokeWeight(1);
-    stroke(0, 0, 0);
-    fill(0, 0, 0);
+    stroke(bright);
+    fill(bright);
     line(0, Cy, Width, Cy);
     line(Cx, 0, Cx, Height);
     //scale x y
@@ -56,6 +56,8 @@ void mathAxis(float maxScaleX) {
     else {
         idx = 2; inc = 1;
     }
+    TEXT_MODE preTextMode = getTextMode();
+    textMode(TOP);
     textSize(20);
     if (MaxScaleX < 1000) {
         //scale x
@@ -76,6 +78,7 @@ void mathAxis(float maxScaleX) {
         }
     }
     text("0", Cx - 15, Cy + 7);
+    textMode(preTextMode);
     mathMouse();
 }
 void mathPoint(float x, float y) {
