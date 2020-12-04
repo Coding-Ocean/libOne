@@ -87,19 +87,18 @@ void mathPoint(float x, float y) {
 void mathCircle(float x, float y, float r) {
     circle(Cx + x * Unit, Cy - y * Unit, r * Unit);
 }
+void mathRect(float x, float y, float w, float h) {
+    rect(Cx + x * Unit, Cy - y * Unit, w * Unit, h * Unit);
+}
 void mathLine(float sx, float sy, float ex, float ey) {
     line(Cx + sx * Unit, Cy - sy * Unit, Cx + ex * Unit, Cy - ey * Unit);
 }
 void mathImage(int img, float x, float y, float r) {
     image(img, Cx + x * Unit, Cy - y * Unit, r);
 }
-void mathText(float n, float x, float y) {
-    text(n, Cx + x * Unit, Cy - y * Unit);
+void mathText(let l, float x, float y) {
+    text(l, Cx + x * Unit, Cy - y * Unit);
 }
-void mathText(const char* s, float x, float y) {
-    text(s, Cx + x * Unit, Cy - y * Unit);
-}
-
 extern ANGLE_MODE AngleMode = RADIANS;
 void angleMode(ANGLE_MODE mode) {
     AngleMode = mode;
@@ -121,6 +120,13 @@ float cos(float angle) {
     }
     return cosf(angle);
 }
+float asin(float sinAngle) {
+    float angle = asinf(sinAngle);
+    if (AngleMode == DEGREES) {
+        angle *= TO_DEG;
+    }
+    return angle;
+}
 float acos(float cosAngle) {
     float angle = acosf(cosAngle);
     if (AngleMode == DEGREES) {
@@ -141,7 +147,9 @@ float sqrt(float square) {
 float pow(float a, float b) {
     return powf(a, b);
 }
-
+float absolute(float a) {
+    return a >= 0.0f ? a : -a;
+}
 float map(float v, float a1, float a2, float b1, float b2) {
     return (b2 - b1) / (a2 - a1) * v + b1;
 }

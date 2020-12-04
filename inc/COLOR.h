@@ -1,5 +1,4 @@
-#ifndef COLOR_HD
-#define COLOR_HD
+#pragma once
 
 struct COLOR{
     float r, g, b, a;
@@ -23,6 +22,5 @@ struct COLOR{
 //色相h、彩度S、明度V を　RGBに変換
 COLOR hsv_to_rgb( float h, float s=255, float v=255 );
 
-#endif
 
 

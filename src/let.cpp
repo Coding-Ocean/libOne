@@ -102,6 +102,9 @@ let let::operator-(double v) const {
 let let::operator-(let v) const {
     return V - v.V;
 }
+let let::operator-()const {
+    return -V;
+}
 
 let let::operator*(int v) const{
     return V * v;
@@ -192,6 +195,15 @@ let& let::operator++() {
 let let::operator++(int) {
     let pre = *this;
     V++;
+    return pre;
+}
+let& let::operator--() {
+    V--;
+    return *this;
+}
+let let::operator--(int) {
+    let pre = *this;
+    V--;
     return pre;
 }
 

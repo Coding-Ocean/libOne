@@ -1,6 +1,4 @@
-#ifndef INPUT_HD
-#define INPUT_HD
-
+#pragma once
 enum INPUT_CODE {
     KEY_NONE,
     //ƒ{ƒ^ƒ“Œn
@@ -41,5 +39,4 @@ extern float MouseX;
 extern float MouseY;
 #define mouseX MouseX
 #define mouseY MouseY
-#endif
 

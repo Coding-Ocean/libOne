@@ -29,6 +29,7 @@ public:
     let operator-(float v)const;
     let operator-(double v)const;
     let operator-(let v)const;
+    let operator-()const;
 
     let operator*(int v)const;
     let operator*(float v)const;
@@ -64,6 +65,8 @@ public:
 
     let& operator++();
     let operator++(int);
+    let& operator--();
+    let operator--(int);
 
     bool operator<(int v);
     bool operator<(float v);
