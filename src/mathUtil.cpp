@@ -7,8 +7,8 @@ static float Cx = 0;
 static float Cy = 0;
 static float Unit = 0;
 static float MaxScaleX = 0;
-extern float MathMouseX = 0;
-extern float MathMouseY = 0;
+extern float mathMouseX = 0;
+extern float mathMouseY = 0;
 float maxScaleX() {
     return MaxScaleX;
 }
@@ -18,12 +18,12 @@ float maxScaleY() {
 void mathMouse() {
     float aspect = Width / Height;
     if ((float)ClientWidth / ClientHeight > aspect){
-        MathMouseX =  (inValue(MOUSE_X) - ClientWidth  / 2.0f) / (ClientHeight / 2.0f / (Cy/Unit));
-        MathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientHeight / 2.0f / (Cy/Unit));
+        mathMouseX =  (inValue(MOUSE_X) - ClientWidth  / 2.0f) / (ClientHeight / 2.0f / (Cy/Unit));
+        mathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientHeight / 2.0f / (Cy/Unit));
     }
     else {
-        MathMouseX =  (inValue(MOUSE_X) - ClientWidth  / 2.0f) / (ClientWidth / 2.0f / MaxScaleX);
-        MathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientWidth / 2.0f / MaxScaleX);
+        mathMouseX =  (inValue(MOUSE_X) - ClientWidth  / 2.0f) / (ClientWidth / 2.0f / MaxScaleX);
+        mathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientWidth / 2.0f / MaxScaleX);
     }
 }
 void mathAxis(float maxScaleX, float bright) {
@@ -87,14 +87,14 @@ void mathPoint(float x, float y) {
 void mathCircle(float x, float y, float r) {
     circle(Cx + x * Unit, Cy - y * Unit, r * Unit);
 }
-void mathRect(float x, float y, float w, float h) {
-    rect(Cx + x * Unit, Cy - y * Unit, w * Unit, h * Unit);
+void mathRect(float x, float y, float w, float h, float angle) {
+    rect(Cx + x * Unit, Cy - y * Unit, w * Unit, h * Unit, angle);
 }
 void mathLine(float sx, float sy, float ex, float ey) {
     line(Cx + sx * Unit, Cy - sy * Unit, Cx + ex * Unit, Cy - ey * Unit);
 }
-void mathImage(int img, float x, float y, float r) {
-    image(img, Cx + x * Unit, Cy - y * Unit, r);
+void mathImage(int img, float x, float y, float angle) {
+    image(img, Cx + x * Unit, Cy - y * Unit, angle);
 }
 void mathText(let l, float x, float y) {
     text(l, Cx + x * Unit, Cy - y * Unit);
