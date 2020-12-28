@@ -7,8 +7,8 @@ static float Cx = 0;
 static float Cy = 0;
 static float Unit = 0;
 static float MaxScaleX = 0;
-extern float MathMouseX = 0;
-extern float MathMouseY = 0;
+extern float mathMouseX = 0;
+extern float mathMouseY = 0;
 float maxScaleX() {
     return MaxScaleX;
 }
@@ -18,12 +18,12 @@ float maxScaleY() {
 void mathMouse() {
     float aspect = Width / Height;
     if ((float)ClientWidth / ClientHeight > aspect){
-        MathMouseX =  (inValue(MOUSE_X) - ClientWidth  / 2.0f) / (ClientHeight / 2.0f / (Cy/Unit));
-        MathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientHeight / 2.0f / (Cy/Unit));
+        mathMouseX =  (inValue(MOUSE_X) - ClientWidth  / 2.0f) / (ClientHeight / 2.0f / (Cy/Unit));
+        mathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientHeight / 2.0f / (Cy/Unit));
     }
     else {
-        MathMouseX =  (inValue(MOUSE_X) - ClientWidth  / 2.0f) / (ClientWidth / 2.0f / MaxScaleX);
-        MathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientWidth / 2.0f / MaxScaleX);
+        mathMouseX =  (inValue(MOUSE_X) - ClientWidth  / 2.0f) / (ClientWidth / 2.0f / MaxScaleX);
+        mathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientWidth / 2.0f / MaxScaleX);
     }
 }
 void mathAxis(float maxScaleX, float bright) {
