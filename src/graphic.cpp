@@ -1104,6 +1104,30 @@ int loadImage(const char* filename){
     Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
     return int(Cntnr->textures.size()) - 1;
 }
+//制作中
+int loadImageFromRes(LPCTSTR resName) {
+    HINSTANCE hInst = GetModuleHandle(0);
+    HRSRC hRes = FindResource(hInst, resName, _T("IMAGE"));
+    WARNING(hRes == 0, "リソースがみつからない", "loadImageFromRes");
+    // リソースのサイズを取得する 
+    DWORD sizeOfRes = SizeofResource(hInst, hRes);
+    WARNING(sizeOfRes == 0, "リソースのサイズがゼロ", "loadImageFromRes");
+    // 取得したリソースをメモリにロードする
+    HGLOBAL hMem = LoadResource(hInst, hRes);
+    WARNING(hMem == 0, "リソースがロードできない", "loadImageFromRes");
+    // ロードしたリソースデータのアドレスを取得する
+    unsigned char* mem = (unsigned char*)LockResource(hMem);
+    if (mem == 0) {
+        FreeResource(hMem);
+        WARNING(true, "リソースのアドレスが取得できない", "PixcelShader");
+    }
+    //stb_imageで読み込んでResourceViewをつくる
+    //WARNING(FAILED(hr), "PixelShaderを生成できません", "PixcelShader");
+    //開放
+    FreeResource(hMem);
+    return 0;
+}
+
 int cutImage(int idx, int left, int top, int w, int h){
     WARNING((size_t)idx >= Cntnr->textures.size(), "画像番号オーバー", "");
     ID3D11ShaderResourceView* texObj = Cntnr->textures.at(idx).obj;
