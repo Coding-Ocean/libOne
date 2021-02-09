@@ -39,7 +39,9 @@ int createShape(struct SHAPE_VERTEX* vertices, int numVertices, long* indices, i
 void shape(int idx, float x, float y, float angle = 0, float size = 1);
 void shape(int idx, const class MATRIX& m);
 int loadImage(const char* filename);
+int loadImageFromRes(const char* resname);
 int cutImage(int idx, int left, int top, int w, int h);
+void divideImage(int img, int cols, int rows, int w, int h, int* imgs);
 void image(int idx, float x, float y, float angle = 0, float size = 1);
 void font(const char* fontname);
 void textSize(float size);

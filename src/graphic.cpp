@@ -1104,8 +1104,12 @@ int loadImage(const char* filename){
     Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
     return int(Cntnr->textures.size()) - 1;
 }
-//制作中
-int loadImageFromRes(LPCTSTR resName) {
+int loadImageFromRes(const char* str) {
+    size_t l = strlen(str);
+    int num = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str, (DWORD)l, 0, 0);
+    wchar_t resName[128] = L"";
+    int ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str, (DWORD)l, resName, num);
+
     HINSTANCE hInst = GetModuleHandle(0);
     HRSRC hRes = FindResource(hInst, resName, _T("IMAGE"));
     WARNING(hRes == 0, "リソースがみつからない", "loadImageFromRes");
@@ -1119,13 +1123,47 @@ int loadImageFromRes(LPCTSTR resName) {
     unsigned char* mem = (unsigned char*)LockResource(hMem);
     if (mem == 0) {
         FreeResource(hMem);
-        WARNING(true, "リソースのアドレスが取得できない", "PixcelShader");
+        WARNING(true, "リソースのアドレスが取得できない", "loadImageFromRes");
     }
     //stb_imageで読み込んでResourceViewをつくる
-    //WARNING(FAILED(hr), "PixelShaderを生成できません", "PixcelShader");
-    //開放
+    unsigned char* pixels = 0;
+    int texWidth = 0;
+    int texHeight = 0;
+    int numBytePerPixel = 0;
+    pixels = stbi_load_from_memory(mem, sizeOfRes, &texWidth, &texHeight, &numBytePerPixel, 4);
+    WARNING(!pixels, resName, "Load error");
+
+    //テクスチャーとビューを創る
+    D3D11_TEXTURE2D_DESC td;
+    td.Width = texWidth;
+    td.Height = texHeight;
+    td.MipLevels = 1;
+    td.ArraySize = 1;
+    td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    td.SampleDesc.Count = 1;
+    td.SampleDesc.Quality = 0;
+    td.Usage = D3D11_USAGE_IMMUTABLE;
+    td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    td.CPUAccessFlags = 0;
+    td.MiscFlags = 0;
+    D3D11_SUBRESOURCE_DATA sd;
+    sd.pSysMem = (void*)pixels;
+    sd.SysMemPitch = (UINT)(texWidth * 4);
+    sd.SysMemSlicePitch = (UINT)(texWidth * texHeight * 4);
+    ID3D11Texture2D* pTexture = 0;
+    HRESULT hr;
+    hr = Device->CreateTexture2D(&td, &sd, &pTexture);
+    ID3D11ShaderResourceView* obj = 0;
+    hr = Device->CreateShaderResourceView(pTexture, 0, &obj);
+    WARNING(FAILED(hr), "resourceView", "");
+
+    //解放
+    pTexture->Release();
+    stbi_image_free(pixels);
     FreeResource(hMem);
-    return 0;
+    ID3D11Buffer* texCoord = 0;
+    Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
+    return int(Cntnr->textures.size()) - 1;
 }
 
 int cutImage(int idx, int left, int top, int w, int h){
@@ -1159,6 +1197,14 @@ int cutImage(int idx, int left, int top, int w, int h){
 
     Cntnr->textures.emplace_back(texObj, w, h, texCoord);
     return int(Cntnr->textures.size()) - 1;
+}
+
+void divideImage(int img, int cols, int rows, int w, int h, int* imgs) {
+    for (int j = 0; j < rows; j++) {
+        for (int i = 0; i < cols; i++) {
+            imgs[j * cols + i] = cutImage(img, i * w, j * h, w, h);
+        }
+    }
 }
 void image(int idx, float x, float y, float a, float s) {
     WARNING((size_t)idx >= Cntnr->textures.size(), "画像番号オーバー", "");
