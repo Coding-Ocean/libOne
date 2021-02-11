@@ -8,6 +8,7 @@
 #include"VECTOR2.h"
 #include"VECTOR3.h"
 #include"stb_image_reader.h"
+#include"package.h"
 #include"graphic.h"
 void createDevice();
 void createRenderTarget();
@@ -1161,6 +1162,50 @@ int loadImageFromRes(const char* str) {
     pTexture->Release();
     stbi_image_free(pixels);
     FreeResource(hMem);
+    ID3D11Buffer* texCoord = 0;
+    Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
+    return int(Cntnr->textures.size()) - 1;
+}
+
+int loadImageFromPak(const char* filename) {
+    int size;
+    unsigned char* mem = getData(filename, &size);
+
+    //stb_imageで読み込んでResourceViewをつくる
+    unsigned char* pixels = 0;
+    int texWidth = 0;
+    int texHeight = 0;
+    int numBytePerPixel = 0;
+    pixels = stbi_load_from_memory(mem, size, &texWidth, &texHeight, &numBytePerPixel, 4);
+    WARNING(!pixels, filename, "Load error from package");
+
+    //テクスチャーとビューを創る
+    D3D11_TEXTURE2D_DESC td;
+    td.Width = texWidth;
+    td.Height = texHeight;
+    td.MipLevels = 1;
+    td.ArraySize = 1;
+    td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    td.SampleDesc.Count = 1;
+    td.SampleDesc.Quality = 0;
+    td.Usage = D3D11_USAGE_IMMUTABLE;
+    td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    td.CPUAccessFlags = 0;
+    td.MiscFlags = 0;
+    D3D11_SUBRESOURCE_DATA sd;
+    sd.pSysMem = (void*)pixels;
+    sd.SysMemPitch = (UINT)(texWidth * 4);
+    sd.SysMemSlicePitch = (UINT)(texWidth * texHeight * 4);
+    ID3D11Texture2D* pTexture = 0;
+    HRESULT hr;
+    hr = Device->CreateTexture2D(&td, &sd, &pTexture);
+    ID3D11ShaderResourceView* obj = 0;
+    hr = Device->CreateShaderResourceView(pTexture, 0, &obj);
+    WARNING(FAILED(hr), "resourceView", "");
+
+    //解放
+    pTexture->Release();
+    stbi_image_free(pixels);
     ID3D11Buffer* texCoord = 0;
     Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
     return int(Cntnr->textures.size()) - 1;

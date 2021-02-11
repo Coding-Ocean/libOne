@@ -28,6 +28,7 @@
     <ClInclude Include="inc\libOne.h" />
     <ClInclude Include="inc\mathUtil.h" />
     <ClInclude Include="inc\MATRIX.h" />
+    <ClInclude Include="inc\package.h" />
     <ClInclude Include="inc\rand.h" />
     <ClInclude Include="inc\stb_image_reader.h" />
     <ClInclude Include="inc\VECTOR2.h" />
@@ -42,6 +43,7 @@
     <ClCompile Include="src\let.cpp" />
     <ClCompile Include="src\mathUtil.cpp" />
     <ClCompile Include="src\MATRIX.cpp" />
+    <ClCompile Include="src\package.cpp" />
     <ClCompile Include="src\rand.cpp" />
     <ClCompile Include="src\stb_image_reader.cpp" />
     <ClCompile Include="src\VECTOR2.cpp" />
