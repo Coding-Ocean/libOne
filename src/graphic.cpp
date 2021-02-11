@@ -1066,14 +1066,22 @@ void shape(int idx, const class MATRIX& world) {
     }
 }
 int loadImage(const char* filename){
-    //stb_imageで画像をメモリに読み込む
     unsigned char* pixels = 0;
     int texWidth = 0;
     int texHeight = 0;
     int numBytePerPixel = 0;
-    pixels = stbi_load(filename, &texWidth, &texHeight, &numBytePerPixel, 4);
-    WARNING(!pixels, filename, "Load error");
-
+    if (packageData()) {
+        //stb_imageで読み込んでResourceViewをつくる
+        int size;
+        unsigned char* mem = getData(filename, &size);
+        pixels = stbi_load_from_memory(mem, size, &texWidth, &texHeight, &numBytePerPixel, 4);
+        WARNING(!pixels, filename, "Load error from package");
+    }
+    else {
+        //stb_imageで画像をメモリに読み込む
+        pixels = stbi_load(filename, &texWidth, &texHeight, &numBytePerPixel, 4);
+        WARNING(!pixels, filename, "Load error");
+    }
     //テクスチャーとビューを創る
     D3D11_TEXTURE2D_DESC td;
     td.Width = texWidth;

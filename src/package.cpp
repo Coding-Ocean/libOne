@@ -1,8 +1,13 @@
-#include<stdio.h>
-#include<string.h>
+//#include<iostream>
+#include<fstream>
+#include<filesystem>
+using namespace std;
+using namespace filesystem;
+//#include<stdio.h>
+//#include<string.h>
 #include<assert.h>
 #include<memory.h>
-#include<process.h>
+//#include<process.h>
 #include <sys\stat.h>
 #include"package.h"
 
@@ -17,6 +22,9 @@ struct INDEX* FileIndices = 0;
 unsigned int SizePackage = 0;
 unsigned char* PackageData = 0;
 
+const unsigned char* packageData() {
+    return PackageData;
+}
 void loadPackage(const char* filename) {
     assert(PackageData == 0);
     FILE* fp;
@@ -32,12 +40,16 @@ void loadPackage(const char* filename) {
     fclose(fp);
 }
 void deletePackage() {
-    delete[]PackageData;
-    PackageData = 0;
-    SizePackage = 0;
-    delete[] FileIndices;
-    FileIndices = 0;
-    NumFiles = 0;
+    if (PackageData) {
+        delete[]PackageData;
+        PackageData = 0;
+        SizePackage = 0;
+    }
+    if (FileIndices) {
+        delete[] FileIndices;
+        FileIndices = 0;
+        NumFiles = 0;
+    }
 }
 
 unsigned char* getData(const char* filename, int* size) {
@@ -57,16 +69,40 @@ unsigned char* getData(const char* filename, int* size) {
 }
 
 //Create--------------------------------------------------------
-void setNumFiles(int numFiles) {
-    NumFiles = numFiles;
-    FileIndices = new INDEX[numFiles]();
+void countFiles(string path) {
+    for (const directory_entry& e : directory_iterator(path)) {
+        if (is_directory(e)) {
+            countFiles(e.path().string());
+        }
+        else {
+            NumFiles++;
+        }
+    }
 }
 void setFilename(int i, const char* filename) {
     strcpy_s(FileIndices[i].filename, filename);
 }
-void createIndices(const char* filename) {
+void setNameToIdx(int* i, string path) {
+    for (const directory_entry& e : directory_iterator(path)) {
+        if (is_directory(e)) {
+            setNameToIdx(i,e.path().string());
+        }
+        else {
+            setFilename(*i, e.path().string().c_str());//e.path().filename().string()
+            *i += 1;
+        }
+    }
+}
+void listsFile(const char* directory) {
+    NumFiles = 0;
+    countFiles(directory);
+    FileIndices = new INDEX[NumFiles]();
+    int i = 0;
+    setNameToIdx(&i,directory);
+}
+void createFileIndices(const char* filename) {
     FILE* fp;
-
+    //パッケージデータのインデックスを作る
     SizePackage = 0;
     for (int i = 0; i < NumFiles; i++) {
         fopen_s(&fp, FileIndices[i].filename, "rb");
@@ -87,24 +123,25 @@ void createIndices(const char* filename) {
     fwrite(&SizePackage, sizeof(unsigned int), 1, fp);
     fclose(fp);
 }
-void addFile(const char* filename) {
+void addPackageFile(const char* filename) {
     FILE* fp;
     for (int i = 0; i < NumFiles; i++) {
-
+        //インデックスに登録されたファイルをメモリに読み込む
         fopen_s(&fp, FileIndices[i].filename, "rb");
         char* data = new char[FileIndices[i].size];
         fread(data, FileIndices[i].size, 1, fp);
         fclose(fp);
-
+        //パッケージファイルに追加出力
         fopen_s(&fp, filename, "ab");
         fwrite(data, FileIndices[i].size, 1, fp);
         fclose(fp);
         delete[] data;
     }
 }
-void createPackage(const char* filename) {
-    createIndices(filename);
-    addFile(filename);
+void createPackage(const char* directry, const char* filename) {
+    listsFile(directry);
+    createFileIndices(filename);
+    addPackageFile(filename);
     deletePackage();
 }
 
