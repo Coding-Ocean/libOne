@@ -614,7 +614,7 @@ void createRectVertexPosBuffer(){
 }
 void createCircleVertexPosBuffer(){
     const int num = 64;
-    float rad = 3.141592 * 2 / num;
+    float rad = 3.141592f * 2 / num;
     VECTOR3 circleVertices[num];
     circleVertices[0] = VECTOR3(0.5f, 0, 0.0f);
     for (int i = 1, j = 1; i <= num / 2 - 1; i++){
@@ -680,7 +680,7 @@ int createShape(struct SHAPE_VERTEX* vertices, int numVertices) {
         shapeIndexBuffer, numIndices,
         shapeVertices);
     delete[] indices;
-    return Cntnr->shapes.size() - 1;
+    return int(Cntnr->shapes.size() - 1);
 }
 int createShape(struct SHAPE_VERTEX* vertices, int numVertices,
     long* indices, int numIndices) {
@@ -717,7 +717,7 @@ int createShape(struct SHAPE_VERTEX* vertices, int numVertices,
         shapeVertexPosBuffer, numVertices,
         shapeIndexBuffer, numIndices,
         shapeVertices);
-    return Cntnr->shapes.size() - 1;
+    return int(Cntnr->shapes.size() - 1);
 }
 
 void createTexCoordBuffer(){
@@ -1376,7 +1376,7 @@ int createFont(const wchar_t* c)
     pTexture->Release();
     delete[] pMono;
 
-    return Cntnr->fonts.size() - 1;
+    return int(Cntnr->fonts.size() - 1);
 }
 void textMode(TEXT_MODE mode) {
     TextMode = mode;

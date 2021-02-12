@@ -1,12 +1,14 @@
 #pragma comment(lib, "winmm.lib" )
 #pragma comment(lib, "imm32.lib" )
 #pragma comment(lib, "d3d11.lib") 
+#pragma comment(lib, "dsound.lib" )
 #include<crtdbg.h>
 #include<tchar.h>
 #include<Windows.h>
 #include"window.h"
 #include"graphic.h"
 #include"input.h"
+#include"sound.h"
 #include"rand.h"
 #include"framework.h"
 
@@ -19,6 +21,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, INT) {
     gmain();
     timeEndPeriod(1);
     freeGraphic();
+    freeSound();
 }
 
 void window(float width, float height, bool fullscreen){
@@ -29,6 +32,7 @@ void window(float width, float height, bool fullscreen){
         initWindow(_T("Game"), (int)width, (int)height);
     }
     initGraphic((int)width, (int)height);
+    initSound();
 }
 
 class WSTR {
@@ -60,6 +64,7 @@ void window(const char* caption, float width, float height, bool fullscreen) {
         initWindow(wCaption.wstr(), (int)width, (int)height);
     }
     initGraphic((int)width, (int)height);
+    initSound();
 #else
     if (fullscreen) {
         initWindow(caption);
@@ -68,6 +73,7 @@ void window(const char* caption, float width, float height, bool fullscreen) {
         initWindow(caption, (int)width, (int)height);
     }
     initGraphic((int)width, (int)height);
+    initSound();
 #endif
 }
 
