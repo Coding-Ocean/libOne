@@ -26,14 +26,14 @@ void mathMouse() {
         mathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientWidth / 2.0f / MaxScaleX);
     }
 }
-void mathAxis(float maxScaleX, float bright) {
+void mathAxis(float maxScaleX, float bright, float alpha) {
     Cx = Width / 2;
     Cy = Height / 2;
     MaxScaleX = maxScaleX;
     Unit = Cx / MaxScaleX;
     strokeWeight(1);
-    stroke(bright);
-    fill(bright);
+    stroke(bright, bright, bright, alpha);
+    fill(bright, bright, bright, alpha);
     line(0, Cy, Width, Cy);
     line(Cx, 0, Cx, Height);
     //scale x y
@@ -93,8 +93,8 @@ void mathRect(float x, float y, float w, float h, float angle) {
 void mathLine(float sx, float sy, float ex, float ey) {
     line(Cx + sx * Unit, Cy - sy * Unit, Cx + ex * Unit, Cy - ey * Unit);
 }
-void mathImage(int img, float x, float y, float angle) {
-    image(img, Cx + x * Unit, Cy - y * Unit, angle);
+void mathImage(int img, float x, float y, float angle, float scale) {
+    image(img, Cx + x * Unit, Cy - y * Unit, angle, scale);
 }
 void mathText(let l, float x, float y) {
     text(l, Cx + x * Unit, Cy - y * Unit);
