@@ -16,7 +16,7 @@ void gmain();
 
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, INT) {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);    setRandSeed();
-    setRandSeed();
+    setRandSeed(timeGetTime());
     timeBeginPeriod(1);
     gmain();
     timeEndPeriod(1);
