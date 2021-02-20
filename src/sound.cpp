@@ -1,11 +1,12 @@
-#include "common.h"
-#include "sound.h"
-#include "window.h"
-#include "package.h"
 #include <dsound.h>
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <memory.h>
+#include "common.h"
+#include "window.h"
+#include "package.h"
+#include "sound.h"
 using namespace std;
 
 static IDirectSound8* Ds = 0;
@@ -36,118 +37,122 @@ void freeSound(){
 	CoUninitialize();
 }
 
+//パッケージ読み込み対応版
 int loadSound(const char* fileName) {
-    if (packageData()) {
-        return loadSoundFromPak(fileName);
-    }
-    else {
-        //①まず使用できるWAVデータかチェックする。結構長い。
-        HMMIO hmmio = 0;//WindowsマルチメディアAPIのハンドル(WindowsマルチメディアAPIはWAVファイル関係の操作用のAPIでありDirectXではない）
-        DWORD waveSize = 0;//WAVファイル内　WAVデータのサイズ（WAVファイルはWAVデータで占められているので、ほぼファイルサイズと同一）
-        WAVEFORMATEX* waveFormat = 0;//WAVのフォーマット 例）16ビット、44100Hz、ステレオなど
-        MMCKINFO ckInfo;//　チャンク情報
-        MMCKINFO riffCkInfo;// 最上部チャンク（RIFFチャンク）保存用
-        PCMWAVEFORMAT pcmWaveFormat;
-
-        //  WAVファイル内のヘッダー情報（音データ以外）の確認と読み込み
-        hmmio = mmioOpenA((char*)fileName, 0, MMIO_ALLOCBUF | MMIO_READ);
-        if (hmmio == 0) {
-            string msg = "WAVロードエラー\n";
-            msg += fileName;
-            WARNING(1, msg.c_str(), "");
-        }
-        //  ファイルポインタをRIFFチャンクの先頭にセットする
-        if ((MMSYSERR_NOERROR != mmioDescend(hmmio, &riffCkInfo, NULL, 0))) {
-            WARNING(1, "WAV 最上部チャンクに進入出来ません", "");
-        }
-        //  チャンク情報によりWAVファイルかどうか確認する
-        if ((riffCkInfo.ckid != mmioFOURCC('R', 'I', 'F', 'F')) ||
-            (riffCkInfo.fccType != mmioFOURCC('W', 'A', 'V', 'E'))) {
-            WARNING(1, "これはWAVファイルではありません", "");
-        }
-        //  ファイルポインタを'f' 'm' 't' ' ' チャンクにセットする
-        ckInfo.ckid = mmioFOURCC('f', 'm', 't', ' ');
-        if (MMSYSERR_NOERROR != mmioDescend(hmmio, &ckInfo, &riffCkInfo, MMIO_FINDCHUNK)) {
-            WARNING(1, "fmt チャンクが見つかりません", "");
-        }
-        //  フォーマットを読み込む
-        if (mmioRead(hmmio, (HPSTR)&pcmWaveFormat, sizeof(pcmWaveFormat)) != sizeof(pcmWaveFormat)) {
-            WARNING(1, "WAVフォーマットの読み込み失敗", "");
-        }
-        //  リニアPCMで、かつ、マルチチャンネルWAVは想定外
-        if (pcmWaveFormat.wf.wFormatTag == WAVE_FORMAT_PCM) {
-            waveFormat = (WAVEFORMATEX*)new CHAR[sizeof(WAVEFORMATEX)];
-            if (NULL == waveFormat) {
-                WARNING(1, "想定外WAVです", "");
-            }
-            memcpy(waveFormat, &pcmWaveFormat, sizeof(pcmWaveFormat));
-            waveFormat->cbSize = 0;
-        }
-        else {
-            WARNING(1, "標準のリニアPCMフォーマットを想定しています", "");
-        }
-        if (MMSYSERR_NOERROR != mmioAscend(hmmio, &ckInfo, 0)) {
-            SAFE_DELETE(waveFormat);
-            WARNING(1, "", "");
-        }
-        //  WAVファイル内の音データの読み込み
-        ckInfo.ckid = mmioFOURCC('d', 'a', 't', 'a');
-        if (MMSYSERR_NOERROR != mmioDescend(hmmio, &ckInfo, &riffCkInfo, MMIO_FINDCHUNK)) {
-            WARNING(1, "dataチャンクが見つかりません", "");
-        }
-        waveSize = ckInfo.cksize;
-        mmioClose(hmmio, 0);
-        //②やっとこさDirectSoundセカンダリーバッファー作成
-        IDirectSoundBuffer* dsb;//push_back用テンポラリィ
-        DSBUFFERDESC dsbd;
-        ZeroMemory(&dsbd, sizeof(DSBUFFERDESC));
-        dsbd.dwSize = sizeof(DSBUFFERDESC);
-        dsbd.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY;
-        dsbd.guid3DAlgorithm = DS3DALG_DEFAULT;
-        dsbd.dwBufferBytes = waveSize;
-        dsbd.lpwfxFormat = waveFormat;
-        if (FAILED(Ds->CreateSoundBuffer(&dsbd, &dsb, NULL))) {
-            WARNING(1, "セカンダリバッファー作成失敗", "");
-        }
-        SAFE_DELETE(waveFormat);
-        //波形データを書き込む準備として、セカンダリーバッファーをロックする
-        void* buffer = 0;
-        DWORD bufferSize = 0;
-        if (FAILED(dsb->Lock(0, waveSize, &buffer, &bufferSize, NULL, NULL, 0))) {
-            WARNING(1, "サウンドバッファーロックできません", "");
-        }
-        //ロックしたバッファーサイズが実際の波形データより大きい場合。クラッシュ防止。
-        DWORD size = bufferSize;
-        if (size > ckInfo.cksize) {
-            size = ckInfo.cksize;
-        }
-        //バッファーに音データを書き込む   
+    //ファイルまたはパッケージから読み込み
+    int waveDataSize = 0;
+    char* waveData = 0;
+    if (packageDataExists() == false) {
+        //パッケージデータがないので、普通にファイルから読み込む
         FILE* fp;
         fopen_s(&fp, fileName, "rb");
-        fseek(fp, riffCkInfo.dwDataOffset + sizeof(FOURCC), SEEK_SET);
-        BYTE* waveData = new BYTE[size];
-        fread(waveData, 1, size, fp);//まずは、一時的な場所(waveData)に波形データを読み込み
-        for (DWORD i = 0; i < size; i++) {
-            *((BYTE*)buffer + i) = *((BYTE*)waveData + i); //一時的な場所の波形データをセカンダリバッファーにコピーする
-        }
+        WARNING(fp == 0, "ロードエラー", fileName);
+        struct stat info;
+        fstat(_fileno(fp), &info);
+        waveDataSize = info.st_size;
+        waveData = new char[waveDataSize];
+        fread(waveData, 1, waveDataSize, fp);//まずは、一時的な場所(waveData)に波形データを読み込み
         fclose(fp);
-        SAFE_DELETE(waveData);//一時的な波形データを開放する
-        dsb->Unlock(buffer, bufferSize, 0, 0);
-        //soundバッファの追加または使いまわし
-        unsigned idx = 0;
-        for (idx = 0; idx < Dsb->size(); idx++) {
-            if (Dsb->at(idx) == 0) {
-                break;
-            }
-        }
-        if (idx == Dsb->size()) {
-            Dsb->push_back(dsb);
-        }
-        else {
-            Dsb->at(idx) = dsb;
-        }
-        return idx;
     }
+    else {
+        //データパッケージから先頭アドレスを取得する
+        waveData = (char*)getPackageData(fileName, &waveDataSize);
+    }
+
+    //pWaveData＝読み込み位置を進めるためのポインタ
+    const char* pWaveData = waveData;
+
+    //riffChunk----------------------------------
+    unsigned riffChunkSize = 0;
+    WARNING(strncmp(pWaveData, "RIFF", 4) != 0, "RIFF形式でない", ""); pWaveData += 4;
+    memcpy(&riffChunkSize, pWaveData, 4 * 1); pWaveData += 4;
+    WARNING(strncmp(pWaveData, "WAVE", 4) != 0, "WAVE形式でない", ""); pWaveData += 4;
+
+    //fmtChunk-----------------------------------
+    //Search "fmt "
+    while ((unsigned int)(pWaveData - waveData) < riffChunkSize + 8) {
+        if (*(pWaveData + 0) == 'f' &&
+            *(pWaveData + 1) == 'm' &&
+            *(pWaveData + 2) == 't' &&
+            *(pWaveData + 3) == ' ') {
+            break;
+        }
+        pWaveData++;
+    }
+    WARNING((unsigned int)(pWaveData - waveData) >= riffChunkSize + 8, "fmt chunkがない", "");
+    pWaveData += 4;
+
+    unsigned fmtChunkSize = 0;
+    memcpy(&fmtChunkSize, pWaveData, 4 * 1); pWaveData += 4;
+    WAVEFORMATEX waveFormat;
+    memcpy(&waveFormat.wFormatTag, pWaveData, 2 * 1); pWaveData += 2;
+    WARNING(waveFormat.wFormatTag != 1, "標準ＰＣＭデータのみ有効", "formatが1でない");
+    memcpy(&waveFormat.nChannels, pWaveData, 2 * 1); pWaveData += 2;
+    memcpy(&waveFormat.nSamplesPerSec, pWaveData, 4 * 1); pWaveData += 4;
+    memcpy(&waveFormat.nAvgBytesPerSec, pWaveData, 4 * 1); pWaveData += 4;
+    memcpy(&waveFormat.nBlockAlign, pWaveData, 2 * 1); pWaveData += 2;
+    memcpy(&waveFormat.wBitsPerSample, pWaveData, 2 * 1); pWaveData += 2;
+    waveFormat.cbSize = 0;
+
+    //dataChunk----------------------------------
+    //Serch "data"
+    while ((unsigned int)(pWaveData - waveData) < riffChunkSize + 8) {
+        if (*(pWaveData + 0) == 'd' &&
+            *(pWaveData + 1) == 'a' &&
+            *(pWaveData + 2) == 't' &&
+            *(pWaveData + 3) == 'a') {
+            break;
+        }
+        pWaveData++;
+    }
+    WARNING((unsigned int)(pWaveData - waveData) >= riffChunkSize + 8, "data chunkがない", "");
+    pWaveData += 4;
+
+    unsigned long dataChunkSize = 0;
+    memcpy(&dataChunkSize, pWaveData, 4 * 1); pWaveData += 4;
+
+    //DirectSoundセカンダリーバッファー作成
+    DSBUFFERDESC dsbd;
+    ZeroMemory(&dsbd, sizeof(DSBUFFERDESC));
+    dsbd.dwSize = sizeof(DSBUFFERDESC);
+    dsbd.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY;
+    dsbd.guid3DAlgorithm = DS3DALG_DEFAULT;
+    dsbd.dwBufferBytes = dataChunkSize;
+    dsbd.lpwfxFormat = &waveFormat;
+    IDirectSoundBuffer* dsb;//push_back用テンポラリィ
+    HRESULT hr = Ds->CreateSoundBuffer(&dsbd, &dsb, 0);
+    WARNING(FAILED(hr), "セカンダリバッファー作成失敗", "");
+    //波形データを書き込む準備として、セカンダリーバッファーをロックする
+    void* buffer = 0;
+    DWORD bufferSize = 0;
+    hr = dsb->Lock(0, dataChunkSize, &buffer, &bufferSize, 0, 0, 0);
+    WARNING(FAILED(hr), "サウンドバッファをロックできません", "");
+    //ロックしたバッファーサイズが実際の波形データより大きい場合。クラッシュ防止。
+    DWORD tempBufferSize = bufferSize;
+    if (bufferSize > dataChunkSize) tempBufferSize = dataChunkSize;
+    //バッファに音データを流し込む
+    memcpy(buffer, pWaveData, tempBufferSize);
+    dsb->Unlock(buffer, bufferSize, 0, 0);
+
+    //ファイルから読み込んだ場合はここでwaveData開放
+    if (packageDataExists() == false) {
+        SAFE_DELETE_ARRAY(waveData);//一時的な波形データを開放する
+    }
+
+    //soundバッファの追加または使いまわし
+    unsigned idx = 0;
+    for (idx = 0; idx < Dsb->size(); idx++) {
+        if (Dsb->at(idx) == 0) {
+            break;
+        }
+    }
+    if (idx == Dsb->size()) {
+        Dsb->push_back(dsb);
+    }
+    else {
+        Dsb->at(idx) = dsb;
+    }
+    return idx;
 }
 
 int duplicateSound( int i ){
@@ -193,97 +198,6 @@ void setPan( int i, int pan ){
 
 void releaseSound( int i ){
     SAFE_RELEASE( Dsb->at( i ) );
-}
-
-int loadSoundFromPak( const char* fileName ){
-    //データぱっけいじから先頭アドレスを取得する
-    int waveDataSize = 0;
-    const char* waveData = (const char*)getData(fileName, &waveDataSize);
-    const char* pWaveData = waveData;
-    //riffChunk----------------------------------
-    char fourChar[ 5 ] = "1234";
-    unsigned riffChunkSize = 0;
-    memcpy( fourChar, pWaveData, 1*4 ); pWaveData+=4;
-    WARNING( strcmp( fourChar, "RIFF" ) != 0, "RIFF形式でない", "" );
-    //WARNING( checkFourChar( fourChar, "RIFF" ), "RIFF形式でない", "" );
-    memcpy( &riffChunkSize, pWaveData, 4*1 ); pWaveData+=4;
-    memcpy( fourChar, pWaveData, 1*4 ); pWaveData += 4;
-    WARNING( strcmp( fourChar, "WAVE" ) != 0, "WAVE形式でない", "" );
-    //fmtChunk-----------------------------------
-    while((unsigned int)(pWaveData - waveData) < riffChunkSize+8 ){
-        if( *(pWaveData+0) == 'f' &&
-            *(pWaveData+1) == 'm' &&
-            *(pWaveData+2) == 't' &&
-            *(pWaveData+3) == ' ' ){
-            break;
-        }
-        pWaveData++;
-    }
-    WARNING((unsigned int)(pWaveData - waveData) >= riffChunkSize+8, "fmt chunkがない", "" );
-    memcpy( fourChar, pWaveData, 1*4 ); pWaveData += 4;
-    WARNING( strcmp( fourChar, "fmt " ) != 0, "fmt chunkでない", "" );
-    unsigned fmtChunkSize = 0;
-    memcpy( &fmtChunkSize, pWaveData, 4*1 ); pWaveData += 4;
-	WAVEFORMATEX waveFormat;
-    memcpy( &waveFormat.wFormatTag, pWaveData, 2*1 ); pWaveData += 2;
-    WARNING( waveFormat.wFormatTag != 1, "標準ＰＣＭデータのみ有効", "formatが1でない" );
-    memcpy( &waveFormat.nChannels, pWaveData, 2*1 ); pWaveData += 2;
-    memcpy( &waveFormat.nSamplesPerSec, pWaveData, 4*1 ); pWaveData += 4;
-    memcpy( &waveFormat.nAvgBytesPerSec, pWaveData, 4*1 ); pWaveData += 4;
-    memcpy( &waveFormat.nBlockAlign, pWaveData, 2*1 ); pWaveData += 2;
-    memcpy( &waveFormat.wBitsPerSample, pWaveData, 2*1 ); pWaveData += 2;
-    waveFormat.cbSize = 0;
-    //dataChunk----------------------------------
-    while( (unsigned int)(pWaveData - waveData) < riffChunkSize+8 ){
-        if( *(pWaveData+0) == 'd' &&
-            *(pWaveData+1) == 'a' &&
-            *(pWaveData+2) == 't' &&
-            *(pWaveData+3) == 'a' ){
-            break;
-        }
-        pWaveData++;
-    }
-    WARNING( (unsigned int)(pWaveData - waveData) >= riffChunkSize+8, "data chunkがない", "" );
-    memcpy( fourChar, pWaveData, 1*4 ); pWaveData += 4;
-    WARNING( strcmp( fourChar, "data" ) != 0, "data chunkでない", "" );
-    unsigned long dataChunkSize = 0;
-    memcpy( &dataChunkSize, pWaveData, 4*1 ); pWaveData += 4;
-    //DirectSoundセカンダリーバッファー作成
-    DSBUFFERDESC dsbd;
-    ZeroMemory( &dsbd, sizeof( DSBUFFERDESC ) );
-    dsbd.dwSize = sizeof( DSBUFFERDESC );
-    dsbd.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY;
-    dsbd.guid3DAlgorithm = DS3DALG_DEFAULT;
-    dsbd.dwBufferBytes = dataChunkSize;
-    dsbd.lpwfxFormat = &waveFormat;
-    IDirectSoundBuffer* dsb;//push_back用テンポラリィ
-    HRESULT hr = Ds->CreateSoundBuffer( &dsbd, &dsb, 0 );
-    WARNING( FAILED( hr ), "セカンダリバッファー作成失敗","" );
-    //波形データを書き込む準備として、セカンダリーバッファーをロックする
-    void* buffer = 0;
-    DWORD bufferSize = 0;
-    hr = dsb->Lock( 0, dataChunkSize, &buffer, &bufferSize, 0, 0, 0 );
-    WARNING( FAILED( hr ), "サウンドバッファをロックできません","" );
-    //ロックしたバッファーサイズが実際の波形データより大きい場合。クラッシュ防止。
-    DWORD tempBufferSize = bufferSize;
-    if( bufferSize > dataChunkSize ) tempBufferSize = dataChunkSize;
-    //バッファに音データを流し込む
-    memcpy( buffer, pWaveData, tempBufferSize );
-    dsb->Unlock( buffer, bufferSize, 0, 0 );
-    //soundバッファの追加または使いまわし
-    unsigned idx = 0;
-    for( idx = 0; idx < Dsb->size(); idx++ ){
-        if( Dsb->at( idx ) == 0 ){
-            break;
-        }
-    }
-    if( idx == Dsb->size() ){
-        Dsb->push_back( dsb );
-    }
-    else{
-        Dsb->at( idx ) = dsb;
-    }
-    return idx;
 }
 
 /*

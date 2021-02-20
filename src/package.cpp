@@ -1,14 +1,6 @@
-//#include<iostream>
 #include<fstream>
 #include<filesystem>
-using namespace std;
-using namespace filesystem;
-//#include<stdio.h>
-//#include<string.h>
-#include<assert.h>
-#include<memory.h>
-//#include<process.h>
-#include <sys\stat.h>
+#include"common.h"
 #include"package.h"
 
 struct INDEX {
@@ -19,22 +11,23 @@ struct INDEX {
 
 int NumFiles = 0;
 struct INDEX* FileIndices = 0;
-unsigned int SizePackage = 0;
+int SizePackage = 0;
 unsigned char* PackageData = 0;
 
-const unsigned char* packageData() {
-    return PackageData;
+bool packageDataExists() {
+    return PackageData != 0;
 }
 void loadPackage(const char* filename) {
-    assert(PackageData == 0);
+    //assert(PackageData == 0);
     FILE* fp;
     //インデックス読み込み
     fopen_s(&fp, filename, "rb");
+    WARNING(fp == 0, "パッケージファイルオープンエラー", filename);
     fread(&NumFiles, sizeof(int), 1, fp);
     FileIndices = new INDEX[NumFiles];
     fread(FileIndices, sizeof(INDEX), NumFiles, fp);
     //パッケージデータ読み込み
-    fread(&SizePackage, sizeof(unsigned int), 1, fp);
+    fread(&SizePackage, sizeof(int), 1, fp);
     PackageData = new unsigned char[SizePackage];
     fread(PackageData, SizePackage, 1, fp);
     fclose(fp);
@@ -52,7 +45,7 @@ void deletePackage() {
     }
 }
 
-unsigned char* getData(const char* filename, int* size) {
+unsigned char* getPackageData(const char* filename, int* size) {
     int i = 0;
     while (i < NumFiles) {
         if (strcmp(FileIndices[i].filename, filename) == 0) {
@@ -60,17 +53,16 @@ unsigned char* getData(const char* filename, int* size) {
         }
         i++;
     }
-    assert(i < NumFiles);
+    WARNING(i >= NumFiles,"パッケージデータ取得エラー",filename);
 
-    //Dataからデータを取り出す
-    assert(PackageData != 0);
     *size = FileIndices[i].size;
     return PackageData + FileIndices[i].startIdx;
 }
 
 //Create--------------------------------------------------------
-void countFiles(string path) {
-    for (const directory_entry& e : directory_iterator(path)) {
+void countFiles(std::string path) {
+    for (const std::filesystem::directory_entry& e 
+        : std::filesystem::directory_iterator(path)) {
         if (is_directory(e)) {
             countFiles(e.path().string());
         }
@@ -82,13 +74,14 @@ void countFiles(string path) {
 void setFilename(int i, const char* filename) {
     strcpy_s(FileIndices[i].filename, filename);
 }
-void setNameToIdx(int* i, string path) {
-    for (const directory_entry& e : directory_iterator(path)) {
+void setNameToIdx(int* i, std::string path) {
+    for (const std::filesystem::directory_entry& e 
+        : std::filesystem::directory_iterator(path)) {
         if (is_directory(e)) {
             setNameToIdx(i,e.path().string());
         }
         else {
-            setFilename(*i, e.path().string().c_str());//e.path().filename().string()
+            setFilename(*i, e.path().string().c_str());
             *i += 1;
         }
     }
@@ -101,28 +94,33 @@ void listsFile(const char* directory) {
     setNameToIdx(&i,directory);
 }
 void createFileIndices(const char* filename) {
-    FILE* fp;
     //パッケージデータのインデックスを作る
     SizePackage = 0;
     for (int i = 0; i < NumFiles; i++) {
-        fopen_s(&fp, FileIndices[i].filename, "rb");
-        assert(fp != 0);
-        struct stat info;
-        fstat(_fileno(fp), &info);
-        FileIndices[i].size = info.st_size;
+        FileIndices[i].size = (int)std::filesystem::file_size(FileIndices[i].filename);
         if (i > 0) {
             FileIndices[i].startIdx = FileIndices[i - 1].startIdx + FileIndices[i - 1].size;
         }
         SizePackage += FileIndices[i].size;
-        fclose(fp);
     }
     //パッケージファイルの先頭にインデックスを出力する
+    FILE* fp;
     fopen_s(&fp, filename, "wb");
     fwrite(&NumFiles, sizeof(int), 1, fp);
     fwrite(FileIndices, sizeof(INDEX), NumFiles, fp);
-    fwrite(&SizePackage, sizeof(unsigned int), 1, fp);
+    fwrite(&SizePackage, sizeof(int), 1, fp);
     fclose(fp);
 }
+#if 1
+void addPackageFile(const char* filename) {
+    char buf[1024];
+    for (int i = 0; i < NumFiles; i++) {
+        //system関数でパッケージファイルに追加出力
+        sprintf_s(buf, "type %s >> %s", FileIndices[i].filename, filename);
+        system(buf);
+    }
+}
+#else
 void addPackageFile(const char* filename) {
     FILE* fp;
     for (int i = 0; i < NumFiles; i++) {
@@ -138,6 +136,7 @@ void addPackageFile(const char* filename) {
         delete[] data;
     }
 }
+#endif
 void createPackage(const char* directry, const char* filename) {
     listsFile(directry);
     createFileIndices(filename);

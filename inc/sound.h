@@ -1,5 +1,4 @@
-#ifndef Sound_HD
-#define Sound_HD
+#pragma once
 
 //初期化開放系
 void initSound();
@@ -8,7 +7,6 @@ void releaseSound( int soundIdx );//ひとつの音だけ開放
 
 //ロード
 int loadSound( const char* filename );
-int loadSoundFromPak( const char* fileName );
 int duplicateSound( int i );
 
 //出力系
@@ -18,10 +16,9 @@ void stopSound( int soundIdx );
 void setVolume( int soundIdx, long volume );
 void setPan( int soundIdx, int pan );//panの値域は-10000～10000
 
-//お勉強
+//テスト
 //init();
 //free();
 //void play( char* fileName );
 //void autoReleaseSound();
 
-#endif
