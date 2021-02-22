@@ -1223,7 +1223,8 @@ void image(int idx, float x, float y, float a, float s) {
 
     World.identity();
     if (RectMode == CORNER) {
-        World.mulTranslate(x + texture.width *s/ 2, y + texture.height*s / 2, 0);
+        World.mulTranslate(x + texture.width *s/ 2, 
+            y + texture.height*s / 2, 0);
     }
     else {
         World.mulTranslate(x, y, 0);
