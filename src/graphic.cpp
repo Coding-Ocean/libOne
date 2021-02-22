@@ -1114,13 +1114,14 @@ int loadImage(const char* filename){
     return int(Cntnr->textures.size()) - 1;
 }
 int loadImageFromRes(const char* str) {
-    size_t l = strlen(str);
-    int num = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str, (DWORD)l, 0, 0);
-    wchar_t resName[128] = L"";
-    int ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str, (DWORD)l, resName, num);
+    //size_t l = strlen(str);
+    //int num = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str, (DWORD)l, 0, 0);
+    //wchar_t resName[128] = L"";
+    //int ret = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str, (DWORD)l, resName, num);
 
     HINSTANCE hInst = GetModuleHandle(0);
-    HRSRC hRes = FindResource(hInst, resName, _T("IMAGE"));
+    //HRSRC hRes = FindResource(hInst, resName, _T("IMAGE"));
+    HRSRC hRes = FindResourceA(hInst, str, "IMAGE");
     WARNING(hRes == 0, "リソースがみつからない", "loadImageFromRes");
     // リソースのサイズを取得する 
     DWORD sizeOfRes = SizeofResource(hInst, hRes);
@@ -1140,7 +1141,7 @@ int loadImageFromRes(const char* str) {
     int texHeight = 0;
     int numBytePerPixel = 0;
     pixels = stbi_load_from_memory(mem, sizeOfRes, &texWidth, &texHeight, &numBytePerPixel, 4);
-    WARNING(!pixels, resName, "Load error");
+    WARNING(!pixels, str, "Load error");
 
     //テクスチャーとビューを創る
     D3D11_TEXTURE2D_DESC td;

@@ -2,7 +2,7 @@
 #include"let.h"
 float maxScaleX();
 float maxScaleY();
-void mathAxis(float maxScaleX=1.1f, float bright=0);
+void mathAxis(float maxScaleX=1.1f, float bright=0, float alpha=255);
 void mathPoint(float x, float y);
 void mathCircle(float x, float y, float r);
 void mathRect(float x, float y, float w, float h, float angle = 0);
