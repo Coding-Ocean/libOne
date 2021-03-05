@@ -849,6 +849,24 @@ void line(float sx, float sy, float ex, float ey){
         if (DrawEndPointFlag)point(ex, ey);
     }
 }
+void arrow(float sx, float sy, float ex, float ey, float size) {
+    angleMode(DEGREES);
+    float ang = atan2(ey - sy, ex - sx);
+    float c = cos(ang);
+    float s = sin(ang);
+    float sizeY = size / 3;
+    float ax, ay;
+    //ê¸
+    line(sx, sy, ex, ey);
+    //ñÓàÛÇP
+    ax = -size * c + sizeY * -s;
+    ay = -size * s + sizeY * c;
+    line(ex, ey, ex + ax, ey + ay);
+    //ñÓàÛÇQ
+    ax = -size * c + -sizeY * -s;
+    ay = -size * s + -sizeY * c;
+    line(ex, ey, ex + ax, ey + ay);
+}
 void point(float x, float y){
     World.identity();
     World.mulTranslate(x, y, 0);
