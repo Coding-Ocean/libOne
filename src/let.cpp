@@ -259,6 +259,31 @@ bool let::operator>=(let v) {
     return V >= v.V;
 }
 
+bool let::operator!=(int v) {
+    return V != v;
+}
+bool let::operator!=(float v) {
+    return V != v;
+}
+bool let::operator!=(double v) {
+    return V != v;
+}
+bool let::operator!=(let v) {
+    return V != v.V;
+}
+
+bool let::operator==(int v) {
+    return V == v;
+}
+bool let::operator==(float v) {
+    return V == v;
+}
+bool let::operator==(double v) {
+    return V == v;
+}
+bool let::operator==(let v) {
+    return V == v.V;
+}
 //ˆÈ‰ºlet‚Ìƒƒ“ƒo‚Å‚È‚¢ŠÖ”--------------------------------
 let operator+(const char* str, let v) {
     strcpy_s(let::staticStr(), NUM_STR, str);

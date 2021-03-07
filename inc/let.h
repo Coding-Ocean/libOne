@@ -88,6 +88,15 @@ public:
     bool operator>=(double v);
     bool operator>=(let v);
 
+    bool operator!=(int v);
+    bool operator!=(float v);
+    bool operator!=(double v);
+    bool operator!=(let v);
+
+    bool operator==(int v);
+    bool operator==(float v);
+    bool operator==(double v);
+    bool operator==(let v);
 };
 let operator+(const char* str, let v);
 let operator+(int i, let v);
