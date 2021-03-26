@@ -61,6 +61,7 @@ void getInputState(){
     //マウス
     // ボタン
     InputState[ Now ][ MOUSE_LBUTTON ] = GetAsyncKeyState( VK_LBUTTON );
+    InputState[Now][MOUSE_MBUTTON] = GetAsyncKeyState(VK_MBUTTON);//MouseMButton;
     InputState[ Now ][ MOUSE_RBUTTON ] = GetAsyncKeyState( VK_RBUTTON );
     // カーソルの位置
     POINT mouse;
@@ -388,11 +389,12 @@ void getJoyXbox(){
 }
 */
 
-int isPress( INPUT_CODE inCode ){
+
+int inValue( enum INPUT_CODE inCode ){
     return InputState[ Now ][ inCode ];
 }
 
-int inValue( INPUT_CODE inCode ){
+int isPress( INPUT_CODE inCode ){
     return InputState[ Now ][ inCode ];
 }
 

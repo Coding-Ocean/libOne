@@ -850,6 +850,7 @@ void line(float sx, float sy, float ex, float ey){
     }
 }
 void arrow(float sx, float sy, float ex, float ey, float size) {
+    if (sx == ex && sy == ey)return;
     angleMode(DEGREES);
     float ang = atan2(ey - sy, ex - sx);
     float c = cos(ang);

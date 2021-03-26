@@ -107,23 +107,8 @@ void mathText(let l, float x, float y) {
     text(l, Cx + x * Unit, Cy - y * Unit);
 }
 void mathArrow(float sx, float sy, float ex, float ey, float size) {
+    if (sx == ex && sy == ey)return;
     arrow(Cx + sx * Unit, Cy - sy * Unit, Cx + ex * Unit, Cy - ey * Unit, size);
-
-    //angleMode(DEGREES);
-    //float ang = atan2(ey - sy, ex - sx);
-    //float c = cos(ang);
-    //float s = sin(ang);
-    //float ax, ay;
-    ////ê¸
-    //mathLine(sx, sy, ex, ey);
-    ////ñÓàÛÇP
-    //ax = -size * c + size / 3 * -s;
-    //ay = -size * s + size / 3 * c;
-    //mathLine(ex, ey, ex + ax, ey + ay);
-    ////ñÓàÛÇQ
-    //ax = -size * c + -size / 3 * -s;
-    //ay = -size * s + -size / 3 * c;
-    //mathLine(ex, ey, ex + ax, ey + ay);
 }
 
 extern ANGLE_MODE AngleMode = RADIANS;
