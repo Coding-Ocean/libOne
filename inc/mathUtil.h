@@ -12,6 +12,7 @@ void mathLine(float sx, float sy, float ex, float ey);
 void mathImage(int img, float x, float y, float angle = 0, float scale=1);
 void mathArrow(float sx, float sy, float ex, float ey, float size = 30.0f);
 void mathText(class let l, float x, float y);
+void mathArc(float startAngle, float centralAngle, float radius);
 extern float mathMouseX;
 extern float mathMouseY;
 
@@ -33,7 +34,6 @@ float atan2(float y, float x);
 float sqrt(float square);
 float pow(float a, float b);
 float absolute(float a);
-double abs(double) noexcept;
 float round(float v);
 
 float map(float v, float a1, float a2, float b1, float b2);
