@@ -193,6 +193,9 @@ float absolute(float a) {
 float map(float v, float a1, float a2, float b1, float b2) {
     return (b2 - b1) / (a2 - a1) * v + b1;
 }
+float round(float v) {
+    return round((double)v);
+}
 
 
 
