@@ -1,6 +1,5 @@
 #pragma once
 #include"common.h"
-#include"mathUtil.h"
 #include"COLOR.h"
 #include"let.h"
 //for users

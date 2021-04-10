@@ -37,6 +37,7 @@
     <ClInclude Include="inc\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\abs.cpp" />
     <ClCompile Include="src\COLOR.cpp" />
     <ClCompile Include="src\framework.cpp" />
     <ClCompile Include="src\graphic.cpp" />
@@ -180,13 +181,13 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>lib\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
-    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>lib\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
-    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -238,9 +239,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy .\lib\x64\debug\*.* ..\appOne\libOne\lib\64\deb
-copy .\obj\x64\debug\libone.pdb ..\appOne\libOne\lib\64\deb
-copy .\inc\*.* ..\appOne\libOne\inc</Command>
+      <Command>If Exist ..\appOne copy ..\libOne\lib\x64\debug\*.* ..\appOne\libOne\lib\64\deb
+If Exist ..\appOne copy ..\libOne\obj\x64\debug\libone.pdb ..\appOne\libOne\lib\64\deb
+If Exist ..\appOne copy ..\libOne\inc\*.* ..\appOne\libOne\inc</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -263,7 +264,7 @@ copy .\inc\*.* ..\appOne\libOne\inc</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>copy .\lib\x64\release\*.* ..\appOne\libOne\lib\64\rel</Command>
+      <Command>If Exist ..\appOne copy .\lib\x64\release\*.* ..\appOne\libOne\lib\64\rel</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
