@@ -35,5 +35,4 @@ float sqrt(float square);
 float pow(float a, float b);
 float absolute(float a);
 float round(float v);
-
 float map(float v, float a1, float a2, float b1, float b2);

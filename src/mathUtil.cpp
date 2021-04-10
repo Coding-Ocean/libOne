@@ -191,11 +191,12 @@ float pow(float a, float b) {
 float absolute(float a) {
     return a >= 0.0f ? a : -a;
 }
-float map(float v, float a1, float a2, float b1, float b2) {
-    return (b2 - b1) / (a2 - a1) * v + b1;
-}
 float round(float v) {
     return round((double)v);
+}
+float map(float value, float start1, float stop1, float start2, float stop2)
+{
+    return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
 }
 
 
