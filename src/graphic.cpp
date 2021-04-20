@@ -1453,3 +1453,28 @@ void text(let l, float x, float y) {
         text((double)l, x, y);
 }
 
+//print function
+float PrintSize = 50;
+float PrintPosX = 0;
+float PrintPosY = 0;
+void printStart() {
+    PrintPosY = 0;
+}
+void printSize(float size) { 
+    PrintSize = size;
+}
+void printPosX(float x) { 
+    PrintPosX = x;
+}
+void printPosY(float y) { 
+    PrintPosY = y;
+}
+void printColor(float r, float g, float b) { 
+    fill(r, g, b);
+}
+void print(let textInfo) {
+    textMode(TOP);
+    textSize(PrintSize);
+    text(textInfo, PrintPosX, PrintPosY);
+    PrintPosY += PrintSize;
+}

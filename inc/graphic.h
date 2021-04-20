@@ -49,6 +49,12 @@ void text(const char* str, float x, float y);
 void text(double n, float x, float y);
 void text(int n, float x, float y);
 void text(let n, float x, float y);
+void printStart();
+void printSize(float size);
+void printPosX(float x);
+void printPosY(float y);
+void printColor(float r, float g, float b);
+void print(let textInfo);
 //for framework
 void initGraphic(int baseWidth, int baseHeight);
 void freeGraphic();
