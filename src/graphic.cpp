@@ -10,6 +10,7 @@
 #include"stb_image_reader.h"
 #include"package.h"
 #include"graphic.h"
+#include"mathUtil.h"
 void createDevice();
 void createRenderTarget();
 void setViewport();
@@ -1477,4 +1478,5 @@ void print(let textInfo) {
     textSize(PrintSize);
     text(textInfo, PrintPosX, PrintPosY);
     PrintPosY += PrintSize;
+    textMode(BOTTOM);
 }
