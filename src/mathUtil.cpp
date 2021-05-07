@@ -192,7 +192,7 @@ float absolute(float a) {
     return a >= 0.0f ? a : -a;
 }
 float round(float v) {
-    return round((double)v);
+    return (float)round((double)v);
 }
 float map(float value, float start1, float stop1, float start2, float stop2)
 {

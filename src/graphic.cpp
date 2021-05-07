@@ -801,6 +801,12 @@ void fill(float c) {
     FillColor.b = c;
     FillColor.a = 1;
 }
+void imageColor(const COLOR& c) {
+    MeshColor.r = c.r / 255;
+    MeshColor.g = c.g / 255;
+    MeshColor.b = c.b / 255;
+    MeshColor.a = c.a / 255;
+}
 void imageColor(float r, float g, float b, float a){
     MeshColor.r = r / 255;
     MeshColor.g = g / 255;
