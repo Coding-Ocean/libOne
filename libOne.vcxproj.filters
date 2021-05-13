@@ -127,5 +127,11 @@
     <FxCompile Include="shader\ShapeVertexShader.hlsl">
       <Filter>シェーダー</Filter>
     </FxCompile>
+    <FxCompile Include="shader\TrianglePixelShader.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\TriangleVertexShader.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

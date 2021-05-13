@@ -111,11 +111,14 @@ void mathArrow(float sx, float sy, float ex, float ey, float size) {
     arrow(Cx + sx * Unit, Cy - sy * Unit, Cx + ex * Unit, Cy - ey * Unit, size);
 }
 void mathArc(float startAngle, float centralAngle, float radius) {
+    //å ÇÃï™äÑêî num 
     int num = int(centralAngle / 10);
-    if (AngleMode == RADIANS) num = int(centralAngle / (10 * TO_RAD));
+    if (AngleMode == RADIANS) num = int(round(centralAngle * TO_DEG)) / 10;
     if (num < 0)num = -num;
     num += 1;
+    //ï™äÑÇµÇΩäpÇÃëÂÇ´Ç≥
     float divAngle = centralAngle / num;
+    //ï™äÑêîï™ÇÃê¸Çà¯Ç≠
     float x1 = cos(startAngle) * radius;
     float y1 = sin(startAngle) * radius;
     for (int i = 1; i <= num; i++) {

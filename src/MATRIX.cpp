@@ -23,21 +23,55 @@ void MATRIX::mulScale( float x, float y, float z ){
 	_21 *= x;    _22 *= y;    _23 *= z;
 	_31 *= x;    _32 *= y;    _33 *= z;
 }
-void MATRIX::mulRotateZ( float r ){
-    float c = cos( r );
-    float s = sin( r );
+void MATRIX::mulRotateX(float r) {
+    float c = cos(r);
+    float s = sin(r);
+    float tmp;
+    //1行目
+    tmp = c * _12 + s * _13;
+    _13 = -s * _12 + c * _13;
+    _12 = tmp;
+    //2行目
+    tmp = c * _22 + s * _23;
+    _23 = -s * _22 + c * _23;
+    _22 = tmp;
+    //3行目
+    tmp = c * _32 + s * _33;
+    _33 = -s * _32 + c * _33;
+    _32 = tmp;
+}
+void MATRIX::mulRotateY(float r) {
+    float c = cos(r);
+    float s = sin(r);
+    float tmp;
+    //1行目
+    tmp = c * _11 - s * _13;
+    _13 = s * _11 + c * _13;
+    _11 = tmp;
+    //2行目
+    tmp = c * _21 + -s * _23;
+    _23 = s * _21 + c * _23;
+    _21 = tmp;
+    //3行目
+    tmp = c * _31 - s * _33;
+    _33 = s * _31 + c * _33;
+    _31 = tmp;
+}
+void MATRIX::mulRotateZ(float r) {
+    float c = cos(r);
+    float s = sin(r);
     float tmp;
     //1行目
     tmp = c * _11 + s * _12;
-    _12 = -s * _11 +  c * _12;
+    _12 = -s * _11 + c * _12;
     _11 = tmp;
     //2行目
     tmp = c * _21 + s * _22;
-    _22 = -s * _21 +  c * _22;
+    _22 = -s * _21 + c * _22;
     _21 = tmp;
     //1行目
     tmp = c * _31 + s * _32;
-    _32 = -s * _31 +  c * _32;
+    _32 = -s * _31 + c * _32;
     _31 = tmp;
 }
 void MATRIX::ortho( float l, float r, float b, float t, float n, float f ){

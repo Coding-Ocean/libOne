@@ -22,6 +22,7 @@ void createConstantBuffer();
 void createShaderFromRes();
 void createRectVertexPosBuffer();
 void createCircleVertexPosBuffer();
+void createTriangleVertexBuffer();
 void createTexCoordBuffer();
 
 extern float Width = 0;
@@ -45,6 +46,10 @@ ID3D11VertexShader* ImageVertexShader = 0;
 ID3D11InputLayout* ImageVertexLayout = 0;
 ID3D11PixelShader* ImagePixelShader = 0;
 ID3D11SamplerState* SamplerLinear = 0;
+//triangle用シェーダ
+ID3D11VertexShader* TriangleVertexShader = 0;
+ID3D11InputLayout* TriangleVertexLayout = 0;
+ID3D11PixelShader* TrianglePixelShader = 0;
 //シェーダ用コンスタントバッファオブジェクト
 ID3D11Buffer* CbWorld = 0;
 ID3D11Buffer* CbProj = 0;
@@ -52,8 +57,8 @@ ID3D11Buffer* CbColor = 0;
 //頂点オブジェクト
 ID3D11Buffer* RectVertexPosBuffer = 0;
 ID3D11Buffer* CircleVertexPosBuffer = 0;
+ID3D11Buffer* TriangleVertexBuffer = 0;
 ID3D11Buffer* TexCoordBuffer = 0;
-
 
 //共通使用マトリックス
 MATRIX Proj;
@@ -225,6 +230,7 @@ void initGraphic(int baseWidth, int baseHeight) {
 
     createCircleVertexPosBuffer();
     createRectVertexPosBuffer();
+    createTriangleVertexBuffer();
     createTexCoordBuffer();
 
     Cntnr = new CNTNR;
@@ -494,7 +500,7 @@ void createConstantBuffer(){
     Context->UpdateSubresource(CbProj, 0, NULL, &Proj, 0, 0);
     Context->VSSetConstantBuffers(2, 1, &CbProj);
 }
-enum class VERTEX_TYPE { PNT, PNTWW, PT, P };
+enum class VERTEX_TYPE { PNT, PNTWW, PT, P, PC };
 void createVertexShaderAndInputLayoutFromRes(
     LPCTSTR resName,
     ID3D11VertexShader** vertexShader,
@@ -518,7 +524,7 @@ void createVertexShaderAndInputLayoutFromRes(
     //vertexShaderをつくる
     HRESULT hr = Device->CreateVertexShader(mem, sizeOfRes, NULL, vertexShader);
     WARNING(FAILED(hr), "cannot CreateVertexShader", "");
-
+    //inputLayoutをつくる
     switch (vertexType) {
     case VERTEX_TYPE::PNT: {
         //インプットレイアウト
@@ -559,6 +565,15 @@ void createVertexShaderAndInputLayoutFromRes(
         UINT numElementsLine = ARRAYSIZE(inputElementDescLine);
         hr = Device->CreateInputLayout(inputElementDescLine, numElementsLine, mem, sizeOfRes, inputLayout);
         break; }
+    case VERTEX_TYPE::PC: {
+        //トライアングルインプットレイアウト生成
+        D3D11_INPUT_ELEMENT_DESC inputElementDescTriangle[] = {
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        };
+        UINT numElementsLine = ARRAYSIZE(inputElementDescTriangle);
+        hr = Device->CreateInputLayout(inputElementDescTriangle, numElementsLine, mem, sizeOfRes, inputLayout);
+        break; }
     }
     WARNING(FAILED(hr), "InputLayoutを生成できません", "");
     //開放
@@ -591,6 +606,8 @@ void createShaderFromRes(){
     createPixelShaderFromRes(_T("SHAPE_PS"), &ShapePixelShader);
     createVertexShaderAndInputLayoutFromRes(_T("IMAGE_VS"), &ImageVertexShader, VERTEX_TYPE::PT, &ImageVertexLayout);
     createPixelShaderFromRes(_T("IMAGE_PS"), &ImagePixelShader);
+    createVertexShaderAndInputLayoutFromRes(_T("TRIANGLE_VS"), &TriangleVertexShader, VERTEX_TYPE::PC, &TriangleVertexLayout);
+    createPixelShaderFromRes(_T("TRIANGLE_PS"), &TrianglePixelShader);
 }
 void createRectVertexPosBuffer(){
     //vertex for rect or line
@@ -634,6 +651,26 @@ void createCircleVertexPosBuffer(){
     InitData.pSysMem = circleVertices;
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &CircleVertexPosBuffer);
     WARNING(FAILED(hr), "CreateVertexBuffer Circle","");
+}
+//3D勉強用
+struct VERTEX_PC {
+    VECTOR3 pos;
+    COLOR color;
+};
+struct VERTEX_PC Vertices[3];
+void createTriangleVertexBuffer() {
+    // Vertex Buffer for drawTriangle
+    D3D11_BUFFER_DESC bd;
+    ZeroMemory(&bd, sizeof(bd));
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bd.CPUAccessFlags = 0;
+    bd.ByteWidth = sizeof(VERTEX_PC) * 3;
+    D3D11_SUBRESOURCE_DATA initData;
+    ZeroMemory(&initData, sizeof(initData));
+    initData.pSysMem = Vertices;
+    HRESULT hr = Device->CreateBuffer(&bd, &initData, &TriangleVertexBuffer);
+    WARNING(FAILED(hr), "CreateTriangleVertexBuffer", "");
 }
 //カスタムシェープの頂点バッファを作る。トライアングルファンインデックス
 int createShape(struct SHAPE_VERTEX* vertices, int numVertices) {
@@ -738,13 +775,12 @@ void createTexCoordBuffer(){
     ZeroMemory(&InitData, sizeof(InitData));
     InitData.pSysMem = vertices;
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &TexCoordBuffer);
-    WARNING(FAILED(hr), "CreateVertexBuffer Image","");
+    WARNING(FAILED(hr), "CreateTexCoordBuffe","");
 }
 
 void colorMode(COLOR_MODE mode) {
     ColorMode = mode;
 }
-
 void stroke(float r, float g, float b, float a){
     if (ColorMode == RGB) {
         StrokeColor.r = r / 255;
@@ -761,10 +797,19 @@ void stroke(float r, float g, float b, float a){
     }
 }
 void stroke(const COLOR& c) {
-    StrokeColor.r = c.r / 255;
-    StrokeColor.g = c.g / 255;
-    StrokeColor.b = c.b / 255;
-    StrokeColor.a = c.a / 255;
+    if (ColorMode == RGB) {
+        StrokeColor.r = c.r / 255;
+        StrokeColor.g = c.g / 255;
+        StrokeColor.b = c.b / 255;
+        StrokeColor.a = c.a / 255;
+    }
+    else if (ColorMode == HSV) {
+        COLOR c_ = hsv_to_rgb(c.r, c.g, c.b);
+        StrokeColor.r = c_.r / 255;
+        StrokeColor.g = c_.g / 255;
+        StrokeColor.b = c_.b / 255;
+        StrokeColor.a = c.a / 255;
+    }
 }
 void stroke(float c) {
     c /= 255;
@@ -789,10 +834,19 @@ void fill(float r, float g, float b, float a){
     }
 }
 void fill(const COLOR& c) {
-    FillColor.r = c.r / 255;
-    FillColor.g = c.g / 255;
-    FillColor.b = c.b / 255;
-    FillColor.a = c.a / 255;
+    if (ColorMode == RGB) {
+        FillColor.r = c.r / 255;
+        FillColor.g = c.g / 255;
+        FillColor.b = c.b / 255;
+        FillColor.a = c.a / 255;
+    }
+    else if (ColorMode == HSV) {
+        COLOR c_ = hsv_to_rgb(c.r, c.g, c.b);
+        FillColor.r = c_.r / 255;
+        FillColor.g = c_.g / 255;
+        FillColor.b = c_.b / 255;
+        FillColor.a = c.a / 255;
+    }
 }
 void fill(float c) {
     c /= 255;
@@ -801,17 +855,35 @@ void fill(float c) {
     FillColor.b = c;
     FillColor.a = 1;
 }
-void imageColor(const COLOR& c) {
-    MeshColor.r = c.r / 255;
-    MeshColor.g = c.g / 255;
-    MeshColor.b = c.b / 255;
-    MeshColor.a = c.a / 255;
-}
 void imageColor(float r, float g, float b, float a){
-    MeshColor.r = r / 255;
-    MeshColor.g = g / 255;
-    MeshColor.b = b / 255;
-    MeshColor.a = a / 255;
+    if (ColorMode == RGB) {
+        MeshColor.r = r / 255;
+        MeshColor.g = g / 255;
+        MeshColor.b = b / 255;
+        MeshColor.a = a / 255;
+    }
+    else if (ColorMode == HSV) {
+        COLOR c = hsv_to_rgb(r, g, b);
+        MeshColor.r = c.r / 255;
+        MeshColor.g = c.g / 255;
+        MeshColor.b = c.b / 255;
+        MeshColor.a = a / 255;
+    }
+}
+void imageColor(const COLOR& c) {
+    if (ColorMode == RGB) {
+        MeshColor.r = c.r / 255;
+        MeshColor.g = c.g / 255;
+        MeshColor.b = c.b / 255;
+        MeshColor.a = c.a / 255;
+    }
+    else if (ColorMode == HSV) {
+        COLOR c_ = hsv_to_rgb(c.r, c.g, c.b);
+        MeshColor.r = c_.r / 255;
+        MeshColor.g = c_.g / 255;
+        MeshColor.b = c_.b / 255;
+        MeshColor.a = c.a / 255;
+    }
 }
 void imageColor(float c){
     c /= 255;
@@ -1200,7 +1272,6 @@ int loadImageFromRes(const char* str) {
     Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
     return int(Cntnr->textures.size()) - 1;
 }
-
 int cutImage(int idx, int left, int top, int w, int h){
     WARNING((size_t)idx >= Cntnr->textures.size(), "画像番号オーバー", "");
     ID3D11ShaderResourceView* texObj = Cntnr->textures.at(idx).obj;
@@ -1233,7 +1304,6 @@ int cutImage(int idx, int left, int top, int w, int h){
     Cntnr->textures.emplace_back(texObj, w, h, texCoord);
     return int(Cntnr->textures.size()) - 1;
 }
-
 void divideImage(int img, int cols, int rows, int w, int h, int* imgs) {
     for (int j = 0; j < rows; j++) {
         for (int i = 0; i < cols; i++) {
@@ -1281,6 +1351,24 @@ void image(int idx, float x, float y, float a, float s) {
     Context->VSSetShader(ImageVertexShader, NULL, 0);
     Context->PSSetShader(ImagePixelShader, NULL, 0);
     Context->Draw(4, 0);
+}
+void triangle(const VECTOR3& p0, const VECTOR3& p1, const VECTOR3& p2, 
+    const COLOR& c0, const COLOR& c1, const COLOR& c2) {
+    Vertices[0].pos = p0;
+    Vertices[0].color = c0 * 0.003921568627451f;
+    Vertices[1].pos = p1;
+    Vertices[1].color = c1 * 0.003921568627451f;
+    Vertices[2].pos = p2;
+    Vertices[2].color = c2 * 0.003921568627451f;
+
+    Context->UpdateSubresource(TriangleVertexBuffer, 0, 0, Vertices, 0, 0);
+    UINT stride = sizeof(VERTEX_PC);
+    UINT offset = 0;
+    Context->IASetVertexBuffers(0, 1, &TriangleVertexBuffer, &stride, &offset);
+    Context->IASetInputLayout(TriangleVertexLayout);
+    Context->VSSetShader(TriangleVertexShader, NULL, 0);
+    Context->PSSetShader(TrianglePixelShader, NULL, 0);
+    Context->Draw(3, 0);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -1486,3 +1574,4 @@ void print(let textInfo) {
     PrintPosY += PrintSize;
     textMode(BOTTOM);
 }
+
