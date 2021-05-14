@@ -56,7 +56,10 @@ ID3D11Buffer* CbProj = 0;
 ID3D11Buffer* CbColor = 0;
 //頂点オブジェクト
 ID3D11Buffer* RectVertexPosBuffer = 0;
-ID3D11Buffer* CircleVertexPosBuffer = 0;
+ID3D11Buffer* CircleSVertexPosBuffer = 0;
+ID3D11Buffer* CircleMVertexPosBuffer = 0;
+ID3D11Buffer* CircleLVertexPosBuffer = 0;
+ID3D11Buffer* CircleLLVertexPosBuffer = 0;
 ID3D11Buffer* TriangleVertexBuffer = 0;
 ID3D11Buffer* TexCoordBuffer = 0;
 
@@ -184,7 +187,10 @@ void freeGraphic() {
     SAFE_RELEASE(SamplerLinear);
     SAFE_RELEASE(TexCoordBuffer);
     SAFE_RELEASE(RectVertexPosBuffer);
-    SAFE_RELEASE(CircleVertexPosBuffer);
+    SAFE_RELEASE(CircleLLVertexPosBuffer);
+    SAFE_RELEASE(CircleLVertexPosBuffer);
+    SAFE_RELEASE(CircleMVertexPosBuffer);
+    SAFE_RELEASE(CircleSVertexPosBuffer);
     SAFE_RELEASE(CbColor);
     SAFE_RELEASE(CbWorld);
     SAFE_RELEASE(CbProj);
@@ -236,8 +242,6 @@ void initGraphic(int baseWidth, int baseHeight) {
     Cntnr = new CNTNR;
     font("BIZ UDGothic");
 }
-
-
 void createDevice() {
     //マルチサンプリング対応
     //デバイスの生成
@@ -631,26 +635,94 @@ void createRectVertexPosBuffer(){
     WARNING(FAILED(hr), "CreateVertexBuffer Rect","");
 }
 void createCircleVertexPosBuffer(){
-    const int num = 64;
-    float rad = 3.141592f * 2 / num;
-    VECTOR3 circleVertices[num];
-    circleVertices[0] = VECTOR3(0.5f, 0, 0.0f);
-    for (int i = 1, j = 1; i <= num / 2 - 1; i++){
-        circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
-        circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+    {
+        const int num = 8;
+        float rad = 3.141592f * 2 / num;
+        VECTOR3 circleVertices[num];
+        circleVertices[0] = VECTOR3(0.5f, 0, 0.0f);
+        for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
+            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+        }
+        circleVertices[num - 1] = VECTOR3(-0.5f, 0, 0.0f);
+        D3D11_BUFFER_DESC bd;
+        ZeroMemory(&bd, sizeof(bd));
+        bd.Usage = D3D11_USAGE_DEFAULT;
+        bd.ByteWidth = sizeof(VECTOR3) * (num);
+        bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        bd.CPUAccessFlags = 0;
+        D3D11_SUBRESOURCE_DATA InitData;
+        ZeroMemory(&InitData, sizeof(InitData));
+        InitData.pSysMem = circleVertices;
+        HRESULT hr = Device->CreateBuffer(&bd, &InitData, &CircleSVertexPosBuffer);
+        WARNING(FAILED(hr), "CreateVertexBuffer Circle", "");
     }
-    circleVertices[num - 1] = VECTOR3(-0.5f, 0, 0.0f);
-    D3D11_BUFFER_DESC bd;
-    ZeroMemory(&bd, sizeof(bd));
-    bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(VECTOR3) * (num);
-    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bd.CPUAccessFlags = 0;
-    D3D11_SUBRESOURCE_DATA InitData;
-    ZeroMemory(&InitData, sizeof(InitData));
-    InitData.pSysMem = circleVertices;
-    HRESULT hr = Device->CreateBuffer(&bd, &InitData, &CircleVertexPosBuffer);
-    WARNING(FAILED(hr), "CreateVertexBuffer Circle","");
+    {
+        const int num = 16;
+        float rad = 3.141592f * 2 / num;
+        VECTOR3 circleVertices[num];
+        circleVertices[0] = VECTOR3(0.5f, 0, 0.0f);
+        for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
+            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+        }
+        circleVertices[num - 1] = VECTOR3(-0.5f, 0, 0.0f);
+        D3D11_BUFFER_DESC bd;
+        ZeroMemory(&bd, sizeof(bd));
+        bd.Usage = D3D11_USAGE_DEFAULT;
+        bd.ByteWidth = sizeof(VECTOR3) * (num);
+        bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        bd.CPUAccessFlags = 0;
+        D3D11_SUBRESOURCE_DATA InitData;
+        ZeroMemory(&InitData, sizeof(InitData));
+        InitData.pSysMem = circleVertices;
+        HRESULT hr = Device->CreateBuffer(&bd, &InitData, &CircleMVertexPosBuffer);
+        WARNING(FAILED(hr), "CreateVertexBuffer Circle", "");
+    }
+    {
+        const int num = 32;
+        float rad = 3.141592f * 2 / num;
+        VECTOR3 circleVertices[num];
+        circleVertices[0] = VECTOR3(0.5f, 0, 0.0f);
+        for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
+            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+        }
+        circleVertices[num - 1] = VECTOR3(-0.5f, 0, 0.0f);
+        D3D11_BUFFER_DESC bd;
+        ZeroMemory(&bd, sizeof(bd));
+        bd.Usage = D3D11_USAGE_DEFAULT;
+        bd.ByteWidth = sizeof(VECTOR3) * (num);
+        bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        bd.CPUAccessFlags = 0;
+        D3D11_SUBRESOURCE_DATA InitData;
+        ZeroMemory(&InitData, sizeof(InitData));
+        InitData.pSysMem = circleVertices;
+        HRESULT hr = Device->CreateBuffer(&bd, &InitData, &CircleLVertexPosBuffer);
+        WARNING(FAILED(hr), "CreateVertexBuffer Circle", "");
+    }
+    {
+        const int num = 64;
+        float rad = 3.141592f * 2 / num;
+        VECTOR3 circleVertices[num];
+        circleVertices[0] = VECTOR3(0.5f, 0, 0.0f);
+        for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
+            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+        }
+        circleVertices[num - 1] = VECTOR3(-0.5f, 0, 0.0f);
+        D3D11_BUFFER_DESC bd;
+        ZeroMemory(&bd, sizeof(bd));
+        bd.Usage = D3D11_USAGE_DEFAULT;
+        bd.ByteWidth = sizeof(VECTOR3) * (num);
+        bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        bd.CPUAccessFlags = 0;
+        D3D11_SUBRESOURCE_DATA InitData;
+        ZeroMemory(&InitData, sizeof(InitData));
+        InitData.pSysMem = circleVertices;
+        HRESULT hr = Device->CreateBuffer(&bd, &InitData, &CircleLLVertexPosBuffer);
+        WARNING(FAILED(hr), "CreateVertexBuffer Circle", "");
+    }
 }
 //3D勉強用
 struct VERTEX_PC {
@@ -959,12 +1031,26 @@ void point(float x, float y){
 
     // Set vertex buffer
     UINT stride = sizeof(VECTOR3), offset = 0;
-    Context->IASetVertexBuffers(0, 1, &CircleVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
     Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
     Context->VSSetShader(ShapeVertexShader, NULL, 0);
     Context->PSSetShader(ShapePixelShader, NULL, 0);
-    Context->Draw(64, 0);
+    if (StrokeWeight <=4) {
+        Context->IASetVertexBuffers(0, 1, &CircleSVertexPosBuffer, &stride, &offset);
+        Context->Draw(8, 0);
+    }
+    else if (StrokeWeight<=10) {
+        Context->IASetVertexBuffers(0, 1, &CircleMVertexPosBuffer, &stride, &offset);
+        Context->Draw(16, 0);
+    }
+    else if (StrokeWeight <= 20) {
+        Context->IASetVertexBuffers(0, 1, &CircleLVertexPosBuffer, &stride, &offset);
+        Context->Draw(32, 0);
+    }
+    else {
+        Context->IASetVertexBuffers(0, 1, &CircleLLVertexPosBuffer, &stride, &offset);
+        Context->Draw(64, 0);
+    }
 }
 void rectMode(RECT_MODE mode){
     RectMode = mode;
@@ -1069,25 +1155,37 @@ void circle(float x, float y, float diameter){
 
     // Set vertex buffer
     UINT stride = sizeof(VECTOR3), offset = 0;
-    Context->IASetVertexBuffers(0, 1, &CircleVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
     Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
     Context->VSSetShader(ShapeVertexShader, NULL, 0);
     Context->PSSetShader(ShapePixelShader, NULL, 0);
-    Context->Draw(64, 0);
+
+    int numAngles;
+    if (diameter <= 100) {
+        Context->IASetVertexBuffers(0, 1, &CircleLVertexPosBuffer, &stride, &offset);
+        numAngles = 32;
+        Context->Draw(numAngles, 0);
+    }
+    else {
+        Context->IASetVertexBuffers(0, 1, &CircleLLVertexPosBuffer, &stride, &offset);
+        numAngles = 64;
+        Context->Draw(numAngles, 0);
+    }
 
     if (StrokeWeight > 0) {
-        int numAngles = 64;
         float rad = 3.141592f * 2 / numAngles;
         float radius = diameter / 2;
         DrawEndPointFlag = false;
+        float sx = x + radius;
+        float sy = y;
+        float ex, ey;
         for (int i = 0; i < numAngles; i++) {
-            float sx = x + cosf(rad * i) * radius;
-            float sy = y + sinf(rad * i) * radius;
-            float ex = x + cosf(rad * (i + 1)) * radius;
-            float ey = y + sinf(rad * (i + 1)) * radius;
+            ex = x + cosf(rad * (i + 1)) * radius;
+            ey = y + sinf(rad * (i + 1)) * radius;
             line(sx, sy, ex, ey);
+            sx = ex;
+            sy = ey;
         }
         DrawEndPointFlag = true;
     }

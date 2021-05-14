@@ -14,6 +14,8 @@ public:
     void mulRotateX(float r);
     void mulRotateY(float r);
     void mulRotateZ(float r);
+    void view(const VECTOR3& camera, const VECTOR3& lookat, const VECTOR3& up);
+    void proj(float angle, float aspect, float n, float f);
     void ortho(float l, float r, float b, float t, float n, float f);
     VECTOR3 operator*(const VECTOR3& v) const;
     MATRIX operator*(const MATRIX& m) const;

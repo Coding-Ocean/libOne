@@ -78,14 +78,14 @@ void window(const char* caption, float width, float height, bool fullscreen) {
 }
 
 bool msgProc() {
-    present();
-    getInputState();
-    printStart();
     MSG msg;
     if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+    present();
+    getInputState();
+    printStart();
     return (msg.message != WM_QUIT);
 }
 
