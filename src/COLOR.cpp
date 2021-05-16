@@ -1,15 +1,13 @@
-#include"mathUtil.h"
-#include"COLOR.h"
+//#include"COLOR.h"
 
+/*
 //色相h、彩度S、明度V を　RGBに変換
 COLOR hsv_to_rgb( float h, float s, float v ){
     float max = v;
     float min = max  - ( (s / 255) * max );
     float r=0,g=0,b=0;
-    if (AngleMode == RADIANS) {
-        //ラジアン値を角度に変換
-        h *= TO_DEG;
-    }
+    //角度に変換
+    if (AngleMode == RADIANS) h *= TO_DEG;
     //0～360の値に変換
     if( h <   0 ) h = h - int( h / 360 ) * 360 + 360;
     if( h > 360 ) h = h - int( h / 360 ) * 360;
@@ -47,5 +45,6 @@ COLOR hsv_to_rgb( float h, float s, float v ){
 
     return COLOR(r, g, b);
 }
+*/
 
 

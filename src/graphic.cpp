@@ -446,34 +446,6 @@ void clear(float* clearColor){
     // Clear the depth buffer to 1.0 (max depth)
     Context->ClearDepthStencilView(DepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
-void clear(const COLOR& c) {
-    // Clear the back buffer
-    float clearColor[4] = { c.r/255, c.g/255, c.b/255, 1.0f };
-    clear(clearColor);
-}
-void clear(float r, float g, float b) {
-    float clearColor[4];
-    if (ColorMode == RGB) {
-        clearColor[0] = r / 255;
-        clearColor[1] = g / 255;
-        clearColor[2] = b / 255;
-        clearColor[3] = 1.0f;
-    }
-    else if (ColorMode == HSV) {
-        COLOR c = hsv_to_rgb(r, g, b);
-        clearColor[0] = c.r / 255;
-        clearColor[1] = c.g / 255;
-        clearColor[2] = c.b / 255;
-        clearColor[3] = 1.0f;
-    }
-    clear(clearColor);
-}
-void clear(float c) {
-    // Clear the back buffer
-    c /= 255;
-    float clearColor[4] = { c, c, c, 1.0f };
-    clear(clearColor);
-}
 void present() {
     SwapChain->Present(1, 0);
 }
@@ -850,120 +822,229 @@ void createTexCoordBuffer(){
     WARNING(FAILED(hr), "CreateTexCoordBuffe","");
 }
 
-void colorMode(COLOR_MODE mode) {
+float ColorDenominator = 255;
+void colorMode(COLOR_MODE mode, float colorDenominator) {
     ColorMode = mode;
+    ColorDenominator = colorDenominator;
+}
+COLOR hsv2rgb(float h, float s, float v, float a) {
+    if (AngleMode == RADIANS) h *= TO_DEG;
+    //0Å`360ÇÃílÇ…ïœä∑
+    if (h < 0) h = h - int(h / 360) * 360 + 360;
+    if (h > 360) h = h - int(h / 360) * 360;
+    h /= 360;
+    s /= ColorDenominator;
+    v /= ColorDenominator;
+    float r = v;
+    float g = v;
+    float b = v;
+    if (s > 0.0f) {
+        h *= 6.0f;
+        int i = (int)h;
+        float f = h - (float)i;
+        switch (i) {
+        default:
+        case 0:
+            g *= 1 - s * (1 - f);
+            b *= 1 - s;
+            break;
+        case 1:
+            r *= 1 - s * f;
+            b *= 1 - s;
+            break;
+        case 2:
+            r *= 1 - s;
+            b *= 1 - s * (1 - f);
+            break;
+        case 3:
+            r *= 1 - s;
+            g *= 1 - s * f;
+            break;
+        case 4:
+            r *= 1 - s * (1 - f);
+            g *= 1 - s;
+            break;
+        case 5:
+            g *= 1 - s;
+            b *= 1 - s * f;
+            break;
+        }
+    }
+    return COLOR(r, g, b, a / ColorDenominator);
+}
+
+void clear(const COLOR& c) {
+    float clearColor[4] = { 
+        c.r / ColorDenominator, 
+        c.g / ColorDenominator, 
+        c.b / ColorDenominator, 
+        1.0f 
+    };
+    clear(clearColor);
+}
+void clear(float r, float g, float b) {
+    float clearColor[4];
+    if (ColorMode == RGB) {
+        clearColor[0] = r / ColorDenominator;
+        clearColor[1] = g / ColorDenominator;
+        clearColor[2] = b / ColorDenominator;
+        clearColor[3] = 1.0f;
+    }
+    else if (ColorMode == HSV) {
+        COLOR c = hsv2rgb(r, g, b, ColorDenominator);
+        clearColor[0] = c.r / ColorDenominator;
+        clearColor[1] = c.g / ColorDenominator;
+        clearColor[2] = c.b / ColorDenominator;
+        clearColor[3] = 1.0f;
+    }
+    clear(clearColor);
+}
+void clear(float c) {
+    c /= ColorDenominator;
+    float clearColor[4] = { c, c, c, 1.0f };
+    clear(clearColor);
+}
+
+void stroke(float r, float g, float b) {
+    if (ColorMode == RGB) {
+        StrokeColor.r = r / ColorDenominator;
+        StrokeColor.g = g / ColorDenominator;
+        StrokeColor.b = b / ColorDenominator;
+        StrokeColor.a = 1.0f;
+    }
+    else if (ColorMode == HSV) {
+        StrokeColor = hsv2rgb(r, g, b, ColorDenominator);
+    }
 }
 void stroke(float r, float g, float b, float a){
     if (ColorMode == RGB) {
-        StrokeColor.r = r / 255;
-        StrokeColor.g = g / 255;
-        StrokeColor.b = b / 255;
-        StrokeColor.a = a / 255;
+        StrokeColor.r = r / ColorDenominator;
+        StrokeColor.g = g / ColorDenominator;
+        StrokeColor.b = b / ColorDenominator;
+        StrokeColor.a = a / ColorDenominator;
     }
     else if (ColorMode == HSV) {
-        COLOR c = hsv_to_rgb(r, g, b);
-        StrokeColor.r = c.r / 255;
-        StrokeColor.g = c.g / 255;
-        StrokeColor.b = c.b / 255;
-        StrokeColor.a = a / 255;
+        StrokeColor = hsv2rgb(r, g, b, a);
     }
 }
 void stroke(const COLOR& c) {
     if (ColorMode == RGB) {
-        StrokeColor.r = c.r / 255;
-        StrokeColor.g = c.g / 255;
-        StrokeColor.b = c.b / 255;
-        StrokeColor.a = c.a / 255;
+        StrokeColor.r = c.r / ColorDenominator;
+        StrokeColor.g = c.g / ColorDenominator;
+        StrokeColor.b = c.b / ColorDenominator;
+        StrokeColor.a = c.a / ColorDenominator;
     }
     else if (ColorMode == HSV) {
-        COLOR c_ = hsv_to_rgb(c.r, c.g, c.b);
-        StrokeColor.r = c_.r / 255;
-        StrokeColor.g = c_.g / 255;
-        StrokeColor.b = c_.b / 255;
-        StrokeColor.a = c.a / 255;
+        StrokeColor = hsv2rgb(c.r, c.g, c.b, c.a);
     }
 }
 void stroke(float c) {
-    c /= 255;
+    c /= ColorDenominator;
     StrokeColor.r = c;
     StrokeColor.g = c;
     StrokeColor.b = c;
     StrokeColor.a = 1;
 }
-void fill(float r, float g, float b, float a){
+void fill(float r, float g, float b) {
     if (ColorMode == RGB) {
-        FillColor.r = r / 255;
-        FillColor.g = g / 255;
-        FillColor.b = b / 255;
-        FillColor.a = a / 255;
+        FillColor.r = r / ColorDenominator;
+        FillColor.g = g / ColorDenominator;
+        FillColor.b = b / ColorDenominator;
+        FillColor.a = 1.0f;
     }
     else if (ColorMode == HSV) {
-        COLOR c = hsv_to_rgb(r, g, b);
-        FillColor.r = c.r / 255;
-        FillColor.g = c.g / 255;
-        FillColor.b = c.b / 255;
-        FillColor.a = a / 255;
+        FillColor = hsv2rgb(r, g, b, ColorDenominator);
+    }
+}
+void fill(float r, float g, float b, float a){
+    if (ColorMode == RGB) {
+        FillColor.r = r / ColorDenominator;
+        FillColor.g = g / ColorDenominator;
+        FillColor.b = b / ColorDenominator;
+        FillColor.a = a / ColorDenominator;
+    }
+    else if (ColorMode == HSV) {
+        FillColor = hsv2rgb(r, g, b, a);
     }
 }
 void fill(const COLOR& c) {
     if (ColorMode == RGB) {
-        FillColor.r = c.r / 255;
-        FillColor.g = c.g / 255;
-        FillColor.b = c.b / 255;
-        FillColor.a = c.a / 255;
+        FillColor.r = c.r / ColorDenominator;
+        FillColor.g = c.g / ColorDenominator;
+        FillColor.b = c.b / ColorDenominator;
+        FillColor.a = c.a / ColorDenominator;
     }
     else if (ColorMode == HSV) {
-        COLOR c_ = hsv_to_rgb(c.r, c.g, c.b);
-        FillColor.r = c_.r / 255;
-        FillColor.g = c_.g / 255;
-        FillColor.b = c_.b / 255;
-        FillColor.a = c.a / 255;
+        FillColor = hsv2rgb(c.r, c.g, c.b, c.a);
     }
 }
 void fill(float c) {
-    c /= 255;
+    c /= ColorDenominator;
     FillColor.r = c;
     FillColor.g = c;
     FillColor.b = c;
     FillColor.a = 1;
 }
-void imageColor(float r, float g, float b, float a){
+void imageColor(float r, float g, float b) {
     if (ColorMode == RGB) {
-        MeshColor.r = r / 255;
-        MeshColor.g = g / 255;
-        MeshColor.b = b / 255;
-        MeshColor.a = a / 255;
+        MeshColor.r = r / ColorDenominator;
+        MeshColor.g = g / ColorDenominator;
+        MeshColor.b = b / ColorDenominator;
+        MeshColor.a = 1.0f;
     }
     else if (ColorMode == HSV) {
-        COLOR c = hsv_to_rgb(r, g, b);
-        MeshColor.r = c.r / 255;
-        MeshColor.g = c.g / 255;
-        MeshColor.b = c.b / 255;
-        MeshColor.a = a / 255;
+        MeshColor = hsv2rgb(r, g, b, ColorDenominator);
+    }
+}
+void imageColor(float r, float g, float b, float a){
+    if (ColorMode == RGB) {
+        MeshColor.r = r / ColorDenominator;
+        MeshColor.g = g / ColorDenominator;
+        MeshColor.b = b / ColorDenominator;
+        MeshColor.a = a / ColorDenominator;
+    }
+    else if (ColorMode == HSV) {
+        MeshColor = hsv2rgb(r, g, b, a);
     }
 }
 void imageColor(const COLOR& c) {
     if (ColorMode == RGB) {
-        MeshColor.r = c.r / 255;
-        MeshColor.g = c.g / 255;
-        MeshColor.b = c.b / 255;
-        MeshColor.a = c.a / 255;
+        MeshColor.r = c.r / ColorDenominator;
+        MeshColor.g = c.g / ColorDenominator;
+        MeshColor.b = c.b / ColorDenominator;
+        MeshColor.a = c.a / ColorDenominator;
     }
     else if (ColorMode == HSV) {
-        COLOR c_ = hsv_to_rgb(c.r, c.g, c.b);
-        MeshColor.r = c_.r / 255;
-        MeshColor.g = c_.g / 255;
-        MeshColor.b = c_.b / 255;
-        MeshColor.a = c.a / 255;
+        MeshColor = hsv2rgb(c.r, c.g, c.b, c.a);
     }
 }
 void imageColor(float c){
-    c /= 255;
+    c /= ColorDenominator;
     MeshColor.r = c;
     MeshColor.g = c;
     MeshColor.b = c;
     MeshColor.a = 1;
 }
+COLOR::COLOR() {
+    r = g = b = a = ColorDenominator;
+}
+COLOR::COLOR(float r, float g, float b) {
+    this->r = r; this->g = g; this->b = b; this->a = ColorDenominator;
+}
+COLOR::COLOR(float r, float g, float b, float a) {
+    this->r = r; this->g = g; this->b = b; this->a = a;
+}
+COLOR::COLOR(unsigned c) {
+    a = float(c >> 24);
+    r = float((c & 0x00ff0000) >> 16);
+    g = float((c & 0x0000ff00) >> 8);
+    b = float(c & 0x000000ff);
+}
+COLOR COLOR::operator*(float f)const {
+    return(COLOR(r * f, g * f, b * f, a));
+}
+
+
 void strokeWeight(float weight){
     StrokeWeight = weight;
 }

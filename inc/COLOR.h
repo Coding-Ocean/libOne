@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 struct COLOR{
     float r, g, b, a;
     COLOR() {
@@ -18,9 +18,9 @@ struct COLOR{
         return( COLOR( r * f, g * f, b * f, a ) );
     }
 };
-
+*/
 //色相h、彩度S、明度V を　RGBに変換
-COLOR hsv_to_rgb( float h, float s=255, float v=255 );
+//COLOR hsv_to_rgb( float h, float s=255, float v=255 );
 
 
 

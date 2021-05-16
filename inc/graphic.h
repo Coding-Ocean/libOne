@@ -1,6 +1,6 @@
 #pragma once
 #include"common.h"
-#include"COLOR.h"
+//#include"COLOR.h"
 #include"let.h"
 //for users
 extern float Width;
@@ -8,7 +8,7 @@ extern float Height;
 #define width Width
 #define height Height
 enum COLOR_MODE { RGB, HSV };
-void colorMode(COLOR_MODE mode);
+void colorMode(COLOR_MODE mode, float colorDenominator=255);
 enum RECT_MODE { CENTER, CORNER };
 void rectMode(RECT_MODE mode);
 enum TEXT_MODE { BOTTOM, TOP };
@@ -18,15 +18,18 @@ void clear(const struct COLOR& c);
 void clear(float r, float g, float b);
 void clear(float c=0);
 void stroke(const struct COLOR& c);
-void stroke(float r, float g, float b, float a=255);
+void stroke(float r, float g, float b);
+void stroke(float r, float g, float b, float a);
 void stroke(float c);
 void strokeWeight(float weight);
 void noStroke();
 void fill(const struct COLOR& c);
-void fill(float r, float g, float b, float a = 255);
+void fill(float r, float g, float b);
+void fill(float r, float g, float b, float a);
 void fill(float c);
 void imageColor(const struct COLOR& c);
-void imageColor(float r, float g, float b, float a=255);
+void imageColor(float r, float g, float b);
+void imageColor(float r, float g, float b, float a);
 void imageColor(float c);
 void point(float x, float y);
 void line(float sx, float sy, float ex, float ey);
@@ -63,3 +66,13 @@ void initGraphic(int baseWidth, int baseHeight);
 void freeGraphic();
 void changeSize();
 void present();
+//
+struct COLOR {
+    float r, g, b, a;
+    COLOR();
+    COLOR(float r, float g, float b);
+    COLOR(float r, float g, float b, float a);
+    COLOR(unsigned c);
+    COLOR operator*(float f)const;
+};
+
