@@ -78,15 +78,19 @@ void window(const char* caption, float width, float height, bool fullscreen) {
 }
 
 bool msgProc() {
+    present();
+    getInputState();
+    if (isTrigger(KEY_ESCAPE))closeWindow();
+    printStart();
     MSG msg;
     if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-    present();
-    getInputState();
-    printStart();
     return (msg.message != WM_QUIT);
 }
 
+void closeWindow() {
+    PostMessage(HWnd, WM_CLOSE, 0, 0);
+}
 

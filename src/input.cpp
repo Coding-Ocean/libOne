@@ -56,7 +56,9 @@ void getInputState(){
     InputState[ Now ][ KEY_UP ] = GetAsyncKeyState( VK_UP );
     InputState[ Now ][ KEY_DOWN ] = GetAsyncKeyState( VK_DOWN );
     InputState[ Now ][ KEY_SPACE ] = GetAsyncKeyState( VK_SPACE );
-    InputState[ Now ][ KEY_ENTER ] = GetAsyncKeyState( VK_RETURN );
+    InputState[ Now ][ KEY_ENTER ] = GetAsyncKeyState(VK_RETURN);
+    InputState[ Now ][ KEY_ESCAPE ] = GetAsyncKeyState( VK_ESCAPE );
+    InputState[ Now ][ KEY_SHIFT ] = GetAsyncKeyState( VK_SHIFT );
 
     //マウス
     // ボタン

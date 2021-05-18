@@ -1,6 +1,5 @@
 #include "window.h"
 #include "graphic.h"
-#include "input.h"
 
 extern LPCTSTR CLASS_NAME = _T("GameWindow");
 extern int ClientWidth = 0;
@@ -19,11 +18,6 @@ LRESULT CALLBACK winProc( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp ) {
             ClientWidth  =  lp & 0xFFFF;
             ClientHeight = (lp >> 16) & 0xFFFF;
             changeSize();
-        }
-        return 0;
-    case WM_KEYDOWN:
-        if( wp == VK_ESCAPE ) {
-            PostMessage( hwnd, WM_CLOSE, 0, 0 );
         }
         return 0;
     case WM_MOUSEWHEEL:
@@ -46,7 +40,7 @@ void initWindow( LPCTSTR caption, int clientWidth, int clientHeight ){
     WNDCLASS wc = {0, winProc, 0, 0, hinst,
         LoadIcon( hinst, _T("MYICON") ),
         LoadCursor( 0, IDC_ARROW ),
-		( HBRUSH )2, 0, CLASS_NAME };
+        (HBRUSH)GetStockObject(BLACK_BRUSH), 0, CLASS_NAME };
     RegisterClass( &wc );
 
 	//ウィンドウを作る
