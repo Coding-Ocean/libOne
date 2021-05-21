@@ -35,6 +35,7 @@ void window(float width, float height, bool fullscreen){
     initSound();
 }
 
+//キャプション指定window（システム）初期化
 class WSTR {
     wchar_t* Wstr = 0;
 public:
@@ -53,7 +54,6 @@ public:
         return Wstr;
     }
 };
-
 void window(const char* caption, float width, float height, bool fullscreen) {
 #ifdef _UNICODE
     WSTR wCaption(caption);
@@ -79,9 +79,9 @@ void window(const char* caption, float width, float height, bool fullscreen) {
 
 bool msgProc() {
     present();
+    printStart();
     getInputState();
     if (isTrigger(KEY_ESCAPE))closeWindow();
-    printStart();
     MSG msg;
     if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
@@ -90,7 +90,5 @@ bool msgProc() {
     return (msg.message != WM_QUIT);
 }
 
-void closeWindow() {
-    PostMessage(HWnd, WM_CLOSE, 0, 0);
-}
+
 

@@ -892,9 +892,9 @@ void clear(float r, float g, float b) {
     }
     else if (ColorMode == HSV) {
         COLOR c = hsv2rgb(r, g, b, ColorDenominator);
-        clearColor[0] = c.r / ColorDenominator;
-        clearColor[1] = c.g / ColorDenominator;
-        clearColor[2] = c.b / ColorDenominator;
+        clearColor[0] = c.r;
+        clearColor[1] = c.g;
+        clearColor[2] = c.b;
         clearColor[3] = 1.0f;
     }
     clear(clearColor);

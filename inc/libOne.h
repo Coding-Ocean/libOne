@@ -1,5 +1,6 @@
 #pragma once
 #include"framework.h"
+#include"window.h"
 #include"graphic.h"
 #include"input.h"
 #include"rand.h"

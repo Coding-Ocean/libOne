@@ -102,8 +102,9 @@ void initWindow( LPCTSTR caption, int clientWidth, int clientHeight ){
 
     ShowWindow( HWnd, SW_SHOW );
 }
-
 unsigned getTime(){
     return timeGetTime();
 }
-
+void closeWindow() {
+    PostMessage(HWnd, WM_CLOSE, 0, 0);
+}
