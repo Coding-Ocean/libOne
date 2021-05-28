@@ -34,6 +34,7 @@ void imageColor(float c);
 void point(float x, float y);
 void line(float sx, float sy, float ex, float ey);
 void arrow(float sx, float sy, float ex, float ey, float size = 30.0f);
+void arc(float x, float y, float startAngle, float angle, float radius);
 void rect(float x, float y, float w, float h);
 void rect(float x, float y, float w, float h, float angle);
 void circle(float x, float y, float diameter);

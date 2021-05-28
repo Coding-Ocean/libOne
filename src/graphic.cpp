@@ -1099,6 +1099,25 @@ void arrow(float sx, float sy, float ex, float ey, float size) {
     ay = -size * s + -sizeY * c;
     line(ex, ey, ex + ax, ey + ay);
 }
+void arc(float px, float py, float startAngle, float angle, float radius) {
+    float div = 5;
+    if (AngleMode == RADIANS)div *= TO_RAD;
+    int num = int(abs(angle) / div) + 1;
+    float divAngle = angle / num;
+
+    float sx = cos(startAngle) * radius;
+    float sy = -sin(startAngle) * radius;
+    line(px, py, px + sx, py + sy);
+    float ex = 0, ey = 0;
+    for (int i = 0; i < num; i++) {
+        ex = cos(startAngle + divAngle * (i + 1)) * radius;
+        ey = -sin(startAngle + divAngle * (i + 1)) * radius;
+        line(px + sx, py + sy, px + ex, py + ey);
+        sx = ex;
+        sy = ey;
+    }
+    line(px, py, px + ex, py + ey);
+}
 void point(float x, float y){
     World.identity();
     World.mulTranslate(x, y, 0);

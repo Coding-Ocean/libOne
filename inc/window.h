@@ -8,7 +8,7 @@ extern unsigned ActiveWindow;
 extern int MouseDelta;
 extern bool Windowed;
 extern float DeltaTime;
-#define dtime DeltaTime
+#define delta DeltaTime
 unsigned getTime();
 void initDeltaTime();
 void setDeltaTime();
