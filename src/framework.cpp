@@ -13,12 +13,16 @@
 #include"framework.h"
 
 void gmain();
+int CursorFlag = 1;
 
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, INT) {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     setRandSeed(timeGetTime());
     timeBeginPeriod(1);
     gmain();
+    if (CursorFlag == 0) {
+        ShowCursor(true);
+    }
     timeEndPeriod(1);
     freeGraphic();
     freeSound();
@@ -90,5 +94,8 @@ bool msgProc() {
     return (msg.message != WM_QUIT);
 }
 
-
+void hideCursor() {
+    CursorFlag = 0;
+    ShowCursor(false);
+}
 
