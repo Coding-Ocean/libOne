@@ -874,12 +874,20 @@ COLOR hsv2rgb(float h, float s, float v, float a) {
 }
 
 void clear(const COLOR& c) {
-    float clearColor[4] = { 
-        c.r / ColorDenominator, 
-        c.g / ColorDenominator, 
-        c.b / ColorDenominator, 
-        1.0f 
-    };
+    float clearColor[4];
+    if (ColorMode == RGB) {
+        clearColor[0] = c.r / ColorDenominator;
+        clearColor[1] = c.g / ColorDenominator;
+        clearColor[2] = c.b / ColorDenominator;
+        clearColor[3] = 1.0f;
+    }
+    else if (ColorMode == HSV) {
+        COLOR hsv = hsv2rgb(c.r, c.g, c.b, ColorDenominator);
+        clearColor[0] = hsv.r;
+        clearColor[1] = hsv.g;
+        clearColor[2] = hsv.b;
+        clearColor[3] = 1.0f;
+    }
     clear(clearColor);
 }
 void clear(float r, float g, float b) {
