@@ -9,8 +9,8 @@
 #include"VECTOR3.h"
 #include"stb_image_reader.h"
 #include"package.h"
-#include"graphic.h"
 #include"mathUtil.h"
+#include"graphic.h"
 void createDevice();
 void createRenderTarget();
 void setViewport();

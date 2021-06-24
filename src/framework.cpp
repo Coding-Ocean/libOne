@@ -26,6 +26,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, INT) {
     timeEndPeriod(1);
     freeGraphic();
     freeSound();
+    return 0;
 }
 
 void window(float width, float height, bool fullscreen){
