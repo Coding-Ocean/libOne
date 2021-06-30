@@ -1,6 +1,6 @@
 #pragma once
 #include"common.h"
-//#include"COLOR.h"
+#include"COLOR.h"
 #include"let.h"
 //for users
 extern float Width;
@@ -67,13 +67,3 @@ void initGraphic(int baseWidth, int baseHeight);
 void freeGraphic();
 void changeSize();
 void present();
-//
-struct COLOR {
-    float r, g, b, a;
-    COLOR();
-    COLOR(float r, float g, float b);
-    COLOR(float r, float g, float b, float a);
-    COLOR(unsigned c);
-    COLOR operator*(float f)const;
-};
-

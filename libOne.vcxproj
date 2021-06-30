@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="inc\COLOR.h" />
     <ClInclude Include="inc\common.h" />
     <ClInclude Include="inc\DATABASE.h" />
     <ClInclude Include="inc\DATA_ELEM.h" />
@@ -39,6 +40,7 @@
     <ClInclude Include="inc\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\COLOR.cpp" />
     <ClCompile Include="src\DATABASE.cpp" />
     <ClCompile Include="src\DATA_ELEM.cpp" />
     <ClCompile Include="src\FILE_BUFFER.cpp" />
