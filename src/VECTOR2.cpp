@@ -35,6 +35,23 @@ void VECTOR2::operator/=( float f ) {
     x /= f;
     y /= f;
 }
+float VECTOR2::mag() {
+    return sqrtf(x * x + y * y);
+}
+float VECTOR2::sqMag() {
+    return x * x + y * y;
+}
+VECTOR2 VECTOR2::normalize() {
+    float l = sqrtf(x * x + y * y);
+    if (l != 0.0f) {
+        x /= l;
+        y /= l;
+        return VECTOR2(x, y);
+    }
+    else {
+        return VECTOR2(0, 0);
+    }
+}
 
 //ÇQéüå≥ÉxÉNÉgÉãÇÃàÍî ä÷êî-------------------------------------------------------
 VECTOR2 operator*( float f, const VECTOR2& v ){
