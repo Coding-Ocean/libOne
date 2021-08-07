@@ -52,6 +52,29 @@ VECTOR2 VECTOR2::normalize() {
         return VECTOR2(0, 0);
     }
 }
+void VECTOR2::setMag(float mag) {
+    float l = sqrtf(x * x + y * y);
+    if (l != 0.0f) {
+        x /= l;
+        y /= l;
+        x *= mag;
+        y *= mag;
+    }
+}
+void VECTOR2::limmit(float lim){
+    float l = sqrtf(x * x + y * y);
+    if (l > lim) {
+        x /= l;
+        y /= l;
+        x *= lim;
+        y *= lim;
+    }
+}
+
+float VECTOR2::heading()
+{
+    return atan2(y,x);
+}
 
 //‚QŸŒ³ƒxƒNƒgƒ‹‚Ìˆê”ÊŠÖ”-------------------------------------------------------
 VECTOR2 operator*( float f, const VECTOR2& v ){
