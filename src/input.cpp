@@ -406,7 +406,12 @@ int isTrigger( INPUT_CODE inCode ){
     }
     return 0;
 }
-
+int isRelease(INPUT_CODE inCode) {
+    if (InputState[!Now][inCode] && InputState[Now][inCode]==0) {
+        return 1;
+    }
+    return 0;
+}
 extern const char* ButtonName[ MOUSE_X ]={
     "èdï°(ñ¢ê›íË)",
     "Ç`", "Ça", "Çb", "Çc", "Çd", 

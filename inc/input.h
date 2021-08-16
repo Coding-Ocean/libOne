@@ -31,6 +31,7 @@ void getJoyXbox();
 int inValue( enum INPUT_CODE inCode );
 int isPress( INPUT_CODE inCode );
 int isTrigger( INPUT_CODE inCode );
+int isRelease(INPUT_CODE inCode);
 
 extern const char* ButtonName[];
 INPUT_CODE getPressedKeyCode();
