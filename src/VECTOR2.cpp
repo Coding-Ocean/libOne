@@ -76,12 +76,12 @@ float VECTOR2::heading()
     return atan2(y,x);
 }
 
-float VECTOR2::dot(const VECTOR2 v)
+float VECTOR2::dot(const VECTOR2& v)const
 {
     return x * v.x + y * v.y;
 }
 
-float VECTOR2::cross(const VECTOR2 v)
+float VECTOR2::cross(const VECTOR2& v)const
 {
     return x * v.y - y * v.x;
 }
