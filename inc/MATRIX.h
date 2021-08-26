@@ -10,7 +10,7 @@ public:
     MATRIX();
     void identity();
     void mulTranslate(float x, float y, float z = 0);
-    void mulScale(float x, float y, float z = 1);
+    void mulScaling(float x, float y, float z = 1);
     void mulRotateX(float r);
     void mulRotateY(float r);
     void mulRotateZ(float r);

@@ -18,7 +18,7 @@ void MATRIX::mulTranslate( float x, float y, float z ){
 	_24 += _21 * x + _22 * y + _23 * z;
 	_34 += _31 * x + _32 * y + _33 * z;
 }
-void MATRIX::mulScale( float x, float y, float z ){
+void MATRIX::mulScaling( float x, float y, float z ){
 	_11 *= x;    _12 *= y;    _13 *= z;
 	_21 *= x;    _22 *= y;    _23 *= z;
 	_31 *= x;    _32 *= y;    _33 *= z;

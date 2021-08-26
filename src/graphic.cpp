@@ -1052,7 +1052,7 @@ void line(float sx, float sy, float ex, float ey){
     World.identity();
     World.mulTranslate(sx, sy, 0);
     World.mulRotateZ(r);
-    World.mulScale(length, StrokeWeight, 1);
+    World.mulScaling(length, StrokeWeight, 1);
     // Update constant buffer
     Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
     Context->UpdateSubresource(CbColor, 0, NULL, &StrokeColor, 0, 0);
@@ -1112,7 +1112,7 @@ void arc(float px, float py, float startAngle, float angle, float radius) {
 void point(float x, float y){
     World.identity();
     World.mulTranslate(x, y, 0);
-    World.mulScale(StrokeWeight, StrokeWeight, 1);
+    World.mulScaling(StrokeWeight, StrokeWeight, 1);
 
     // Update variables that change once per frame
     Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
@@ -1150,13 +1150,13 @@ void rect(float x, float y, float w, float h) {
     if (RectMode == CORNER) {
         World.identity();
         World.mulTranslate(x, y, 0);
-        World.mulScale(w, h, 1);
+        World.mulScaling(w, h, 1);
         World.mulTranslate(0, 0.5, 0);
     }
     else {
         World.identity();
         World.mulTranslate(x, y, 0);
-        World.mulScale(w, h, 1);
+        World.mulScaling(w, h, 1);
         World.mulTranslate(-0.5f, 0, 0);
     }
     // Update variables that change once per frame
@@ -1205,7 +1205,7 @@ void rect(float x, float y, float w, float h, float r) {
         World.mulTranslate(x, y, 0);
     }
     World.mulRotateZ(r);
-    World.mulScale(w, h, 1);
+    World.mulScaling(w, h, 1);
     World.mulTranslate(-0.5f, 0, 0);
     // Update variables that change once per frame
     Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
@@ -1236,7 +1236,7 @@ void rect(float x, float y, float w, float h, float r) {
 void circle(float x, float y, float diameter){
     World.identity();
     World.mulTranslate(x, y, 0);
-    World.mulScale(diameter, diameter, 1);
+    World.mulScaling(diameter, diameter, 1);
 
     // Update variables that change once per frame
     Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
@@ -1287,7 +1287,7 @@ void shape(int idx, float x, float y, float r, float size) {
     World.identity();
     World.mulTranslate(x, y, 0);
     World.mulRotateZ(r);
-    World.mulScale(size, size, 1);
+    World.mulScaling(size, size, 1);
     // Update variables that change once per frame
     Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
     Context->UpdateSubresource(CbColor, 0, NULL, &FillColor, 0, 0);
@@ -1514,7 +1514,7 @@ void image(int idx, float x, float y, float a, float s) {
         World.mulTranslate(x, y, 0);
     }
     World.mulRotateZ(a);
-    World.mulScale(texture.width*s, texture.height*s, 1);
+    World.mulScaling(texture.width*s, texture.height*s, 1);
     World.mulTranslate(-0.5f, 0, 0);
 
     // Update variables that change once per frame
@@ -1662,7 +1662,7 @@ void drawFont(CNTNR::FONT* font, float x, float y){
         World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, y - (float)font->gm.gmptGlyphOrigin.y + font->size, 0.0f);
     else
         World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, y - (float)font->gm.gmptGlyphOrigin.y, 0.0f);
-    World.mulScale((float)font->gm.gmBlackBoxX, (float)font->gm.gmBlackBoxY, 1.0f);
+    World.mulScaling((float)font->gm.gmBlackBoxX, (float)font->gm.gmBlackBoxY, 1.0f);
     World.mulTranslate(0, 0.5f, 0);
     // Update variables that change once per frame
     Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
