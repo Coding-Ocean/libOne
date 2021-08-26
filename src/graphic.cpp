@@ -1544,11 +1544,22 @@ void image(int idx, float x, float y, float a, float s) {
 void triangle(const VECTOR3& p0, const VECTOR3& p1, const VECTOR3& p2, 
     const COLOR& c0, const COLOR& c1, const COLOR& c2) {
     Vertices[0].pos = p0;
-    Vertices[0].color = c0 * 0.003921568627451f;
     Vertices[1].pos = p1;
-    Vertices[1].color = c1 * 0.003921568627451f;
     Vertices[2].pos = p2;
-    Vertices[2].color = c2 * 0.003921568627451f;
+    if (ColorMode == RGB) {
+        float ce = 1 / ColorDenominator;
+        Vertices[0].color = c0 * ce;
+        Vertices[1].color = c1 * ce;
+        Vertices[2].color = c2 * ce;
+    }
+    else {
+        Vertices[0].color = hsv2rgb(c0.r, c0.g, c0.b, c0.a);
+        Vertices[1].color = hsv2rgb(c1.r, c1.g, c1.b, c1.a);
+        Vertices[2].color = hsv2rgb(c2.r, c2.g, c2.b, c2.a);
+    }
+    //Vertices[0].color = c0 * 0.003921568627451f;
+    //Vertices[1].color = c1 * 0.003921568627451f;
+    //Vertices[2].color = c2 * 0.003921568627451f;
 
     Context->UpdateSubresource(TriangleVertexBuffer, 0, 0, Vertices, 0, 0);
     UINT stride = sizeof(VERTEX_PC);

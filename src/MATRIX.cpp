@@ -74,8 +74,8 @@ void MATRIX::mulRotateZ(float r) {
     _32 = -s * _31 + c * _32;
     _31 = tmp;
 }
-void MATRIX::view(const VECTOR3& camera, const VECTOR3& lookat, const VECTOR3& up) {
-    //カメラのローカル軸の座標を求める
+void MATRIX::camera(const VECTOR3& camera, const VECTOR3& lookat, const VECTOR3& up) {
+    //カメラのローカル軸座標を求める
     VECTOR3 z = normalize(camera - lookat);
     VECTOR3 x = normalize(cross(up, z));
     VECTOR3 y = cross(z, x);
@@ -84,7 +84,7 @@ void MATRIX::view(const VECTOR3& camera, const VECTOR3& lookat, const VECTOR3& u
     _31 = z.x;    _32 = z.y;    _33 = z.z;    _34 = z.x * -camera.x + z.y * -camera.y + z.z * -camera.z;
     _41 = 0;      _42 = 0;      _43 = 0;      _44 = 1;
 }
-void MATRIX::proj(float angle, float aspect, float n, float f) {
+void MATRIX::pers(float angle, float aspect, float n, float f) {
     float s = 1.0f / tan(angle * 0.5f);
     float a = -f / (-f + n);
     _11 = s / aspect;   _12 = 0;        _13 = 0;            _14 = 0;
