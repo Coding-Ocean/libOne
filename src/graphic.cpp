@@ -6,7 +6,7 @@
 #include"window.h"
 #include"MATRIX.h"
 #include"VECTOR2.h"
-#include"VECTOR3.h"
+#include"VECTOR.h"
 #include"stb_image_reader.h"
 #include"package.h"
 #include"mathUtil.h"
@@ -136,13 +136,13 @@ struct CNTNR {
         int numShapeVertices;
         ID3D11Buffer* shapeIndexBuffer;
         int numShapeIndices;
-        VECTOR3* shapeVertices;
+        VECTOR* shapeVertices;
         SHAPE(
             ID3D11Buffer* shapeVertexPosBuffer,
             int numShapeVertices,
             ID3D11Buffer* shapeIndexBuffer,
             int numShapeIndices,
-            VECTOR3* shapeVertices
+            VECTOR* shapeVertices
         ) {
             this->shapeVertexPosBuffer = shapeVertexPosBuffer;
             this->numShapeVertices = numShapeVertices;
@@ -588,16 +588,16 @@ void createShaderFromRes(){
 void createRectVertexPosBuffer(){
     //vertex for rect or line
     //rectと兼用だがline用に最適化した位置を設定する
-    VECTOR3 vertices[] =  {
-        VECTOR3(0.0f,  0.5f, 0.0f),
-        VECTOR3(0.0f, -0.5f, 0.0f),
-        VECTOR3(1.0f,  0.5f, 0.0f),
-        VECTOR3(1.0f, -0.5f, 0.0f),
+    VECTOR vertices[] =  {
+        VECTOR(0.0f,  0.5f, 0.0f),
+        VECTOR(0.0f, -0.5f, 0.0f),
+        VECTOR(1.0f,  0.5f, 0.0f),
+        VECTOR(1.0f, -0.5f, 0.0f),
     };
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(VECTOR3) * 4;
+    bd.ByteWidth = sizeof(VECTOR) * 4;
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -610,17 +610,17 @@ void createCircleVertexPosBuffer(){
     {
         const int num = 8;
         float rad = 3.141592f * 2 / num;
-        VECTOR3 circleVertices[num];
-        circleVertices[0] = VECTOR3(0.5f, 0, 0.0f);
+        VECTOR circleVertices[num];
+        circleVertices[0] = VECTOR(0.5f, 0, 0.0f);
         for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
-            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
-            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
         }
-        circleVertices[num - 1] = VECTOR3(-0.5f, 0, 0.0f);
+        circleVertices[num - 1] = VECTOR(-0.5f, 0, 0.0f);
         D3D11_BUFFER_DESC bd;
         ZeroMemory(&bd, sizeof(bd));
         bd.Usage = D3D11_USAGE_DEFAULT;
-        bd.ByteWidth = sizeof(VECTOR3) * (num);
+        bd.ByteWidth = sizeof(VECTOR) * (num);
         bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         bd.CPUAccessFlags = 0;
         D3D11_SUBRESOURCE_DATA InitData;
@@ -632,17 +632,17 @@ void createCircleVertexPosBuffer(){
     {
         const int num = 16;
         float rad = 3.141592f * 2 / num;
-        VECTOR3 circleVertices[num];
-        circleVertices[0] = VECTOR3(0.5f, 0, 0.0f);
+        VECTOR circleVertices[num];
+        circleVertices[0] = VECTOR(0.5f, 0, 0.0f);
         for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
-            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
-            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
         }
-        circleVertices[num - 1] = VECTOR3(-0.5f, 0, 0.0f);
+        circleVertices[num - 1] = VECTOR(-0.5f, 0, 0.0f);
         D3D11_BUFFER_DESC bd;
         ZeroMemory(&bd, sizeof(bd));
         bd.Usage = D3D11_USAGE_DEFAULT;
-        bd.ByteWidth = sizeof(VECTOR3) * (num);
+        bd.ByteWidth = sizeof(VECTOR) * (num);
         bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         bd.CPUAccessFlags = 0;
         D3D11_SUBRESOURCE_DATA InitData;
@@ -654,17 +654,17 @@ void createCircleVertexPosBuffer(){
     {
         const int num = 32;
         float rad = 3.141592f * 2 / num;
-        VECTOR3 circleVertices[num];
-        circleVertices[0] = VECTOR3(0.5f, 0, 0.0f);
+        VECTOR circleVertices[num];
+        circleVertices[0] = VECTOR(0.5f, 0, 0.0f);
         for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
-            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
-            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
         }
-        circleVertices[num - 1] = VECTOR3(-0.5f, 0, 0.0f);
+        circleVertices[num - 1] = VECTOR(-0.5f, 0, 0.0f);
         D3D11_BUFFER_DESC bd;
         ZeroMemory(&bd, sizeof(bd));
         bd.Usage = D3D11_USAGE_DEFAULT;
-        bd.ByteWidth = sizeof(VECTOR3) * (num);
+        bd.ByteWidth = sizeof(VECTOR) * (num);
         bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         bd.CPUAccessFlags = 0;
         D3D11_SUBRESOURCE_DATA InitData;
@@ -676,17 +676,17 @@ void createCircleVertexPosBuffer(){
     {
         const int num = 64;
         float rad = 3.141592f * 2 / num;
-        VECTOR3 circleVertices[num];
-        circleVertices[0] = VECTOR3(0.5f, 0, 0.0f);
+        VECTOR circleVertices[num];
+        circleVertices[0] = VECTOR(0.5f, 0, 0.0f);
         for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
-            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
-            circleVertices[j++] = VECTOR3(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
         }
-        circleVertices[num - 1] = VECTOR3(-0.5f, 0, 0.0f);
+        circleVertices[num - 1] = VECTOR(-0.5f, 0, 0.0f);
         D3D11_BUFFER_DESC bd;
         ZeroMemory(&bd, sizeof(bd));
         bd.Usage = D3D11_USAGE_DEFAULT;
-        bd.ByteWidth = sizeof(VECTOR3) * (num);
+        bd.ByteWidth = sizeof(VECTOR) * (num);
         bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         bd.CPUAccessFlags = 0;
         D3D11_SUBRESOURCE_DATA InitData;
@@ -698,7 +698,7 @@ void createCircleVertexPosBuffer(){
 }
 //3D勉強用
 struct VERTEX_PC {
-    VECTOR3 pos;
+    VECTOR pos;
     COLOR color;
 };
 struct VERTEX_PC Vertices[3];
@@ -720,9 +720,9 @@ void createTriangleVertexBuffer() {
 int createShape(struct SHAPE_VERTEX* vertices, int numVertices) {
     ID3D11Buffer* shapeVertexPosBuffer = 0;
     ID3D11Buffer* shapeIndexBuffer = 0;
-    VECTOR3* shapeVertices = 0;
+    VECTOR* shapeVertices = 0;
     //頂点バッファをつくる
-    shapeVertices = new VECTOR3[numVertices];
+    shapeVertices = new VECTOR[numVertices];
     for (int i = 0; i < numVertices; i++) {
         shapeVertices[i].x = vertices[i].x;
         shapeVertices[i].y = vertices[i].y;
@@ -731,7 +731,7 @@ int createShape(struct SHAPE_VERTEX* vertices, int numVertices) {
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(VECTOR3) * (numVertices);
+    bd.ByteWidth = sizeof(VECTOR) * (numVertices);
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -768,9 +768,9 @@ int createShape(struct SHAPE_VERTEX* vertices, int numVertices,
     long* indices, int numIndices) {
     ID3D11Buffer* shapeVertexPosBuffer = 0;
     ID3D11Buffer* shapeIndexBuffer = 0;
-    VECTOR3* shapeVertices = 0;
+    VECTOR* shapeVertices = 0;
     //頂点バッファをつくる
-    shapeVertices = new VECTOR3[numVertices];
+    shapeVertices = new VECTOR[numVertices];
     for (int i = 0; i < numVertices; i++) {
         shapeVertices[i].x = vertices[i].x;
         shapeVertices[i].y = vertices[i].y;
@@ -779,7 +779,7 @@ int createShape(struct SHAPE_VERTEX* vertices, int numVertices,
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(VECTOR3) * (numVertices);
+    bd.ByteWidth = sizeof(VECTOR) * (numVertices);
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
     D3D11_SUBRESOURCE_DATA InitData;
@@ -1059,7 +1059,7 @@ void line(float sx, float sy, float ex, float ey){
     Context->VSSetConstantBuffers(0, 1, &CbWorld);
     Context->PSSetConstantBuffers(3, 1, &CbColor);
     // Set vertex buffer
-    UINT stride = sizeof(VECTOR3), offset = 0;
+    UINT stride = sizeof(VECTOR), offset = 0;
     Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
     Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -1121,7 +1121,7 @@ void point(float x, float y){
     Context->PSSetConstantBuffers(3, 1, &CbColor);
 
     // Set vertex buffer
-    UINT stride = sizeof(VECTOR3), offset = 0;
+    UINT stride = sizeof(VECTOR), offset = 0;
     Context->IASetInputLayout(ShapeVertexLayout);
     Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
     Context->VSSetShader(ShapeVertexShader, NULL, 0);
@@ -1165,7 +1165,7 @@ void rect(float x, float y, float w, float h) {
     Context->VSSetConstantBuffers(0, 1, &CbWorld);
     Context->PSSetConstantBuffers(3, 1, &CbColor);
     // Set vertex buffer
-    UINT stride = sizeof(VECTOR3), offset = 0;
+    UINT stride = sizeof(VECTOR), offset = 0;
     Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
     Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -1213,7 +1213,7 @@ void rect(float x, float y, float w, float h, float r) {
     Context->VSSetConstantBuffers(0, 1, &CbWorld);
     Context->PSSetConstantBuffers(3, 1, &CbColor);
     // Set vertex buffer
-    UINT stride = sizeof(VECTOR3), offset = 0;
+    UINT stride = sizeof(VECTOR), offset = 0;
     Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
     Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
@@ -1222,10 +1222,10 @@ void rect(float x, float y, float w, float h, float r) {
     Context->Draw(4, 0);
     if (StrokeWeight > 0) {
         DrawEndPointFlag = false;
-        VECTOR3 lt = World * VECTOR3(0.0f, 0.5f, 0.0f);
-        VECTOR3 lb = World * VECTOR3(0.0f, -0.5f, 0.0f);
-        VECTOR3 rt = World * VECTOR3(1.0f, 0.5f, 0.0f);
-        VECTOR3 rb = World * VECTOR3(1.0f, -0.5f, 0.0f);
+        VECTOR lt = World * VECTOR(0.0f, 0.5f, 0.0f);
+        VECTOR lb = World * VECTOR(0.0f, -0.5f, 0.0f);
+        VECTOR rt = World * VECTOR(1.0f, 0.5f, 0.0f);
+        VECTOR rb = World * VECTOR(1.0f, -0.5f, 0.0f);
         line(lt.x, lt.y, lb.x, lb.y);
         line(lb.x, lb.y, rb.x, rb.y);
         line(rb.x, rb.y, rt.x, rt.y);
@@ -1245,7 +1245,7 @@ void circle(float x, float y, float diameter){
     Context->PSSetConstantBuffers(3, 1, &CbColor);
 
     // Set vertex buffer
-    UINT stride = sizeof(VECTOR3), offset = 0;
+    UINT stride = sizeof(VECTOR), offset = 0;
     Context->IASetInputLayout(ShapeVertexLayout);
     Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
@@ -1294,7 +1294,7 @@ void shape(int idx, float x, float y, float r, float size) {
     Context->VSSetConstantBuffers(0, 1, &CbWorld);
     Context->PSSetConstantBuffers(3, 1, &CbColor);
     // Set vertex buffer
-    UINT stride = sizeof(VECTOR3), offset = 0;
+    UINT stride = sizeof(VECTOR), offset = 0;
     Context->IASetVertexBuffers(0, 1, &sh.shapeVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
     Context->IASetIndexBuffer(sh.shapeIndexBuffer, DXGI_FORMAT_R32_UINT, 0); 
@@ -1307,7 +1307,7 @@ void shape(int idx, float x, float y, float r, float size) {
         DrawEndPointFlag = false;
         //line内でWorldを変更するためローカルコピーを使用
         MATRIX world = World;
-        VECTOR3 o, s, e;
+        VECTOR o, s, e;
         o = world * sh.shapeVertices[0];
         s = o;
         for (int i = 0; i < sh.numShapeVertices-1; i++) {
@@ -1328,7 +1328,7 @@ void shape(int idx, const class MATRIX& world) {
     Context->VSSetConstantBuffers(0, 1, &CbWorld);
     Context->PSSetConstantBuffers(3, 1, &CbColor);
     // Set vertex buffer
-    UINT stride = sizeof(VECTOR3), offset = 0;
+    UINT stride = sizeof(VECTOR), offset = 0;
     Context->IASetVertexBuffers(0, 1, &sh.shapeVertexPosBuffer, &stride, &offset);
     Context->IASetInputLayout(ShapeVertexLayout);
     Context->IASetIndexBuffer(sh.shapeIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
@@ -1339,7 +1339,7 @@ void shape(int idx, const class MATRIX& world) {
     // Outline of shape
     if (StrokeWeight > 0) {
         DrawEndPointFlag = false;
-        VECTOR3 o, s, e;
+        VECTOR o, s, e;
         o = world * sh.shapeVertices[0];
         s = o;
         for (int i = 0; i < sh.numShapeVertices - 1; i++) {
@@ -1524,7 +1524,7 @@ void image(int idx, float x, float y, float a, float s) {
     Context->PSSetConstantBuffers(3, 1, &CbColor);
 
     // Set vertex buffer
-    UINT stride = sizeof(VECTOR3); UINT offset = 0;
+    UINT stride = sizeof(VECTOR); UINT offset = 0;
     Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
     stride = sizeof(VECTOR2);
     if (texture.texCoord == 0)
@@ -1541,7 +1541,7 @@ void image(int idx, float x, float y, float a, float s) {
     Context->PSSetShader(ImagePixelShader, NULL, 0);
     Context->Draw(4, 0);
 }
-void triangle(const VECTOR3& p0, const VECTOR3& p1, const VECTOR3& p2, 
+void triangle(const VECTOR& p0, const VECTOR& p1, const VECTOR& p2, 
     const COLOR& c0, const COLOR& c1, const COLOR& c2) {
     Vertices[0].pos = p0;
     Vertices[1].pos = p1;
@@ -1670,7 +1670,7 @@ void drawFont(CNTNR::FONT* font, float x, float y){
     Context->VSSetConstantBuffers(0, 1, &CbWorld);
     Context->PSSetConstantBuffers(3, 1, &CbColor);
     // Set vertex buffer
-    UINT stride = sizeof(VECTOR3); UINT offset = 0;
+    UINT stride = sizeof(VECTOR); UINT offset = 0;
     Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
     stride = sizeof(VECTOR2);
     Context->IASetVertexBuffers(1, 1, &TexCoordBuffer, &stride, &offset);

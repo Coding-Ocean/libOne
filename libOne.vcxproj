@@ -35,8 +35,8 @@
     <ClInclude Include="inc\rand.h" />
     <ClInclude Include="inc\sound.h" />
     <ClInclude Include="inc\stb_image_reader.h" />
+    <ClInclude Include="inc\VECTOR.h" />
     <ClInclude Include="inc\VECTOR2.h" />
-    <ClInclude Include="inc\VECTOR3.h" />
     <ClInclude Include="inc\window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -54,8 +54,8 @@
     <ClCompile Include="src\rand.cpp" />
     <ClCompile Include="src\sound.cpp" />
     <ClCompile Include="src\stb_image_reader.cpp" />
+    <ClCompile Include="src\VECTOR.cpp" />
     <ClCompile Include="src\VECTOR2.cpp" />
-    <ClCompile Include="src\VECTOR3.cpp" />
     <ClCompile Include="src\window.cpp" />
   </ItemGroup>
   <ItemGroup>
