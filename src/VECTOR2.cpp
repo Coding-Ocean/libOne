@@ -1,4 +1,5 @@
 #include <math.h>
+#include "mathUtil.h"
 #include "VECTOR2.h"
 VECTOR2::VECTOR2( float x, float y ){
 	this->x = x;
