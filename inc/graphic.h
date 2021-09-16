@@ -48,8 +48,8 @@ int loadImageFromRes(const char* resname);
 int cutImage(int idx, int left, int top, int w, int h);
 void divideImage(int img, int cols, int rows, int w, int h, int* imgs);
 void image(int idx, float x, float y, float angle = 0, float size = 1);
-void triangle(const class VECTOR& p0, const class VECTOR& p1, const class VECTOR& p2,
-    const COLOR& c0, const COLOR& c1, const COLOR& c2);
+void triangle3D(const class VECTOR& p0, const class VECTOR& p1, const class VECTOR& p2,
+            const COLOR& c0=COLOR(), const COLOR& c1=COLOR(), const COLOR& c2=COLOR());
 void font(const char* fontname);
 void textSize(float size);
 void text(const char* str, float x, float y);
