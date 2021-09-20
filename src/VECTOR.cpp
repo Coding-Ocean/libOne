@@ -3,6 +3,9 @@
 VECTOR::VECTOR( float x, float y, float z ){
     this->x = x;    this->y = y;    this->z = z;
 }
+void VECTOR::set(float x, float y, float z){
+    this->x = x;    this->y = y;    this->z = z;
+}
 VECTOR VECTOR::operator-( const VECTOR& v ) const{
     return VECTOR( x - v.x,  y - v.y,  z - v.z );
 }

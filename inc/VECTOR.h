@@ -3,6 +3,7 @@ class VECTOR{
 public:
     float x, y, z;
     VECTOR( float x=0, float y=0, float z=0 );
+    void set(float x, float y, float z=0);
     VECTOR operator+( const VECTOR& v ) const;
     VECTOR operator-( const VECTOR& v ) const;
     VECTOR operator*( float f ) const;

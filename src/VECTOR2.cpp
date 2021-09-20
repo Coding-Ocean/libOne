@@ -2,8 +2,10 @@
 #include "mathUtil.h"
 #include "VECTOR2.h"
 VECTOR2::VECTOR2( float x, float y ){
-	this->x = x;
-	this->y = y;
+	this->x = x;	this->y = y;
+}
+void VECTOR2::set(float x, float y){
+    this->x = x;    this->y = y;
 }
 VECTOR2 VECTOR2::operator+( const VECTOR2& v ) const {
     return VECTOR2( x + v.x, y + v.y );
