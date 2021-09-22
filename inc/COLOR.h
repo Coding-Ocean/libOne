@@ -6,4 +6,6 @@ struct COLOR {
     COLOR(float r, float g, float b, float a);
     COLOR(unsigned c);
     COLOR operator*(float f)const;
+    void set(float r, float g, float b);
+    void set(float r, float g, float b, float a);
 };

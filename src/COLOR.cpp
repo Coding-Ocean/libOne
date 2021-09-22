@@ -16,5 +16,11 @@ COLOR::COLOR(unsigned c) {
     b = float(c & 0x000000ff);
 }
 COLOR COLOR::operator*(float f)const {
-    return(COLOR(r * f, g * f, b * f, a));
+    return(COLOR(r * f, g * f, b * f, a));//ƒAƒ‹ƒtƒ@‚Í‚»‚Ì‚Ü‚Ü
+}
+void COLOR::set(float r, float g, float b) {
+    this->r = r; this->g = g; this->b = b; this->a = ColorDenominator;
+}
+void COLOR::set(float r, float g, float b, float a) {
+    this->r = r; this->g = g; this->b = b; this->a = a;
 }
