@@ -61,12 +61,23 @@ void MATRIX::camera(const VECTOR& camera, const VECTOR& lookat, const VECTOR& up
 }
 void MATRIX::pers(float angle, float aspect, float n, float f) {
     float s = 1.0f / tan(angle * 0.5f);
+    float a = f / (-f + n);
+    _11 = s / aspect;   _12 = 0;        _13 = 0;            _14 = 0;
+    _21 = 0;            _22 = s;        _23 = 0;            _24 = 0;
+    _31 = 0;            _32 = 0;        _33 = a;            _34 = a * n;
+    _41 = 0;            _42 = 0;        _43 = -1;           _44 = 0;
+}
+/*
+//nとｆをマイナス値で指定する
+void MATRIX::pers(float angle, float aspect, float n, float f) {
+    float s = 1.0f / tan(angle * 0.5f);
     float a = -f / (-f + n);
     _11 = s / aspect;   _12 = 0;        _13 = 0;            _14 = 0;
     _21 = 0;            _22 = s;        _23 = 0;            _24 = 0;
     _31 = 0;            _32 = 0;        _33 = -a;            _34 = a * n;
     _41 = 0;            _42 = 0;        _43 = -1;            _44 = 0;
 }
+*/
 void MATRIX::ortho(float l, float r, float b, float t, float n, float f) {
     _11 = 2.0f / (r - l);   _12 = 0.0f;             _13 = 0.0f;               _14 = -(r + l) / (r - l);
     _21 = 0.0f;             _22 = 2.0f / (t - b);   _23 = 0.0f;               _24 = -(t + b) / (t - b);
@@ -167,6 +178,7 @@ VECTOR MATRIX::operator*(const VECTOR& v) const {
     tmp.y   = _21 * v.x + _22 * v.y + _23 * v.z + _24;
     tmp.z   = _31 * v.x + _32 * v.y + _33 * v.z + _34;
     float w = _41 * v.x + _42 * v.y + _43 * v.z + _44;
+    if (w < 0)w *= -1;
     return  tmp / w;
 }
 
