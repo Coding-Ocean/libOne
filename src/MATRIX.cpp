@@ -167,7 +167,7 @@ VECTOR MATRIX::operator*(const VECTOR& v) const {
     tmp.y   = _21 * v.x + _22 * v.y + _23 * v.z + _24;
     tmp.z   = _31 * v.x + _32 * v.y + _33 * v.z + _34;
     float w = _41 * v.x + _42 * v.y + _43 * v.z + _44;
-    if (w < 0)w *= -1;
+    if (w < 0) w *= -1;
     return  tmp / w;
 }
 
