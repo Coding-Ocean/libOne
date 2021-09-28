@@ -1,12 +1,6 @@
 #include "mathUtil.h"
 #include "MATRIX.h"
 
-//MATRIX::MATRIX(){
-//    _11 = 1;     _12 = 0;     _13 = 0;     _14 = 0;      
-//    _21 = 0;     _22 = 1;     _23 = 0;     _24 = 0;      
-//    _31 = 0;     _32 = 0;     _33 = 1;     _34 = 0;      
-//    _41 = 0;     _42 = 0;     _43 = 0;     _44 = 1;    
-//}
 void MATRIX::identity() {
     _11 = 1;     _12 = 0;     _13 = 0;     _14 = 0;    
     _21 = 0;     _22 = 1;     _23 = 0;     _24 = 0;    
@@ -50,7 +44,7 @@ void MATRIX::rotateX(float angle) {
     _41 = 0;     _42 = 0;     _43 = 0;     _44 = 1;    
 }
 void MATRIX::camera(const VECTOR& camera, const VECTOR& lookat, const VECTOR& up) {
-    //カメラのローカル軸座標を求める
+    //カメラのローカル軸座標を求める(正規直交基底ベクトル）
     VECTOR z = normalize(camera - lookat);
     VECTOR x = normalize(cross(up, z));
     VECTOR y = cross(z, x);
@@ -62,9 +56,10 @@ void MATRIX::camera(const VECTOR& camera, const VECTOR& lookat, const VECTOR& up
 void MATRIX::pers(float angle, float aspect, float n, float f) {
     float s = 1.0f / tan(angle * 0.5f);
     float a = f / (-f + n);
+    float b = a * n;
     _11 = s / aspect;   _12 = 0;        _13 = 0;            _14 = 0;
     _21 = 0;            _22 = s;        _23 = 0;            _24 = 0;
-    _31 = 0;            _32 = 0;        _33 = a;            _34 = a * n;
+    _31 = 0;            _32 = 0;        _33 = a;            _34 = b;
     _41 = 0;            _42 = 0;        _43 = -1;           _44 = 0;
 }
 void MATRIX::ortho(float l, float r, float b, float t, float n, float f) {
@@ -166,7 +161,7 @@ VECTOR MATRIX::operator*(const VECTOR& v) const {
     tmp.x   = _11 * v.x + _12 * v.y + _13 * v.z + _14;
     tmp.y   = _21 * v.x + _22 * v.y + _23 * v.z + _24;
     tmp.z   = _31 * v.x + _32 * v.y + _33 * v.z + _34;
-    float w = _41 * v.x + _42 * v.y + _43 * v.z + _44;
+    float w = _43 * v.z + _44;
     if (w < 0) w *= -1;
     return  tmp / w;
 }
