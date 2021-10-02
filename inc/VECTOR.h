@@ -27,11 +27,5 @@ public:
 VECTOR operator* (float f, const VECTOR& v);// VECTOR = float * VECTOR
 VECTOR normalize( const VECTOR& a );
 float dot( const VECTOR& a, const VECTOR& b );
+float crossZ(const VECTOR& a, const VECTOR& b);//äOêœZê¨ï™ÇÃÇ›åvéZ(ÇQÇcóp)
 VECTOR cross( const VECTOR& a, const VECTOR& b );
-
-//float length( const VECTOR& a );
-//float sqLength(const VECTOR& a);
-//float length2(const VECTOR& a);
-
-
-

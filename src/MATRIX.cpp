@@ -43,14 +43,14 @@ void MATRIX::rotateX(float angle) {
     _31 = 0;     _32 = s;     _33 = c;     _34 = 0;    
     _41 = 0;     _42 = 0;     _43 = 0;     _44 = 1;    
 }
-void MATRIX::camera(const VECTOR& camera, const VECTOR& lookat, const VECTOR& up) {
-    //カメラのローカル軸座標を求める(正規直交基底ベクトル）
-    VECTOR z = normalize(camera - lookat);
+void MATRIX::camera(const VECTOR& camPos, const VECTOR& lookat, const VECTOR& up) {
+    //カメラのローカル軸座標を求める(正規直交ベクトル）
+    VECTOR z = normalize(camPos - lookat);
     VECTOR x = normalize(cross(up, z));
     VECTOR y = cross(z, x);
-    _11 = x.x;    _12 = x.y;    _13 = x.z;    _14 = x.x * -camera.x + x.y * -camera.y + x.z * -camera.z;
-    _21 = y.x;    _22 = y.y;    _23 = y.z;    _24 = y.x * -camera.x + y.y * -camera.y + y.z * -camera.z;
-    _31 = z.x;    _32 = z.y;    _33 = z.z;    _34 = z.x * -camera.x + z.y * -camera.y + z.z * -camera.z;
+    _11 = x.x;    _12 = x.y;    _13 = x.z;    _14 = x.x * -camPos.x + x.y * -camPos.y + x.z * -camPos.z;
+    _21 = y.x;    _22 = y.y;    _23 = y.z;    _24 = y.x * -camPos.x + y.y * -camPos.y + y.z * -camPos.z;
+    _31 = z.x;    _32 = z.y;    _33 = z.z;    _34 = z.x * -camPos.x + z.y * -camPos.y + z.z * -camPos.z;
     _41 = 0;      _42 = 0;      _43 = 0;      _44 = 1;
 }
 void MATRIX::pers(float angle, float aspect, float n, float f) {
@@ -158,11 +158,14 @@ MATRIX MATRIX::operator*(const MATRIX& m) const {
 
 VECTOR MATRIX::operator*(const VECTOR& v) const {
     VECTOR tmp;
-    tmp.x   = _11 * v.x + _12 * v.y + _13 * v.z + _14;
-    tmp.y   = _21 * v.x + _22 * v.y + _23 * v.z + _24;
-    tmp.z   = _31 * v.x + _32 * v.y + _33 * v.z + _34;
-    float w = _43 * v.z + _44;
-    if (w < 0) w *= -1;
-    return  tmp / w;
+    tmp.x = _11 * v.x + _12 * v.y + _13 * v.z + _14;
+    tmp.y = _21 * v.x + _22 * v.y + _23 * v.z + _24;
+    tmp.z = _31 * v.x + _32 * v.y + _33 * v.z + _34;
+    //projとの掛け算
+    if (_43 < 0) {//応用がきかないが、これでproj matと判断
+        return tmp / (v.z < 0 ? -v.z : v.z);
+    }
+    //proj以外の掛け算
+    return tmp;
 }
 

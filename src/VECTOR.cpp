@@ -89,7 +89,7 @@ VECTOR VECTOR::cross(const VECTOR& v) const{
 VECTOR operator*(float f, const VECTOR& v) {
     return VECTOR(f * v.x, f * v.y, f * v.z);
 }
-//”ñ”j‰ó
+//”ñ”j‰ónoramalize
 VECTOR normalize( const VECTOR& a ){
     float l = sqrtf( a.x * a.x + a.y * a.y + a.z * a.z );
     if (l > 0) {
@@ -100,6 +100,9 @@ VECTOR normalize( const VECTOR& a ){
 float dot( const VECTOR& a, const VECTOR& b){
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
+float crossZ(const VECTOR& a, const VECTOR& b){
+    return a.x * b.y - a.y * b.x;
+}
 VECTOR cross( const VECTOR& a, const VECTOR& b ){
     return VECTOR(
         a.y * b.z - a.z * b.y,
@@ -107,17 +110,6 @@ VECTOR cross( const VECTOR& a, const VECTOR& b ){
         a.x * b.y - a.y * b.x
     );
 }
-//float length( const VECTOR& a ){
-//    return sqrtf( a.x * a.x + a.y * a.y + a.z * a.z );
-//}
-//
-//float length2(const VECTOR& a){
-//    return a.x * a.x + a.y * a.y + a.z * a.z;
-//}
-//
-//float sqLength(const VECTOR& a){
-//    return a.x * a.x + a.y * a.y + a.z * a.z;
-//}
 
 
 
