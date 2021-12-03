@@ -20,3 +20,11 @@
 //#else
 //  #define WARNING(flag,msg1,msg2) {}
 //#endif
+
+void halt( const char* filename, int line, const char* message );
+#define STRONG_ASSERT( exp ) ( ( !! ( exp ) ) || ( halt( __FILE__, __LINE__, #exp ), 0 ) ) //‚±‚Ìs‚ÌˆÓ–¡‚ğ—‰ğ‚·‚é‚Ì‚Í‘Š“–“ï‚µ‚¢
+#ifdef _DEBUG
+    #define ASSERT( exp ) ( ( !! ( exp ) ) || ( halt( __FILE__, __LINE__, #exp ), 0 ) )
+#else
+    #define ASSERT( exp )
+#endif

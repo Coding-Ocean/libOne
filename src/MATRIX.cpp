@@ -1,5 +1,6 @@
-#include "mathUtil.h"
-#include "MATRIX.h"
+#include"mathUtil.h"
+#include"VECTOR.h"
+#include"MATRIX.h"
 
 void MATRIX::identity() {
     _11 = 1;     _12 = 0;     _13 = 0;     _14 = 0;    
@@ -74,10 +75,20 @@ void MATRIX::mulTranslate( float x, float y, float z ){
 	_24 += _21 * x + _22 * y + _23 * z;
 	_34 += _31 * x + _32 * y + _33 * z;
 }
+void MATRIX::mulTranslate(const VECTOR& a) {
+    _14 += _11 * a.x + _12 * a.y + _13 * a.z;
+    _24 += _21 * a.x + _22 * a.y + _23 * a.z;
+    _34 += _31 * a.x + _32 * a.y + _33 * a.z;
+}
 void MATRIX::mulScaling( float x, float y, float z ){
 	_11 *= x;    _12 *= y;    _13 *= z;
 	_21 *= x;    _22 *= y;    _23 *= z;
 	_31 *= x;    _32 *= y;    _33 *= z;
+}
+void MATRIX::mulScaling(const VECTOR& a) {
+    _11 *= a.x;  _12 *= a.y;  _13 *= a.z;
+    _21 *= a.x;  _22 *= a.y;  _23 *= a.z;
+    _31 *= a.x;  _32 *= a.y;  _33 *= a.z;
 }
 void MATRIX::mulRotateX(float r) {
     float c = cos(r);

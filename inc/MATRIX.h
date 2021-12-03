@@ -1,5 +1,6 @@
 #pragma once
-#include"VECTOR.h"
+//#include"VECTOR.h"
+class VECTOR;
 
 class MATRIX {
 public:
@@ -20,7 +21,9 @@ public:
     void ortho(float l, float r, float b, float t, float n, float f);
     //çsóÒìØémÇÃä|ÇØéZ
     void mulTranslate(float x, float y, float z = 0);
+    void mulTranslate(const VECTOR& a);
     void mulScaling(float x, float y, float z = 1);
+    void mulScaling(const VECTOR& a);
     void mulRotateZ(float angle);
     void mulRotateY(float angle);
     void mulRotateX(float angle);

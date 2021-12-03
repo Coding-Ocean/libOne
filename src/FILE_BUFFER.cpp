@@ -75,7 +75,7 @@ const char* FILE_BUFFER::readString(){
     }
     return String;
 }
-void FILE_BUFFER::readOnAssumption( char* s ){
+void FILE_BUFFER::readOnAssumption( const char* s ){
     readString();
     if( strcmp( s, String ) != 0 ){
         char tmp1[256]="“Ç‚Þ‚Æ‘z’è‚µ‚½•¶Žš—ñ:";

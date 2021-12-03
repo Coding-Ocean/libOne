@@ -21,6 +21,20 @@
   <ItemGroup>
     <ClInclude Include="inc\COLOR.h" />
     <ClInclude Include="inc\common.h" />
+    <ClInclude Include="inc\CONTAINER\ANIMATION.h" />
+    <ClInclude Include="inc\CONTAINER\ANIMATION_NODE.h" />
+    <ClInclude Include="inc\CONTAINER\BATCH.h" />
+    <ClInclude Include="inc\CONTAINER\CONTAINER.h" />
+    <ClInclude Include="inc\CONTAINER\CURVE.h" />
+    <ClInclude Include="inc\CONTAINER\DATA.h" />
+    <ClInclude Include="inc\CONTAINER\INDEX_BUFFER.h" />
+    <ClInclude Include="inc\CONTAINER\NODE.h" />
+    <ClInclude Include="inc\CONTAINER\NODE_ORIGIN.h" />
+    <ClInclude Include="inc\CONTAINER\TEXTURE.h" />
+    <ClInclude Include="inc\CONTAINER\TREE.h" />
+    <ClInclude Include="inc\CONTAINER\TREE_ORIGIN.h" />
+    <ClInclude Include="inc\CONTAINER\VERTEX_BUFFER.h" />
+    <ClInclude Include="inc\CONTAINER\VERTEX_FORMATS.h" />
     <ClInclude Include="inc\DATABASE.h" />
     <ClInclude Include="inc\DATA_ELEM.h" />
     <ClInclude Include="inc\FILE_BUFFER.h" />
@@ -31,16 +45,42 @@
     <ClInclude Include="inc\libOne.h" />
     <ClInclude Include="inc\mathUtil.h" />
     <ClInclude Include="inc\MATRIX.h" />
+    <ClInclude Include="inc\NAME.h" />
     <ClInclude Include="inc\package.h" />
     <ClInclude Include="inc\rand.h" />
+    <ClInclude Include="inc\SHADER\LAMBERT.h" />
+    <ClInclude Include="inc\SHADER\SHADER.h" />
     <ClInclude Include="inc\sound.h" />
     <ClInclude Include="inc\stb_image_reader.h" />
+    <ClInclude Include="inc\Thread\EVENT.h" />
+    <ClInclude Include="inc\Thread\LOADER.h" />
+    <ClInclude Include="inc\Thread\MUTEX.h" />
+    <ClInclude Include="inc\Thread\ReferenceType.h" />
+    <ClInclude Include="inc\Thread\ReferenceTypeTemplate.h" />
+    <ClInclude Include="inc\Thread\SEMAPHORE.h" />
+    <ClInclude Include="inc\Thread\THREAD.h" />
+    <ClInclude Include="inc\Thread\THREAD_MANAGER.h" />
+    <ClInclude Include="inc\Thread\THREAD_MANAGER_IMPL.h" />
     <ClInclude Include="inc\VECTOR.h" />
     <ClInclude Include="inc\VECTOR2.h" />
     <ClInclude Include="inc\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="common.cpp" />
     <ClCompile Include="src\COLOR.cpp" />
+    <ClCompile Include="src\CONTAINER\ANIMATION.cpp" />
+    <ClCompile Include="src\CONTAINER\ANIMATION_NODE.cpp" />
+    <ClCompile Include="src\CONTAINER\BATCH.cpp" />
+    <ClCompile Include="src\CONTAINER\CONTAINER.cpp" />
+    <ClCompile Include="src\CONTAINER\CURVE.cpp" />
+    <ClCompile Include="src\CONTAINER\DATA.cpp" />
+    <ClCompile Include="src\CONTAINER\INDEX_BUFFER.cpp" />
+    <ClCompile Include="src\CONTAINER\NODE.cpp" />
+    <ClCompile Include="src\CONTAINER\NODE_ORIGIN.cpp" />
+    <ClCompile Include="src\CONTAINER\TEXTURE.cpp" />
+    <ClCompile Include="src\CONTAINER\TREE.cpp" />
+    <ClCompile Include="src\CONTAINER\TREE_ORIGIN.cpp" />
+    <ClCompile Include="src\CONTAINER\VERTEX_BUFFER.cpp" />
     <ClCompile Include="src\DATABASE.cpp" />
     <ClCompile Include="src\DATA_ELEM.cpp" />
     <ClCompile Include="src\FILE_BUFFER.cpp" />
@@ -50,10 +90,18 @@
     <ClCompile Include="src\let.cpp" />
     <ClCompile Include="src\mathUtil.cpp" />
     <ClCompile Include="src\MATRIX.cpp" />
+    <ClCompile Include="src\NAME.cpp" />
     <ClCompile Include="src\package.cpp" />
     <ClCompile Include="src\rand.cpp" />
+    <ClCompile Include="src\SHADER\LAMBERT.cpp" />
     <ClCompile Include="src\sound.cpp" />
     <ClCompile Include="src\stb_image_reader.cpp" />
+    <ClCompile Include="src\Thread\EVENT.cpp" />
+    <ClCompile Include="src\Thread\LOADER.cpp" />
+    <ClCompile Include="src\Thread\MUTEX.cpp" />
+    <ClCompile Include="src\Thread\SEMAPHORE.cpp" />
+    <ClCompile Include="src\Thread\THREAD.cpp" />
+    <ClCompile Include="src\Thread\THREAD_MANAGER.cpp" />
     <ClCompile Include="src\VECTOR.cpp" />
     <ClCompile Include="src\VECTOR2.cpp" />
     <ClCompile Include="src\window.cpp" />
@@ -86,6 +134,31 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="shader\LambertPS.hlsl">
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableDebuggingInformation>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">res\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">res\%(Filename).cso</ObjectFileOutput>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="shader\LambertSkinVS.hlsl">
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">res\%(Filename).cso</ObjectFileOutput>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableDebuggingInformation>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">res\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="shader\LambertVS.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableDebuggingInformation>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">res\%(Filename).cso</ObjectFileOutput>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">res\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="shader\ShapePixelShader.hlsl">
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DisableOptimizations>
@@ -134,6 +207,9 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">res\%(Filename).cso</ObjectFileOutput>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\LambertCB.hlsli" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

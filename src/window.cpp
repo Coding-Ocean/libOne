@@ -9,6 +9,7 @@ extern float Aspect = 0;
 extern unsigned ActiveWindow = 0;
 extern int MouseDelta = 0;
 extern HWND HWnd = 0;
+unsigned ThreadId = 0;
 
 //メッセージ処理
 LRESULT CALLBACK winProc( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp ) {	
@@ -35,7 +36,9 @@ LRESULT CALLBACK winProc( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp ) {
 }
 
 void initWindow( LPCTSTR caption, int clientWidth, int clientHeight ){
-	//ウィンドウクラスを登録する
+    ThreadId = GetCurrentThreadId();
+
+    //ウィンドウクラスを登録する
 	HINSTANCE hinst = GetModuleHandle( 0 );
     WNDCLASS wc = {0, winProc, 0, 0, hinst,
         LoadIcon( hinst, _T("MYICON") ),
@@ -118,4 +121,8 @@ void setDeltaTime() {
     unsigned int  curTime = timeGetTime();
     DeltaTime = (curTime - PreTime)/1000.0f;
     PreTime = curTime;
+}
+
+bool isMainThread() {
+    return (GetCurrentThreadId() == ThreadId);
 }

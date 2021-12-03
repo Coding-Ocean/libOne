@@ -155,20 +155,20 @@ struct CNTNR {
 
     ~CNTNR() {
         if (textures.size() > 0) {
-            for (int i = textures.size() - 1; i >= 0; i--) {
+            for (int i = (int)textures.size() - 1; i >= 0; i--) {
                 if (textures.at(i).texCoord == 0)textures.at(i).obj->Release();
                 if (textures.at(i).texCoord)textures.at(i).texCoord->Release();
                 textures.pop_back();
             }
         }
         if (fonts.size() > 0) {
-            for (int i = fonts.size() - 1; i >= 0; i--) {
+            for (int i = (int)fonts.size() - 1; i >= 0; i--) {
                 fonts.at(i).texObj->Release();
                 fonts.pop_back();
             }
         }
         if (shapes.size() > 0) {
-            for (int i = shapes.size() - 1; i >= 0; i--) {
+            for (int i = (int)shapes.size() - 1; i >= 0; i--) {
                 shapes.at(i).shapeVertexPosBuffer->Release();
                 shapes.at(i).shapeIndexBuffer->Release();
                 delete[] shapes.at(i).shapeVertices;
@@ -211,7 +211,7 @@ void freeGraphic() {
     SAFE_RELEASE(Context);
     SAFE_RELEASE(Device);
 }
-
+void createDev();
 void initGraphic(int baseWidth, int baseHeight) {
     //基準となる幅と高さ
     if (baseWidth == 0 || baseHeight == 0) {
@@ -222,8 +222,8 @@ void initGraphic(int baseWidth, int baseHeight) {
         Width = (float)baseWidth;
         Height = (float)baseHeight;
     }
-    createDevice();
-    createRenderTarget();
+    createDev();
+    //createRenderTarget();
     setViewport();
 
     createDepthStencielState();
@@ -241,6 +241,95 @@ void initGraphic(int baseWidth, int baseHeight) {
 
     Cntnr = new CNTNR;
     font("BIZ UDGothic");
+}
+void createDev() {
+    //デバイスとスワップチェインを創る
+    HRESULT hr = S_OK;
+
+    HWND hWnd = FindWindow(CLASS_NAME, 0);
+
+    unsigned createDeviceFlags = 0;
+
+    D3D_DRIVER_TYPE driverTypes[] = {
+        D3D_DRIVER_TYPE_HARDWARE,
+        D3D_DRIVER_TYPE_WARP,
+        D3D_DRIVER_TYPE_REFERENCE,
+    };
+    unsigned numDriverTypes = ARRAYSIZE(driverTypes);
+
+    D3D_FEATURE_LEVEL featureLevels[] = {
+        D3D_FEATURE_LEVEL_11_0,
+        D3D_FEATURE_LEVEL_10_1,
+        D3D_FEATURE_LEVEL_10_0,
+    };
+    unsigned numFeatureLevels = ARRAYSIZE(featureLevels);
+
+    DXGI_SWAP_CHAIN_DESC swapChainDesc;
+    ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
+    swapChainDesc.BufferCount = 1;
+    swapChainDesc.BufferDesc.Width = Width;
+    swapChainDesc.BufferDesc.Height = Height;
+    swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+    swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapChainDesc.OutputWindow = hWnd;
+    swapChainDesc.SampleDesc.Count = 1;
+    swapChainDesc.SampleDesc.Quality = 0;
+    swapChainDesc.Windowed = TRUE;
+#ifndef _DEBUG//リリースモードの時
+    if (w->windowMode() == MODE_FULLSCREEN) {
+        swapChainDesc.Windowed = FALSE;
+    }
+#endif
+    D3D_FEATURE_LEVEL featureLevel;
+    for (unsigned driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++) {
+        hr = D3D11CreateDeviceAndSwapChain(
+            NULL, driverTypes[driverTypeIndex], NULL, createDeviceFlags, featureLevels, numFeatureLevels,
+            D3D11_SDK_VERSION, &swapChainDesc, &SwapChain, &Device, &featureLevel, &Context);
+        if (SUCCEEDED(hr)) {
+            break;
+        }
+    }
+    WARNING(FAILED(hr), "Error", "デバイスとスワップチェインを生成できません");
+    //バックバッファのビューを創る
+    ID3D11Texture2D* renderTargetTexture = NULL;
+    hr = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&renderTargetTexture);
+    WARNING(FAILED(hr), "Error", "バックバッファを取得できません");
+    hr = Device->CreateRenderTargetView(renderTargetTexture, NULL, &RenderTargetView);
+    SAFE_RELEASE(renderTargetTexture);
+    WARNING(FAILED(hr), "Error", "バックバッファビューを生成できません");
+
+    //深度、ステンシルバッファを創る
+    D3D11_TEXTURE2D_DESC depthStencilTextureDesc;
+    ZeroMemory(&depthStencilTextureDesc, sizeof(depthStencilTextureDesc));
+    depthStencilTextureDesc.Width = Width;
+    depthStencilTextureDesc.Height = Height;
+    depthStencilTextureDesc.MipLevels = 1;
+    depthStencilTextureDesc.ArraySize = 1;
+    depthStencilTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthStencilTextureDesc.SampleDesc.Count = 1;
+    depthStencilTextureDesc.SampleDesc.Quality = 0;
+    depthStencilTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    depthStencilTextureDesc.CPUAccessFlags = 0;
+    depthStencilTextureDesc.MiscFlags = 0;
+    ID3D11Texture2D* depthStencilTexture = 0;
+    hr = Device->CreateTexture2D(&depthStencilTextureDesc, NULL, &depthStencilTexture);
+    WARNING(FAILED(hr), "Error", "深度、ステンシル用テクスチャを生成できません");
+
+    //深度、ステンシルバッファのビューを創る
+    D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+    ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+    depthStencilViewDesc.Format = depthStencilTextureDesc.Format;
+    depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    depthStencilViewDesc.Texture2D.MipSlice = 0;
+    hr = Device->CreateDepthStencilView(depthStencilTexture, &depthStencilViewDesc, &DepthStencilView);
+    WARNING(FAILED(hr), "Error", "深度、ステンシルバッファのビューを生成できません");
+    SAFE_RELEASE(depthStencilTexture);
+
+    //用意してきたバックバッファと深度、ステンシルバッファをレンダーターゲットに設定する
+    Context->OMSetRenderTargets(1, &RenderTargetView, DepthStencilView);
 }
 void createDevice() {
     //マルチサンプリング対応
@@ -409,6 +498,7 @@ void createRasterizerState() {
     rasterizerDesc.FillMode = D3D11_FILL_SOLID;
     //rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
     rasterizerDesc.CullMode = D3D11_CULL_NONE;
+    //rasterizerDesc.CullMode = D3D11_CULL_BACK;
     rasterizerDesc.FrontCounterClockwise = TRUE;
     rasterizerDesc.DepthBias = 0;
     rasterizerDesc.DepthBiasClamp = 0;
@@ -439,6 +529,7 @@ void createSamplerState(){
 
     // Set primitive topology
     Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    //Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 void clear(float* clearColor){
     // Clear the back buffer
@@ -453,22 +544,24 @@ void createConstantBuffer(){
     HRESULT hr;
 
     // Create the constant buffers
-    // CbWorld
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D11_USAGE_DEFAULT;
     bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bd.CPUAccessFlags = 0;
+
+    //CbWorld
     bd.ByteWidth = sizeof(MATRIX);
     hr = Device->CreateBuffer(&bd, NULL, &CbWorld);
-    WARNING(FAILED(hr), "Create Constant Buffer CbWorld","");
-    // CbProj
+    WARNING(FAILED(hr), "Can't Create Constant Buffer CbWorld","");
+    //CbProj
+    bd.ByteWidth = sizeof(MATRIX);
     hr = Device->CreateBuffer(&bd, NULL, &CbProj);
-    WARNING(FAILED(hr), "Create Constant Buffer Proj","");
-    // CbColor
+    WARNING(FAILED(hr), "Can't Create Constant Buffer Proj","");
+    //CbColor
     bd.ByteWidth = sizeof(COLOR);
     hr = Device->CreateBuffer(&bd, NULL, &CbColor);
-    WARNING(FAILED(hr), "Create Constant Buffer CbColor","");
+    WARNING(FAILED(hr), "Can't Create Constant Buffer CbColor","");
 
     // Set Proj to constant buffer
     Proj.identity();
@@ -476,7 +569,26 @@ void createConstantBuffer(){
     Context->UpdateSubresource(CbProj, 0, NULL, &Proj, 0, 0);
     Context->VSSetConstantBuffers(2, 1, &CbProj);
 }
-enum class VERTEX_TYPE { PNT, PNTWW, PT, P, PC };
+HRESULT createConstantBuffer(unsigned size, ID3D11Buffer** buffer) {
+    D3D11_BUFFER_DESC bufferDesc;
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+    bufferDesc.ByteWidth = size;
+    return Device->CreateBuffer(&bufferDesc, NULL, buffer);
+}
+//TREE用WorldArrayコンストバッファを創る
+void createWorldArrayConstBuffer(unsigned size, ID3D11Buffer** cbWorldArray) {
+    D3D11_BUFFER_DESC bufferDesc;
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+    bufferDesc.ByteWidth = size;
+    HRESULT hr = Device->CreateBuffer(&bufferDesc, NULL, cbWorldArray);
+    WARNING(FAILED(hr), "Error", "コンスタントバッファ・CBWorldArrayが生成できません");
+}
 void createVertexShaderAndInputLayoutFromRes(
     LPCTSTR resName,
     ID3D11VertexShader** vertexShader,
@@ -1772,3 +1884,138 @@ void print(let textInfo) {
     textMode(BOTTOM);
 }
 
+//extention
+#include "CONTAINER/VERTEX_FORMATS.h"
+#include "CONTAINER/VERTEX_BUFFER.h"
+#include "CONTAINER/INDEX_BUFFER.h"
+#include "CONTAINER/BATCH.h"
+#include "CONTAINER/TEXTURE.h"
+
+void createVertexBuffer(unsigned num, VERTEX_PNT* vertices, ID3D11Buffer** dxObj) {
+    D3D11_BUFFER_DESC bufferDesc;
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(VERTEX_PNT) * num;
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA initData;
+    ZeroMemory(&initData, sizeof(initData));
+    initData.pSysMem = vertices;
+
+    HRESULT hr = Device->CreateBuffer(&bufferDesc, &initData, dxObj);
+    WARNING(FAILED(hr), "Error", "頂点バッファが生成できません");
+}
+
+void createVertexBuffer(unsigned num, VERTEX_PNTWW* vertices, ID3D11Buffer** dxObj) {
+    D3D11_BUFFER_DESC bufferDesc;
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(VERTEX_PNTWW) * num;
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA initData;
+    ZeroMemory(&initData, sizeof(initData));
+    initData.pSysMem = vertices;
+
+    HRESULT hr = Device->CreateBuffer(&bufferDesc, &initData, dxObj);
+    WARNING(FAILED(hr), "Error", "スキン頂点バッファが生成できません");
+}
+
+void createVertexBuffer(unsigned num, VERTEX_PT* vertices, ID3D11Buffer** dxObj) {
+    D3D11_BUFFER_DESC bufferDesc;
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(VERTEX_PT) * num;
+    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA initData;
+    ZeroMemory(&initData, sizeof(initData));
+    initData.pSysMem = vertices;
+
+    HRESULT hr = Device->CreateBuffer(&bufferDesc, &initData, dxObj);
+    WARNING(FAILED(hr), "Error", "イメージ頂点バッファが生成できません");
+}
+
+void createIndexBuffer(unsigned num, unsigned short* indices, ID3D11Buffer** dxObj) {
+    D3D11_BUFFER_DESC bufferDesc;
+    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
+    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    bufferDesc.ByteWidth = sizeof(unsigned short) * num;
+    bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufferDesc.CPUAccessFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA initData;
+    ZeroMemory(&initData, sizeof(initData));
+    initData.pSysMem = indices;
+
+    HRESULT hr = Device->CreateBuffer(&bufferDesc, &initData, dxObj);
+    WARNING(FAILED(hr), "Error", "インデックスバッファが生成できません");
+}
+
+void createTexture(const char* fileName, TEXTURE_OBJ** dxObj,
+    int* texWidth, int* texHeight) {
+    void* pixels = 0;
+    //bool tgaFlag = isTGA(fileName);
+    //if (tgaFlag) {
+    //    pixels = tga_load(fileName, texWidth, texHeight);
+    //}
+    //else {
+        pixels = stbi_load(fileName, texWidth, texHeight, 0, 4);
+    //}
+    WARNING(!pixels, fileName, "テクスチャが読み込めません");
+
+    D3D11_SUBRESOURCE_DATA sd;
+    sd.pSysMem = pixels;
+    sd.SysMemPitch = (UINT)(*texWidth * 4);
+    sd.SysMemSlicePitch = (UINT)(*texWidth * *texHeight * 4);
+    D3D11_TEXTURE2D_DESC td;
+    td.Width = *texWidth;
+    td.Height = *texHeight;
+    td.MipLevels = 1;
+    td.ArraySize = 1;
+    td.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    td.SampleDesc.Count = 1;
+    td.SampleDesc.Quality = 0;
+    td.Usage = D3D11_USAGE_IMMUTABLE;
+    td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    td.CPUAccessFlags = 0;
+    td.MiscFlags = 0;
+    ID3D11Texture2D* texture = 0;
+    Device->CreateTexture2D(&td, &sd, &texture);
+    Device->CreateShaderResourceView(texture, 0, dxObj);
+    texture->Release();
+
+    //if (tgaFlag) {
+    //    tga_image_free();
+    //}
+    //else {
+        stbi_image_free(pixels);
+    //}
+}
+
+void draw3D(VERTEX_BUFFER* vb, INDEX_BUFFER* ib, SUBSET* subsets, int numSubsets, unsigned stride) {
+    unsigned offset = 0;
+    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    Context->IASetVertexBuffers(0, 1, vb->obj(), &stride, &offset);
+    Context->IASetIndexBuffer(ib->dxObj(), DXGI_FORMAT_R16_UINT, 0);
+    for (int i = 0; i < numSubsets; i++) {
+        Context->PSSetShaderResources(0, 1, subsets[i].texture->obj());
+        Context->DrawIndexed(subsets[i].numDrawPolygons * 3, subsets[i].startIdx, 0);
+    }
+}
+
+//debug
+void draw3D(VERTEX_BUFFER* vb, INDEX_BUFFER* ib, TEXTURE* t, unsigned stride) {
+    unsigned offset = 0;
+    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    Context->IASetVertexBuffers(0, 1, vb->obj(), &stride, &offset);
+    Context->IASetIndexBuffer(ib->dxObj(), DXGI_FORMAT_R16_UINT, 0);
+    Context->PSSetShaderResources(0, 1, t->obj());
+    Context->DrawIndexed(ib->num(), 0, 0);
+}
+
+ID3D11Device* device() { return Device; }
+ID3D11DeviceContext* context() { return Context; }

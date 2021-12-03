@@ -5,6 +5,7 @@
 #include"input.h"
 #include"rand.h"
 #include"MATRIX.h"
+#include"VECTOR.h"
 #include"VECTOR2.h"
 #include"let.h"
 #include"package.h"

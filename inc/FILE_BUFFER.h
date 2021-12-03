@@ -11,7 +11,7 @@ public:
     float readFloat();
     int readInt();
     unsigned readUnsigned();
-    void readOnAssumption( char* s );
+    void readOnAssumption( const char* s );
     void skipNode();
     void restart();
     bool end();

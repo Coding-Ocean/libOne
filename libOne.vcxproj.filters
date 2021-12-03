@@ -16,6 +16,30 @@
     <Filter Include="シェーダー">
       <UniqueIdentifier>{999b8f8b-7262-49e8-999d-1e2d08bc3d24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\ex">
+      <UniqueIdentifier>{7d25b78b-ffa1-48be-874c-78482548f970}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ex">
+      <UniqueIdentifier>{1d1be8e6-1547-47af-a6fa-2892dc5abe62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ex\thread">
+      <UniqueIdentifier>{d9928b16-6b7b-4dc2-8e55-b3784fe58017}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ex\thread">
+      <UniqueIdentifier>{4cd62a39-32e3-48e5-8048-9782d57d0571}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ex\container">
+      <UniqueIdentifier>{4bb55dd7-c78c-47bf-8750-e1bf016d3244}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ex\container">
+      <UniqueIdentifier>{feb1830c-677c-4b28-b8d0-f7954352c64b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ex\shader">
+      <UniqueIdentifier>{6b2dba98-f2af-4c27-9593-b3ca86e64b7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ex\shader">
+      <UniqueIdentifier>{8c825297-4e3f-4d58-ba97-86eed46d106b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\window.h">
@@ -75,6 +99,84 @@
     <ClInclude Include="inc\VECTOR.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="inc\NAME.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Thread\THREAD_MANAGER.h">
+      <Filter>ヘッダー ファイル\ex\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Thread\THREAD_MANAGER_IMPL.h">
+      <Filter>ヘッダー ファイル\ex\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Thread\EVENT.h">
+      <Filter>ヘッダー ファイル\ex\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Thread\LOADER.h">
+      <Filter>ヘッダー ファイル\ex\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Thread\MUTEX.h">
+      <Filter>ヘッダー ファイル\ex\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Thread\ReferenceType.h">
+      <Filter>ヘッダー ファイル\ex\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Thread\ReferenceTypeTemplate.h">
+      <Filter>ヘッダー ファイル\ex\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Thread\SEMAPHORE.h">
+      <Filter>ヘッダー ファイル\ex\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\Thread\THREAD.h">
+      <Filter>ヘッダー ファイル\ex\thread</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\ANIMATION.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\ANIMATION_NODE.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\BATCH.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\CONTAINER.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\CURVE.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\DATA.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\INDEX_BUFFER.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\NODE.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\NODE_ORIGIN.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\TEXTURE.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\TREE.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\TREE_ORIGIN.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\VERTEX_BUFFER.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONTAINER\VERTEX_FORMATS.h">
+      <Filter>ヘッダー ファイル\ex\container</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\SHADER\SHADER.h">
+      <Filter>ヘッダー ファイル\ex\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\SHADER\LAMBERT.h">
+      <Filter>ヘッダー ファイル\ex\shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\window.cpp">
@@ -128,6 +230,72 @@
     <ClCompile Include="src\VECTOR.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="src\Thread\EVENT.cpp">
+      <Filter>ソース ファイル\ex\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Thread\LOADER.cpp">
+      <Filter>ソース ファイル\ex\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Thread\MUTEX.cpp">
+      <Filter>ソース ファイル\ex\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Thread\SEMAPHORE.cpp">
+      <Filter>ソース ファイル\ex\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Thread\THREAD.cpp">
+      <Filter>ソース ファイル\ex\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Thread\THREAD_MANAGER.cpp">
+      <Filter>ソース ファイル\ex\thread</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\VERTEX_BUFFER.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\ANIMATION.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\ANIMATION_NODE.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\BATCH.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\CONTAINER.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\CURVE.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\DATA.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\INDEX_BUFFER.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\NODE.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\NODE_ORIGIN.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\TEXTURE.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\TREE.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONTAINER\TREE_ORIGIN.cpp">
+      <Filter>ソース ファイル\ex\container</Filter>
+    </ClCompile>
+    <ClCompile Include="common.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SHADER\LAMBERT.cpp">
+      <Filter>ソース ファイル\ex\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NAME.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\ImagePixelShader.hlsl">
@@ -148,5 +316,19 @@
     <FxCompile Include="shader\TriangleVertexShader.hlsl">
       <Filter>シェーダー</Filter>
     </FxCompile>
+    <FxCompile Include="shader\LambertVS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\LambertPS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\LambertSkinVS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader\LambertCB.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
   </ItemGroup>
 </Project>
