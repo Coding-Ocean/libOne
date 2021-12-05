@@ -45,7 +45,8 @@ ID3D11PixelShader* ShapePixelShader = 0;
 ID3D11VertexShader* ImageVertexShader = 0;
 ID3D11InputLayout* ImageVertexLayout = 0;
 ID3D11PixelShader* ImagePixelShader = 0;
-ID3D11SamplerState* SamplerLinear = 0;
+ID3D11SamplerState* SamplerStateClamp = 0;
+ID3D11SamplerState* SamplerStateWrap = 0;
 //triangle用シェーダ
 ID3D11VertexShader* TriangleVertexShader = 0;
 ID3D11InputLayout* TriangleVertexLayout = 0;
@@ -184,7 +185,8 @@ void freeGraphic() {
 
     SAFE_DELETE(Cntnr);
     
-    SAFE_RELEASE(SamplerLinear);
+    SAFE_RELEASE(SamplerStateWrap);
+    SAFE_RELEASE(SamplerStateClamp);
     SAFE_RELEASE(TexCoordBuffer);
     SAFE_RELEASE(RectVertexPosBuffer);
     SAFE_RELEASE(CircleLLVertexPosBuffer);
@@ -222,8 +224,8 @@ void initGraphic(int baseWidth, int baseHeight) {
         Width = (float)baseWidth;
         Height = (float)baseHeight;
     }
-    createDev();
-    //createRenderTarget();
+    createDevice();
+    createRenderTarget();
     setViewport();
 
     createDepthStencielState();
@@ -300,36 +302,36 @@ void createDev() {
     SAFE_RELEASE(renderTargetTexture);
     WARNING(FAILED(hr), "Error", "バックバッファビューを生成できません");
 
-    //深度、ステンシルバッファを創る
-    D3D11_TEXTURE2D_DESC depthStencilTextureDesc;
-    ZeroMemory(&depthStencilTextureDesc, sizeof(depthStencilTextureDesc));
-    depthStencilTextureDesc.Width = Width;
-    depthStencilTextureDesc.Height = Height;
-    depthStencilTextureDesc.MipLevels = 1;
-    depthStencilTextureDesc.ArraySize = 1;
-    depthStencilTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    depthStencilTextureDesc.SampleDesc.Count = 1;
-    depthStencilTextureDesc.SampleDesc.Quality = 0;
-    depthStencilTextureDesc.Usage = D3D11_USAGE_DEFAULT;
-    depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-    depthStencilTextureDesc.CPUAccessFlags = 0;
-    depthStencilTextureDesc.MiscFlags = 0;
-    ID3D11Texture2D* depthStencilTexture = 0;
-    hr = Device->CreateTexture2D(&depthStencilTextureDesc, NULL, &depthStencilTexture);
-    WARNING(FAILED(hr), "Error", "深度、ステンシル用テクスチャを生成できません");
+    ////深度、ステンシルバッファを創る
+    //D3D11_TEXTURE2D_DESC depthStencilTextureDesc;
+    //ZeroMemory(&depthStencilTextureDesc, sizeof(depthStencilTextureDesc));
+    //depthStencilTextureDesc.Width = Width;
+    //depthStencilTextureDesc.Height = Height;
+    //depthStencilTextureDesc.MipLevels = 1;
+    //depthStencilTextureDesc.ArraySize = 1;
+    //depthStencilTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    //depthStencilTextureDesc.SampleDesc.Count = 1;
+    //depthStencilTextureDesc.SampleDesc.Quality = 0;
+    //depthStencilTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+    //depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    //depthStencilTextureDesc.CPUAccessFlags = 0;
+    //depthStencilTextureDesc.MiscFlags = 0;
+    //ID3D11Texture2D* depthStencilTexture = 0;
+    //hr = Device->CreateTexture2D(&depthStencilTextureDesc, NULL, &depthStencilTexture);
+    //WARNING(FAILED(hr), "Error", "深度、ステンシル用テクスチャを生成できません");
 
-    //深度、ステンシルバッファのビューを創る
-    D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-    ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-    depthStencilViewDesc.Format = depthStencilTextureDesc.Format;
-    depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-    depthStencilViewDesc.Texture2D.MipSlice = 0;
-    hr = Device->CreateDepthStencilView(depthStencilTexture, &depthStencilViewDesc, &DepthStencilView);
-    WARNING(FAILED(hr), "Error", "深度、ステンシルバッファのビューを生成できません");
-    SAFE_RELEASE(depthStencilTexture);
+    ////深度、ステンシルバッファのビューを創る
+    //D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+    //ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+    //depthStencilViewDesc.Format = depthStencilTextureDesc.Format;
+    //depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    //depthStencilViewDesc.Texture2D.MipSlice = 0;
+    //hr = Device->CreateDepthStencilView(depthStencilTexture, &depthStencilViewDesc, &DepthStencilView);
+    //WARNING(FAILED(hr), "Error", "深度、ステンシルバッファのビューを生成できません");
+    //SAFE_RELEASE(depthStencilTexture);
 
-    //用意してきたバックバッファと深度、ステンシルバッファをレンダーターゲットに設定する
-    Context->OMSetRenderTargets(1, &RenderTargetView, DepthStencilView);
+    ////用意してきたバックバッファと深度、ステンシルバッファをレンダーターゲットに設定する
+    //Context->OMSetRenderTargets(1, &RenderTargetView, DepthStencilView);
 }
 void createDevice() {
     //マルチサンプリング対応
@@ -512,7 +514,7 @@ void createRasterizerState() {
 }
 void createSamplerState(){
     HRESULT hr;
-    // Create the sample state
+    //サンプラーステートClamp生成～設定
     D3D11_SAMPLER_DESC samplerDesc;
     ZeroMemory(&samplerDesc, sizeof(samplerDesc));
     samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -522,14 +524,21 @@ void createSamplerState(){
     samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     samplerDesc.MinLOD = 0;
     samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device->CreateSamplerState(&samplerDesc, &SamplerLinear);
-    WARNING(FAILED(hr), "cannot Create sampler state","");
-    // Set the sample state
-    Context->PSSetSamplers(0, 1, &SamplerLinear);
-
-    // Set primitive topology
-    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-    //Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    hr = Device->CreateSamplerState(&samplerDesc, &SamplerStateClamp);
+    WARNING(FAILED(hr), "Error", "テクスチャサンプラーClampが生成できません");
+    Context->PSSetSamplers(0, 1, &SamplerStateClamp);
+    //サンプラーステートWrap生成のみ
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    hr = Device->CreateSamplerState(&samplerDesc, &SamplerStateWrap);
+    WARNING(FAILED(hr), "Error", "テクスチャサンプラーWrapが生成できません");
+}
+void setTextureSamplerClamp() {
+    Context->PSSetSamplers(0, 1, &SamplerStateClamp);
+}
+void setTextureSamplerWrap() {
+    Context->PSSetSamplers(0, 1, &SamplerStateWrap);
 }
 void clear(float* clearColor){
     // Clear the back buffer
@@ -569,25 +578,14 @@ void createConstantBuffer(){
     Context->UpdateSubresource(CbProj, 0, NULL, &Proj, 0, 0);
     Context->VSSetConstantBuffers(2, 1, &CbProj);
 }
-HRESULT createConstantBuffer(unsigned size, ID3D11Buffer** buffer) {
+HRESULT createConstantBuffer(unsigned byteWidth, ID3D11Buffer** buffer) {
     D3D11_BUFFER_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(bufferDesc));
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
     bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bufferDesc.CPUAccessFlags = 0;
-    bufferDesc.ByteWidth = size;
+    bufferDesc.ByteWidth = byteWidth;
     return Device->CreateBuffer(&bufferDesc, NULL, buffer);
-}
-//TREE用WorldArrayコンストバッファを創る
-void createWorldArrayConstBuffer(unsigned size, ID3D11Buffer** cbWorldArray) {
-    D3D11_BUFFER_DESC bufferDesc;
-    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    bufferDesc.CPUAccessFlags = 0;
-    bufferDesc.ByteWidth = size;
-    HRESULT hr = Device->CreateBuffer(&bufferDesc, NULL, cbWorldArray);
-    WARNING(FAILED(hr), "Error", "コンスタントバッファ・CBWorldArrayが生成できません");
 }
 void createVertexShaderAndInputLayoutFromRes(
     LPCTSTR resName,
@@ -1891,11 +1889,12 @@ void print(let textInfo) {
 #include "CONTAINER/BATCH.h"
 #include "CONTAINER/TEXTURE.h"
 
-void createVertexBuffer(unsigned num, VERTEX_PNT* vertices, ID3D11Buffer** dxObj) {
+void createVertexBuffer(unsigned byteWidth, void* vertices, ID3D11Buffer** obj)
+{
     D3D11_BUFFER_DESC bufferDesc;
     ZeroMemory(&bufferDesc, sizeof(bufferDesc));
     bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth = sizeof(VERTEX_PNT) * num;
+    bufferDesc.ByteWidth = byteWidth;
     bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bufferDesc.CPUAccessFlags = 0;
 
@@ -1903,40 +1902,7 @@ void createVertexBuffer(unsigned num, VERTEX_PNT* vertices, ID3D11Buffer** dxObj
     ZeroMemory(&initData, sizeof(initData));
     initData.pSysMem = vertices;
 
-    HRESULT hr = Device->CreateBuffer(&bufferDesc, &initData, dxObj);
-    WARNING(FAILED(hr), "Error", "頂点バッファが生成できません");
-}
-
-void createVertexBuffer(unsigned num, VERTEX_PNTWW* vertices, ID3D11Buffer** dxObj) {
-    D3D11_BUFFER_DESC bufferDesc;
-    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth = sizeof(VERTEX_PNTWW) * num;
-    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bufferDesc.CPUAccessFlags = 0;
-
-    D3D11_SUBRESOURCE_DATA initData;
-    ZeroMemory(&initData, sizeof(initData));
-    initData.pSysMem = vertices;
-
-    HRESULT hr = Device->CreateBuffer(&bufferDesc, &initData, dxObj);
-    WARNING(FAILED(hr), "Error", "スキン頂点バッファが生成できません");
-}
-
-void createVertexBuffer(unsigned num, VERTEX_PT* vertices, ID3D11Buffer** dxObj) {
-    D3D11_BUFFER_DESC bufferDesc;
-    ZeroMemory(&bufferDesc, sizeof(bufferDesc));
-    bufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    bufferDesc.ByteWidth = sizeof(VERTEX_PT) * num;
-    bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bufferDesc.CPUAccessFlags = 0;
-
-    D3D11_SUBRESOURCE_DATA initData;
-    ZeroMemory(&initData, sizeof(initData));
-    initData.pSysMem = vertices;
-
-    HRESULT hr = Device->CreateBuffer(&bufferDesc, &initData, dxObj);
-    WARNING(FAILED(hr), "Error", "イメージ頂点バッファが生成できません");
+    HRESULT hr = Device->CreateBuffer(&bufferDesc, &initData, obj);
 }
 
 void createIndexBuffer(unsigned num, unsigned short* indices, ID3D11Buffer** dxObj) {

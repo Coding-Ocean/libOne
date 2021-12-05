@@ -84,9 +84,7 @@ void present();
 #define VERTEX_BUFFER_OBJ struct ID3D11Buffer
 #define TEXTURE_OBJ struct ID3D11ShaderResourceView
 enum class VERTEX_TYPE { PNT, PNTWW, PT, P, PC };
-void createVertexBuffer(unsigned num, struct VERTEX_PNT* vertices, struct ID3D11Buffer** obj);
-void createVertexBuffer(unsigned num, struct VERTEX_PNTWW* vertices, struct ID3D11Buffer** obj);
-void createVertexBuffer(unsigned num, struct VERTEX_PT* vertices, struct ID3D11Buffer** obj);
+void createVertexBuffer(unsigned byteWidth, void* vertices, struct ID3D11Buffer** obj);
 void createIndexBuffer(unsigned num, unsigned short* indices, struct ID3D11Buffer** obj);
 void createTexture(const char* fileName, TEXTURE_OBJ** obj, int* texWidth, int* texHeight);
 void draw3D(class VERTEX_BUFFER* vb, class INDEX_BUFFER* ib, struct SUBSET* subsets, int numSubsets, unsigned stride);
@@ -95,10 +93,15 @@ void draw3D( class VERTEX_BUFFER* vb, class INDEX_BUFFER* ib, class TEXTURE* t, 
 struct ID3D11Device* device();
 struct ID3D11DeviceContext* context();
 void createVertexShaderAndInputLayoutFromRes(
-    LPCTSTR resName,
-    struct ID3D11VertexShader** vertexShader,
-    VERTEX_TYPE vertexType,
-    struct ID3D11InputLayout** inputLayout);
+    LPCTSTR resName, struct ID3D11VertexShader** vertexShader,
+    VERTEX_TYPE vertexType, struct ID3D11InputLayout** inputLayout);
 void createPixelShaderFromRes(LPCTSTR resName, struct ID3D11PixelShader** pixelShader);
 HRESULT createConstantBuffer(unsigned size, struct ID3D11Buffer** buffer);
-void createWorldArrayConstBuffer(unsigned size, struct ID3D11Buffer** cbWorldArray);
+#define BEGIN_SHADER_PATH() \
+for (int path = 0; path < shader->numPath(); path++) {\
+shader->beginPath(path);
+#define END_SHADER_PATH() \
+shader->endPath();\
+}
+void setTextureSamplerClamp();
+void setTextureSamplerWrap();

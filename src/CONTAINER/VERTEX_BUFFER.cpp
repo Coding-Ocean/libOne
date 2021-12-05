@@ -22,7 +22,7 @@ VERTEX_BUFFER::VERTEX_BUFFER( FILE_BUFFER& fb ):
             vertices[ i ].tex.x = fb.readFloat();
             vertices[ i ].tex.y = fb.readFloat();
         }
-        createVertexBuffer( Num, vertices, &Obj );
+        createVertexBuffer( sizeof(VERTEX_PNT)*Num, vertices, &Obj );
 		SAFE_DELETE_ARRAY( vertices );
     }
     else if( type == "pntww" ){
@@ -44,7 +44,7 @@ VERTEX_BUFFER::VERTEX_BUFFER( FILE_BUFFER& fb ):
                 vertices[ i ].weights[ j ] = fb.readFloat();
             }        
         }
-        createVertexBuffer( Num, vertices, &Obj );    
+        createVertexBuffer( sizeof(VERTEX_PNTWW)*Num, vertices, &Obj );    
 		SAFE_DELETE_ARRAY( vertices );
     }
 	else if (type == "pt") {
@@ -59,7 +59,7 @@ VERTEX_BUFFER::VERTEX_BUFFER( FILE_BUFFER& fb ):
 		}
         OffsetX = vertices[3].pos.x;
         OffsetY = vertices[3].pos.y;
-	    createVertexBuffer(Num, vertices, &Obj);
+	    createVertexBuffer(sizeof(VERTEX_PT)*Num, vertices, &Obj);
 		SAFE_DELETE_ARRAY(vertices);
 	}
 }

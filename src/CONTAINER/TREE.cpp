@@ -96,7 +96,7 @@ void TREE::Create( const TREE_ORIGIN* treeOrigin ){
     }
     //ワールドマトリックス配列とコンスタントバッファを用意
     WorldArray = new MATRIX[ NumNodes ];
-    createWorldArrayConstBuffer( sizeof( MATRIX ) * NumNodes, &CBWorldArray );
+    createConstantBuffer( sizeof( MATRIX ) * NumNodes, &CBWorldArray );
 }
 
 void TREE::setAnimation( const ANIMATION* a, double animationSpeed  ){

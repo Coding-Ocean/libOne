@@ -23,4 +23,5 @@ public:
 	virtual void setLight_ProjView( const MATRIX& light_projView ){}
 };
 
+
 #endif
