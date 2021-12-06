@@ -279,11 +279,11 @@ void createDev() {
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.SampleDesc.Quality = 0;
     swapChainDesc.Windowed = TRUE;
-#ifndef _DEBUG//リリースモードの時
-    if (w->windowMode() == MODE_FULLSCREEN) {
-        swapChainDesc.Windowed = FALSE;
-    }
-#endif
+//#ifndef _DEBUG//リリースモードの時
+//    if (w->windowMode() == MODE_FULLSCREEN) {
+//        swapChainDesc.Windowed = FALSE;
+//    }
+//#endif
     D3D_FEATURE_LEVEL featureLevel;
     for (unsigned driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++) {
         hr = D3D11CreateDeviceAndSwapChain(
