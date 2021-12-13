@@ -36,7 +36,9 @@ ID3D11DepthStencilView* DepthStencilView = 0;
 //各種ステートオブジェクト
 ID3D11DepthStencilState* DepthStencilState = 0;
 ID3D11BlendState* BlendState = 0;
-ID3D11RasterizerState* RasterizerState = 0;
+ID3D11RasterizerState* RasterizerStateWire = 0;
+ID3D11RasterizerState* RasterizerStateCullBack = 0;
+ID3D11RasterizerState* RasterizerStateCullNone = 0;
 //line,rect,circle用シェーダ
 ID3D11VertexShader* ShapeVertexShader = 0;
 ID3D11InputLayout* ShapeVertexLayout = 0;
@@ -205,7 +207,9 @@ void freeGraphic() {
     SAFE_RELEASE(ImagePixelShader);
 
     SAFE_RELEASE(BlendState);
-    SAFE_RELEASE(RasterizerState);
+    SAFE_RELEASE(RasterizerStateWire);
+    SAFE_RELEASE(RasterizerStateCullNone);
+    SAFE_RELEASE(RasterizerStateCullBack);
     SAFE_RELEASE(DepthStencilState);
     SAFE_RELEASE(DepthStencilView);
     SAFE_RELEASE(RenderTargetView);
@@ -213,7 +217,6 @@ void freeGraphic() {
     SAFE_RELEASE(Context);
     SAFE_RELEASE(Device);
 }
-void createDev();
 void initGraphic(int baseWidth, int baseHeight) {
     //基準となる幅と高さ
     if (baseWidth == 0 || baseHeight == 0) {
@@ -224,6 +227,7 @@ void initGraphic(int baseWidth, int baseHeight) {
         Width = (float)baseWidth;
         Height = (float)baseHeight;
     }
+
     createDevice();
     createRenderTarget();
     setViewport();
@@ -243,95 +247,6 @@ void initGraphic(int baseWidth, int baseHeight) {
 
     Cntnr = new CNTNR;
     font("BIZ UDGothic");
-}
-void createDev() {
-    //デバイスとスワップチェインを創る
-    HRESULT hr = S_OK;
-
-    HWND hWnd = FindWindow(CLASS_NAME, 0);
-
-    unsigned createDeviceFlags = 0;
-
-    D3D_DRIVER_TYPE driverTypes[] = {
-        D3D_DRIVER_TYPE_HARDWARE,
-        D3D_DRIVER_TYPE_WARP,
-        D3D_DRIVER_TYPE_REFERENCE,
-    };
-    unsigned numDriverTypes = ARRAYSIZE(driverTypes);
-
-    D3D_FEATURE_LEVEL featureLevels[] = {
-        D3D_FEATURE_LEVEL_11_0,
-        D3D_FEATURE_LEVEL_10_1,
-        D3D_FEATURE_LEVEL_10_0,
-    };
-    unsigned numFeatureLevels = ARRAYSIZE(featureLevels);
-
-    DXGI_SWAP_CHAIN_DESC swapChainDesc;
-    ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
-    swapChainDesc.BufferCount = 1;
-    swapChainDesc.BufferDesc.Width = Width;
-    swapChainDesc.BufferDesc.Height = Height;
-    swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
-    swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
-    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDesc.OutputWindow = hWnd;
-    swapChainDesc.SampleDesc.Count = 1;
-    swapChainDesc.SampleDesc.Quality = 0;
-    swapChainDesc.Windowed = TRUE;
-#ifndef _DEBUG//リリースモードの時
-    if (w->windowMode() == MODE_FULLSCREEN) {
-        swapChainDesc.Windowed = FALSE;
-    }
-#endif
-    D3D_FEATURE_LEVEL featureLevel;
-    for (unsigned driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++) {
-        hr = D3D11CreateDeviceAndSwapChain(
-            NULL, driverTypes[driverTypeIndex], NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-            D3D11_SDK_VERSION, &swapChainDesc, &SwapChain, &Device, &featureLevel, &Context);
-        if (SUCCEEDED(hr)) {
-            break;
-        }
-    }
-    WARNING(FAILED(hr), "Error", "デバイスとスワップチェインを生成できません");
-    //バックバッファのビューを創る
-    ID3D11Texture2D* renderTargetTexture = NULL;
-    hr = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&renderTargetTexture);
-    WARNING(FAILED(hr), "Error", "バックバッファを取得できません");
-    hr = Device->CreateRenderTargetView(renderTargetTexture, NULL, &RenderTargetView);
-    SAFE_RELEASE(renderTargetTexture);
-    WARNING(FAILED(hr), "Error", "バックバッファビューを生成できません");
-
-    ////深度、ステンシルバッファを創る
-    //D3D11_TEXTURE2D_DESC depthStencilTextureDesc;
-    //ZeroMemory(&depthStencilTextureDesc, sizeof(depthStencilTextureDesc));
-    //depthStencilTextureDesc.Width = Width;
-    //depthStencilTextureDesc.Height = Height;
-    //depthStencilTextureDesc.MipLevels = 1;
-    //depthStencilTextureDesc.ArraySize = 1;
-    //depthStencilTextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    //depthStencilTextureDesc.SampleDesc.Count = 1;
-    //depthStencilTextureDesc.SampleDesc.Quality = 0;
-    //depthStencilTextureDesc.Usage = D3D11_USAGE_DEFAULT;
-    //depthStencilTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-    //depthStencilTextureDesc.CPUAccessFlags = 0;
-    //depthStencilTextureDesc.MiscFlags = 0;
-    //ID3D11Texture2D* depthStencilTexture = 0;
-    //hr = Device->CreateTexture2D(&depthStencilTextureDesc, NULL, &depthStencilTexture);
-    //WARNING(FAILED(hr), "Error", "深度、ステンシル用テクスチャを生成できません");
-
-    ////深度、ステンシルバッファのビューを創る
-    //D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-    //ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-    //depthStencilViewDesc.Format = depthStencilTextureDesc.Format;
-    //depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-    //depthStencilViewDesc.Texture2D.MipSlice = 0;
-    //hr = Device->CreateDepthStencilView(depthStencilTexture, &depthStencilViewDesc, &DepthStencilView);
-    //WARNING(FAILED(hr), "Error", "深度、ステンシルバッファのビューを生成できません");
-    //SAFE_RELEASE(depthStencilTexture);
-
-    ////用意してきたバックバッファと深度、ステンシルバッファをレンダーターゲットに設定する
-    //Context->OMSetRenderTargets(1, &RenderTargetView, DepthStencilView);
 }
 void createDevice() {
     //マルチサンプリング対応
@@ -379,6 +294,11 @@ void createDevice() {
     hDXGISwapChainDesc.SampleDesc = MSAA;
     hDXGISwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
     hDXGISwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+#ifndef _DEBUG//リリースモードの時
+    if (Windowed == false) {
+        hDXGISwapChainDesc.Windowed = FALSE;
+    }
+#endif
     hr = hpDXGIFactory->CreateSwapChain(Device, &hDXGISwapChainDesc, &SwapChain);
     WARNING(FAILED(hr), "CreateSwapChain","");
 
@@ -497,10 +417,6 @@ void createBlendState() {
 }
 void createRasterizerState() {
     D3D11_RASTERIZER_DESC rasterizerDesc;
-    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-    //rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
-    rasterizerDesc.CullMode = D3D11_CULL_NONE;
-    //rasterizerDesc.CullMode = D3D11_CULL_BACK;
     rasterizerDesc.FrontCounterClockwise = TRUE;
     rasterizerDesc.DepthBias = 0;
     rasterizerDesc.DepthBiasClamp = 0;
@@ -509,8 +425,25 @@ void createRasterizerState() {
     rasterizerDesc.ScissorEnable = FALSE;
     rasterizerDesc.MultisampleEnable = FALSE;
     rasterizerDesc.AntialiasedLineEnable = FALSE;
-    Device->CreateRasterizerState(&rasterizerDesc, &RasterizerState);
-    Context->RSSetState(RasterizerState);
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+    rasterizerDesc.CullMode = D3D11_CULL_NONE;
+    Device->CreateRasterizerState(&rasterizerDesc, &RasterizerStateCullNone);
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+    rasterizerDesc.CullMode = D3D11_CULL_BACK;
+    Device->CreateRasterizerState(&rasterizerDesc, &RasterizerStateCullBack);
+    rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+    rasterizerDesc.CullMode = D3D11_CULL_BACK;
+    Device->CreateRasterizerState(&rasterizerDesc, &RasterizerStateWire);
+    Context->RSSetState(RasterizerStateCullNone);
+}
+void setRasterizerCullNone() {
+    Context->RSSetState(RasterizerStateCullNone);
+}
+void setRasterizerCullBack() {
+    Context->RSSetState(RasterizerStateCullBack);
+}
+void setRasterizerWire() {
+    Context->RSSetState(RasterizerStateWire);
 }
 void createSamplerState(){
     HRESULT hr;

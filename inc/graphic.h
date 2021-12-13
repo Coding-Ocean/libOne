@@ -105,3 +105,6 @@ shader->endPath();\
 }
 void setTextureSamplerClamp();
 void setTextureSamplerWrap();
+void setRasterizerCullBack(); 
+void setRasterizerCullNone(); 
+void setRasterizerWire();

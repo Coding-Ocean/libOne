@@ -1,4 +1,4 @@
-cbuffer cbWorld : register(b0)
+cbuffer cbWorld: register(b0)
 {
     row_major matrix World;
 };
