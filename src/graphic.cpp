@@ -91,6 +91,7 @@ struct CNTNR {
         }
     };
     std::vector<TEXTURE> textures;
+    std::map<std::string, int> textureMap;
 
     //フォント
     struct FONT {
@@ -631,11 +632,11 @@ void createShaderFromRes(){
 void createRectVertexPosBuffer(){
     //vertex for rect or line
     //rectと兼用だがline用に最適化した位置を設定する
-    VECTOR vertices[] =  {
-        VECTOR(0.0f,  0.5f, 0.0f),
+    VECTOR vertices[] = {
         VECTOR(0.0f, -0.5f, 0.0f),
-        VECTOR(1.0f,  0.5f, 0.0f),
+        VECTOR(0.0f,  0.5f, 0.0f),
         VECTOR(1.0f, -0.5f, 0.0f),
+        VECTOR(1.0f,  0.5f, 0.0f),
     };
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
@@ -656,8 +657,8 @@ void createCircleVertexPosBuffer(){
         VECTOR circleVertices[num];
         circleVertices[0] = VECTOR(0.5f, 0, 0.0f);
         for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
-            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
             circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
         }
         circleVertices[num - 1] = VECTOR(-0.5f, 0, 0.0f);
         D3D11_BUFFER_DESC bd;
@@ -678,8 +679,8 @@ void createCircleVertexPosBuffer(){
         VECTOR circleVertices[num];
         circleVertices[0] = VECTOR(0.5f, 0, 0.0f);
         for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
-            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
             circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
         }
         circleVertices[num - 1] = VECTOR(-0.5f, 0, 0.0f);
         D3D11_BUFFER_DESC bd;
@@ -700,8 +701,8 @@ void createCircleVertexPosBuffer(){
         VECTOR circleVertices[num];
         circleVertices[0] = VECTOR(0.5f, 0, 0.0f);
         for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
-            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
             circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
         }
         circleVertices[num - 1] = VECTOR(-0.5f, 0, 0.0f);
         D3D11_BUFFER_DESC bd;
@@ -722,8 +723,8 @@ void createCircleVertexPosBuffer(){
         VECTOR circleVertices[num];
         circleVertices[0] = VECTOR(0.5f, 0, 0.0f);
         for (int i = 1, j = 1; i <= num / 2 - 1; i++) {
-            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
             circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, -sinf(rad * i) * 0.5f, 0.0f);
+            circleVertices[j++] = VECTOR(cosf(rad * i) * 0.5f, sinf(rad * i) * 0.5f, 0.0f);
         }
         circleVertices[num - 1] = VECTOR(-0.5f, 0, 0.0f);
         D3D11_BUFFER_DESC bd;
@@ -847,10 +848,10 @@ int createShape(struct SHAPE_VERTEX* vertices, int numVertices,
 
 void createTexCoordBuffer(){
     VECTOR2 vertices[] =  {
-        VECTOR2(0.0f, 1.0f),
         VECTOR2(0.0f, 0.0f),
-        VECTOR2(1.0f, 1.0f),
+        VECTOR2(0.0f, 1.0f),
         VECTOR2(1.0f, 0.0f),
+        VECTOR2(1.0f, 1.0f),
     };
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
@@ -1395,6 +1396,12 @@ void shape(int idx, const class MATRIX& world) {
     }
 }
 int loadImage(const char* filename){
+    //重複ロードを避ける
+    auto it = Cntnr->textureMap.find(filename);
+    if (it != Cntnr->textureMap.end()) {
+        return it->second;
+    }
+    //ロード
     unsigned char* pixels = 0;
     int texWidth = 0;
     int texHeight = 0;
@@ -1439,8 +1446,11 @@ int loadImage(const char* filename){
     pTexture->Release();
     stbi_image_free(pixels);
     ID3D11Buffer* texCoord = 0;
+
     Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
-    return int(Cntnr->textures.size()) - 1;
+    int textureIdx = int(Cntnr->textures.size()) - 1;
+    Cntnr->textureMap.emplace(filename, textureIdx);
+    return textureIdx;
 }
 int loadImageFromRes(const char* str) {
     //size_t l = strlen(str);

@@ -97,12 +97,15 @@ void createVertexShaderAndInputLayoutFromRes(
     VERTEX_TYPE vertexType, struct ID3D11InputLayout** inputLayout);
 void createPixelShaderFromRes(LPCTSTR resName, struct ID3D11PixelShader** pixelShader);
 HRESULT createConstantBuffer(unsigned size, struct ID3D11Buffer** buffer);
+
 #define BEGIN_SHADER_PATH() \
 for (int path = 0; path < shader->numPath(); path++) {\
 shader->beginPath(path);
+
 #define END_SHADER_PATH() \
 shader->endPath();\
 }
+
 void setTextureSamplerClamp();
 void setTextureSamplerWrap();
 void setRasterizerCullBack(); 

@@ -287,13 +287,13 @@
     <ClCompile Include="src\CONTAINER\TREE_ORIGIN.cpp">
       <Filter>ソース ファイル\ex\container</Filter>
     </ClCompile>
-    <ClCompile Include="common.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="src\SHADER\LAMBERT.cpp">
       <Filter>ソース ファイル\ex\shader</Filter>
     </ClCompile>
     <ClCompile Include="src\NAME.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
