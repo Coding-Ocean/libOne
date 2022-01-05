@@ -337,7 +337,7 @@
     <PostBuildEvent>
       <Command>If Exist ..\appOne copy ..\libOne\lib\x64\debug\*.* ..\appOne\libOne\lib\64\deb
 If Exist ..\appOne copy ..\libOne\obj\x64\debug\libone.pdb ..\appOne\libOne\lib\64\deb
-If Exist ..\appOne copy ..\libOne\inc\*.* ..\appOne\libOne\inc</Command>
+If Exist ..\appOne xcopy ..\libOne\inc\*.* ..\appOne\libOne\inc /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
