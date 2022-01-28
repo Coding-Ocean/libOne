@@ -5,7 +5,6 @@
 #include"common.h"
 #include"window.h"
 #include"MATRIX.h"
-#include"VECTOR2.h"
 #include"VECTOR.h"
 #include"stb_image_reader.h"
 #include"package.h"
@@ -1525,10 +1524,10 @@ int cutImage(int idx, int left, int top, int w, int h){
     float r = (left + w) / texWidth;
     float b = (top + h) / texHeight;
     VECTOR2 vertices[] = {
-        VECTOR2(l, b),
         VECTOR2(l, t),
-        VECTOR2(r, b),
+        VECTOR2(l, b),
         VECTOR2(r, t),
+        VECTOR2(r, b),
     };
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
@@ -1776,7 +1775,7 @@ void text(const char* str, float x, float y){
     }
 }
 void text(double n, float x, float y){
-    int w = n;
+    int w = (int)n;
     char str[128];
     if (w == n) {
         sprintf_s(str, "%d", w);
@@ -1823,6 +1822,7 @@ void print(let textInfo) {
     text(textInfo, PrintPosX, PrintPosY);
     PrintPosY += PrintSize;
     textMode(BOTTOM);
+    textSize((float)TextSize);
 }
 
 //extention
@@ -1928,3 +1928,11 @@ void draw3D(VERTEX_BUFFER* vb, INDEX_BUFFER* ib, TEXTURE* t, unsigned stride) {
 
 ID3D11Device* device() { return Device; }
 ID3D11DeviceContext* context() { return Context; }
+
+
+VECTOR2 getTextureSize(int idx) {
+
+    CNTNR::TEXTURE& texture = Cntnr->textures.at(idx);
+
+    return VECTOR2(texture.width, texture.height);
+}

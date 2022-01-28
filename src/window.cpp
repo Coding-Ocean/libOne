@@ -1,5 +1,6 @@
-#include "window.h"
+#include "WSTR.h"
 #include "graphic.h"
+#include "window.h"
 
 extern LPCTSTR CLASS_NAME = _T("GameWindow");
 extern int ClientWidth = 0;
@@ -10,6 +11,7 @@ extern unsigned ActiveWindow = 0;
 extern int MouseDelta = 0;
 extern HWND HWnd = 0;
 unsigned ThreadId = 0;
+int CursorFlag = 1;
 
 //メッセージ処理
 LRESULT CALLBACK winProc( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp ) {	
@@ -35,9 +37,8 @@ LRESULT CALLBACK winProc( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp ) {
     }
 }
 
-void initWindow( LPCTSTR caption, int clientWidth, int clientHeight ){
+void initWindow( const char* caption, int clientWidth, int clientHeight ){
     ThreadId = GetCurrentThreadId();
-
     //ウィンドウクラスを登録する
 	HINSTANCE hinst = GetModuleHandle( 0 );
     WNDCLASS wc = {0, winProc, 0, 0, hinst,
@@ -62,9 +63,10 @@ void initWindow( LPCTSTR caption, int clientWidth, int clientHeight ){
         style = WS_POPUP;
         Windowed = false;
     }
+    WSTR wCaption(caption);
     HWnd = CreateWindow(
         CLASS_NAME, // 登録されているクラス名
-        caption, // ウィンドウ名
+        wCaption, // ウィンドウ名
         style,// ウィンドウスタイル
         0, // ウィンドウの横方向の位置
         0, // ウィンドウの縦方向の位置
@@ -100,29 +102,54 @@ void initWindow( LPCTSTR caption, int clientWidth, int clientHeight ){
 
     //IME off
     HIMC hIMC = ImmGetContext( HWnd );
-    ImmSetOpenStatus( hIMC, 0 );
+    ImmSetOpenStatus( hIMC, FALSE );
     ImmReleaseContext( HWnd, hIMC );
 
     ShowWindow( HWnd, SW_SHOW );
 }
-unsigned getTime(){
-    return timeGetTime();
-}
-void closeWindow() {
+
+void closeWindow() 
+{
     PostMessage(HWnd, WM_CLOSE, 0, 0);
 }
+
 float DeltaTime = 0;
 unsigned int PreTime = 0;
-void initDeltaTime() {
+void initDeltaTime() 
+{
     PreTime = timeGetTime();
     DeltaTime = 0;
 }
-void setDeltaTime() {
+void setDeltaTime() 
+{
     unsigned int  curTime = timeGetTime();
     DeltaTime = (curTime - PreTime)/1000.0f;
     PreTime = curTime;
 }
+unsigned getTime()
+{
+    return timeGetTime();
+}
 
-bool isMainThread() {
+bool isMainThread() 
+{
     return (GetCurrentThreadId() == ThreadId);
+}
+
+void hideCursor()
+{
+    if (CursorFlag == 1)
+    {
+        CursorFlag = 0;
+        ShowCursor(false);
+    }
+}
+
+void showCursor()
+{
+    if (CursorFlag == 0)
+    {
+        CursorFlag = 1;
+        ShowCursor(true);
+    }
 }

@@ -1,5 +1,3 @@
-//#include<stdio.h>
-//#include<mbstring.h>
 #include"common.h"
 #include"FILE_BUFFER.h"
 FILE_BUFFER::FILE_BUFFER(){

@@ -64,6 +64,7 @@
     <ClInclude Include="inc\VECTOR.h" />
     <ClInclude Include="inc\VECTOR2.h" />
     <ClInclude Include="inc\window.h" />
+    <ClInclude Include="inc\WSTR.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\COLOR.cpp" />
@@ -105,6 +106,7 @@
     <ClCompile Include="src\VECTOR.cpp" />
     <ClCompile Include="src\VECTOR2.cpp" />
     <ClCompile Include="src\window.cpp" />
+    <ClCompile Include="src\WSTR.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\ImagePixelShader.hlsl">

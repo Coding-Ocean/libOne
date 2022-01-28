@@ -3,6 +3,8 @@
 #include"common.h"
 #include"COLOR.h"
 #include"let.h"
+#include"VECTOR2.h"
+
 //for users
 extern float Width;
 extern float Height;
@@ -111,3 +113,5 @@ void setTextureSamplerWrap();
 void setRasterizerCullBack(); 
 void setRasterizerCullNone(); 
 void setRasterizerWire();
+
+VECTOR2 getTextureSize(int idx);
