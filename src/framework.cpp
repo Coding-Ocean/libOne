@@ -55,7 +55,20 @@ void window(const char* caption, float width, float height, bool fullscreen) {
 }
 
 bool EscapeKeyValid = true;
+//エスケープキーによるウィンドウ終了を無効化
+void disableEscapeKey()
+{
+    EscapeKeyValid = false;
+}
 bool msgProc() {
+    MSG msg;
+    while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+        if (msg.message == WM_QUIT) {
+            return false;
+        }
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
     present();
     printStart();
     getInputState();
@@ -64,16 +77,20 @@ bool msgProc() {
             closeWindow();
         }
     }
+    return true;
+}
+bool quit() {
     MSG msg;
-    if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+    while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+        if (msg.message == WM_QUIT) {
+            return true;
+        }
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-    return (msg.message != WM_QUIT);
-}
 
-//エスケープキーによるウィンドウ終了を無効化
-void disableEscapeKey() 
-{
-    EscapeKeyValid = false;
+    present();
+    printStart();
+    getInputState();
+    return false;
 }
