@@ -338,7 +338,6 @@
     </Link>
     <PostBuildEvent>
       <Command>If Exist ..\appOne copy ..\libOne\lib\x64\debug\*.* ..\appOne\libOne\lib\64\deb
-If Exist ..\appOne copy ..\libOne\obj\x64\debug\libone.pdb ..\appOne\libOne\lib\64\deb
 If Exist ..\appOne xcopy ..\libOne\inc\*.* ..\appOne\libOne\inc /e /y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -362,7 +361,7 @@ If Exist ..\appOne xcopy ..\libOne\inc\*.* ..\appOne\libOne\inc /e /y</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>If Exist ..\appOne copy .\lib\x64\release\*.* ..\appOne\libOne\lib\64\rel</Command>
+      <Command>If Exist ..\appOne copy ..\libOne\lib\x64\release\*.* ..\appOne\libOne\lib\64\rel</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

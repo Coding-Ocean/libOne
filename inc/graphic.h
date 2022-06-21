@@ -15,7 +15,7 @@ enum COLOR_MODE { RGB, HSV };
 void colorMode(COLOR_MODE mode, float colorDenominator=255);
 enum RECT_MODE { CENTER, CORNER };
 void rectMode(RECT_MODE mode);
-enum TEXT_MODE { BOTTOM, TOP };
+enum TEXT_MODE { BOTTOM, TOP, BCENTER, MBCENTER };
 void textMode(TEXT_MODE mode);
 TEXT_MODE getTextMode();
 
@@ -68,6 +68,7 @@ void text(const char* str, float x, float y);
 void text(double n, float x, float y);
 void text(int n, float x, float y);
 void text(let n, float x, float y);
+void text(let l, const VECTOR& p, TEXT_MODE mode, const COLOR& c, float size);
 
 void printStart();
 void printSize(float size);
@@ -75,6 +76,7 @@ void printPosX(float x);
 void printPosY(float y);
 void printColor(float r, float g, float b);
 void print(let textInfo);
+void print(let textInfo, const COLOR& c, float size);
 
 //for framework
 void initGraphic(int baseWidth, int baseHeight);

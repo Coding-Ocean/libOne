@@ -2,6 +2,7 @@
 #include"graphic.h"
 #include"window.h"
 #include"input.h"
+#include"VECTOR.h"
 #include"mathUtil.h"
 static float Cx = 0;
 static float Cy = 0;
@@ -119,17 +120,63 @@ void mathArc(float startAngle, float centralAngle, float radius) {
     //•ªŠ„‚µ‚½Šp‚Ì‘å‚«‚³
     float divAngle = centralAngle / num;
     //•ªŠ„”•ª‚Ìü‚ğˆø‚­
-    float x1 = cos(startAngle) * radius;
-    float y1 = sin(startAngle) * radius;
+    float x1 = Cos(startAngle) * radius;
+    float y1 = Sin(startAngle) * radius;
     for (int i = 1; i <= num; i++) {
         float angle = startAngle + divAngle * i;
-        float x2 = cos(angle) * radius;
-        float y2 = sin(angle) * radius;
+        float x2 = Cos(angle) * radius;
+        float y2 = Sin(angle) * radius;
         mathLine(x1, y1, x2, y2);
         x1 = x2;
         y1 = y2;
     }
 }
+void mathPoint(const class VECTOR& p, const struct COLOR& c, float strokeW){
+    strokeWeight(strokeW);
+    stroke(c);
+    mathPoint(p.x, p.y);
+}
+void mathCircle(const class VECTOR& p, float r, 
+    const COLOR& fillC, const struct COLOR& strokeC, float strokeW){
+    strokeWeight(strokeW);
+    stroke(strokeC);
+    fill(fillC);
+    mathCircle(p.x, p.y, r);
+}
+void mathRect(const class VECTOR& p, float w, float h, float angle,
+    RECT_MODE mode, const COLOR& fillC, const struct COLOR& strokeC, float strokeW){
+    strokeWeight(strokeW);
+    stroke(strokeC);
+    fill(fillC);
+    rectMode(mode);
+    mathRect(p.x, p.y, w, h, angle);
+}
+void mathLine(const class VECTOR& sp, const class VECTOR& ep, const struct COLOR& c, float strokeW){
+    strokeWeight(strokeW);
+    stroke(c);
+    mathLine(sp.x, sp.y, ep.x, ep.y);
+}
+void mathImage(int img, const class VECTOR& p, float angle, float scale){}
+void mathArrow(const class VECTOR& sp, const class VECTOR& ep,
+    const struct COLOR& c, float strokeW, float size){
+    strokeWeight(strokeW);
+    stroke(c);
+    mathArrow(sp.x, sp.y, ep.x, ep.y, size);
+}
+void mathText(class let l, const class VECTOR& p, TEXT_MODE mode,
+    const struct COLOR& c, float size ){
+    textMode(mode);
+    textSize(size);
+    fill(c);
+    mathText(l, p.x, p.y);
+}
+void mathArc(float startAngle, float centralAngle, float radius, const struct COLOR& c, float strokeW){
+    strokeWeight(strokeW);
+    stroke(c);
+    mathArc(startAngle, centralAngle, radius);
+}
+
+
 extern ANGLE_MODE AngleMode = RADIANS;
 void angleMode(ANGLE_MODE mode) {
     AngleMode = mode;
@@ -139,89 +186,68 @@ extern const float M_2PI = 3.1415926535897932384626433832795f * 2;
 extern const float TO_RAD = 3.1415926535897932384626433832795f / 180.f;
 extern const float TO_DEG = 180.f / 3.1415926535897932384626433832795f;
 
-float sin(float angle) {
+float Sin(float angle) {
     if (AngleMode == DEGREES) {
         angle *= TO_RAD;
     }
     return sinf(angle);
 }
-float cos(float angle) {
+float Cos(float angle) {
     if (AngleMode == DEGREES){
         angle *= TO_RAD;
     }
     return cosf(angle);
 }
-float tan(float angle) {
+float Tan(float angle) {
     if (AngleMode == DEGREES) {
         angle *= TO_RAD;
     }
     return tanf(angle);
 }
-float asin(float sinAngle) {
+float Asin(float sinAngle) {
     float angle = asinf(sinAngle);
     if (AngleMode == DEGREES) {
         angle *= TO_DEG;
     }
     return angle;
 }
-float acos(float cosAngle) {
+float Acos(float cosAngle) {
     float angle = acosf(cosAngle);
     if (AngleMode == DEGREES) {
         angle *= TO_DEG;
     }
     return angle;
 }
-float atan(float tanAngle) {
+float Atan(float tanAngle) {
     float angle = atanf(tanAngle);
     if (AngleMode == DEGREES) {
         angle *= TO_DEG;
     }
     return angle;
 }
-float atan2(float y, float x) {
+float Atan2(float y, float x) {
     float angle = atan2f(y, x);
     if (AngleMode == DEGREES) {
         angle *= TO_DEG;
     }
     return angle;
 }
-float sqrt(float square) {
+float Sqrt(float square) {
     return sqrtf(square);
 }
-float pow(float a, float b) {
+float Pow(float a, float b) {
     return powf(a, b);
 }
-float absolute(float a) {
+float Abs(float a) {
     return a >= 0.0f ? a : -a;
 }
-float round(float v) {
-    return (float)round((double)v);
+float Round(float v) {
+    return (float)roundf(v);
 }
-float map(float value, float start1, float stop1, float start2, float stop2)
+float Map(float value, float start1, float stop1, float start2, float stop2)
 {
     return start2 + (stop2 - start2) * ((value - start1) / (stop1 - start1));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

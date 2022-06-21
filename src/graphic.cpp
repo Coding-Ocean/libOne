@@ -1090,8 +1090,8 @@ bool DrawEndPointFlag = true;
 void line(float sx, float sy, float ex, float ey){
     float dx = ex - sx;
     float dy = ey - sy;
-    float length = sqrt(dx * dx + dy * dy);
-    float r = atan2(dy, dx);
+    float length = sqrtf(dx * dx + dy * dy);
+    float r = Atan2(dy, dx);
     World.identity();
     World.mulTranslate(sx, sy, 0);
     World.mulRotateZ(r);
@@ -1117,9 +1117,9 @@ void line(float sx, float sy, float ex, float ey){
 }
 void arrow(float sx, float sy, float ex, float ey, float size) {
     if (sx == ex && sy == ey)return;
-    float ang = atan2(ey - sy, ex - sx);
-    float c = cos(ang);
-    float s = sin(ang);
+    float ang = Atan2(ey - sy, ex - sx);
+    float c = Cos(ang);
+    float s = Sin(ang);
     float sizeY = size / 3;
     float ax, ay;
     //線
@@ -1136,16 +1136,16 @@ void arrow(float sx, float sy, float ex, float ey, float size) {
 void arc(float px, float py, float startAngle, float angle, float radius) {
     float div = 5;
     if (AngleMode == RADIANS)div *= TO_RAD;
-    int num = int(abs(angle) / div) + 1;
+    int num = int(Abs(angle) / div) + 1;
     float divAngle = angle / num;
 
-    float sx = cos(startAngle) * radius;
-    float sy = -sin(startAngle) * radius;
+    float sx = Cos(startAngle) * radius;
+    float sy = -Sin(startAngle) * radius;
     line(px, py, px + sx, py + sy);
     float ex = 0, ey = 0;
     for (int i = 0; i < num; i++) {
-        ex = cos(startAngle + divAngle * (i + 1)) * radius;
-        ey = -sin(startAngle + divAngle * (i + 1)) * radius;
+        ex = Cos(startAngle + divAngle * (i + 1)) * radius;
+        ey = -Sin(startAngle + divAngle * (i + 1)) * radius;
         line(px + sx, py + sy, px + ex, py + ey);
         sx = ex;
         sy = ey;
@@ -1705,12 +1705,20 @@ TEXT_MODE getTextMode() {
     return TextMode;
 }
 //FONTデータを使って、１文字表示する
-void drawFont(CNTNR::FONT* font, float x, float y){
+void drawFont(CNTNR::FONT* font, float x, float y) {
     World.identity();
-    if(TextMode==TOP)
-        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, y - (float)font->gm.gmptGlyphOrigin.y + font->size, 0.0f);
-    else
-        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x, y - (float)font->gm.gmptGlyphOrigin.y, 0.0f);
+    if (TextMode == TOP)
+        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x,
+            y - (float)font->gm.gmptGlyphOrigin.y + font->size, 0.0f);
+    else if (TextMode == BOTTOM)
+        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x,
+            y - (float)font->gm.gmptGlyphOrigin.y, 0.0f);
+    else if (TextMode == BCENTER)
+        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x - font->size * 0.25f,
+            y - (float)font->gm.gmptGlyphOrigin.y + font->size * 0.5f, 0.0f);
+    else if (TextMode == MBCENTER)
+        World.mulTranslate(x + (float)font->gm.gmptGlyphOrigin.x - font->size * 0.5f,
+            y - (float)font->gm.gmptGlyphOrigin.y + font->size * 0.5f, 0.0f);
     World.mulScaling((float)font->gm.gmBlackBoxX, (float)font->gm.gmBlackBoxY, 1.0f);
     World.mulTranslate(0, 0.5f, 0);
     // Update variables that change once per frame
@@ -1796,7 +1804,15 @@ void text(let l, float x, float y) {
     else
         text((double)l, x, y);
 }
-
+void text(let l, const VECTOR& p, TEXT_MODE mode, const COLOR& c, float size) {
+    textMode(mode);
+    fill(c);
+    textSize(size);
+    if (l.str())
+        text(l.str(), p.x, p.y);
+    else
+        text((double)l, p.x, p.y);
+}
 //print function
 float PrintSize = 50;
 float PrintPosX = 0;
@@ -1824,7 +1840,15 @@ void print(let textInfo) {
     textMode(BOTTOM);
     textSize((float)TextSize);
 }
-
+void print(let textInfo, const COLOR& c, float size) {
+    textMode(TOP);
+    textSize(size);
+    fill(c);
+    text(textInfo, PrintPosX, PrintPosY);
+    PrintPosY += size+size*0.1f;
+    textMode(BOTTOM);
+    textSize((float)TextSize);
+}
 //extention
 #include "CONTAINER/VERTEX_FORMATS.h"
 #include "CONTAINER/VERTEX_BUFFER.h"

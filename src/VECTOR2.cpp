@@ -82,7 +82,7 @@ float VECTOR2::cross(const VECTOR2& v)const{
     return x * v.y - y * v.x;
 }
 float VECTOR2::heading() const {
-    return atan2(y, x);
+    return Atan2(y, x);
 }
 
 //‚QŸŒ³ƒxƒNƒgƒ‹‚Ìˆê”ÊŠÖ”-------------------------------------------------------

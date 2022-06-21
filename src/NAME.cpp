@@ -14,14 +14,14 @@ NAME::~NAME(){
 }
 
 NAME::NAME( const char* s ){
-    int len = strlen( s ) + 1;
+    size_t len = strlen( s ) + 1;
     S = new char[ len ];
     strcpy_s( S, len, s );
 }
 
 void NAME::operator=( const char* s ){
     delete [] S;
-    int len = strlen( s ) + 1;
+    size_t len = strlen( s ) + 1;
     S = new char[ len ];
     strcpy_s( S, len, s );
 }
@@ -35,14 +35,14 @@ int NAME::operator!=( const char* s ) const {
 }
 
 NAME::NAME( const NAME& n ){
-    int len = strlen( n.S ) + 1;
+    size_t len = strlen( n.S ) + 1;
     S = new char[ len ];
     strcpy_s( S, len, n.S );
 }
     
 void NAME::operator=( const NAME& n ){
     delete [] S;
-    int len = strlen( n.S ) + 1;
+    size_t len = strlen( n.S ) + 1;
     S = new char[ len ];
     strcpy_s( S, len, n.S );
 }
@@ -56,7 +56,7 @@ int NAME::operator!=( const NAME& n ) const{
 }
 
 void NAME::operator+=( const char* s ){
-    int l = strlen( S ) + strlen( s ) + 1;
+    size_t l = strlen( S ) + strlen( s ) + 1;
     char* ts;//temp string
     ts = new char[ l ];
     strcpy_s( ts, l, S );

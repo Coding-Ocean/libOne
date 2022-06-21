@@ -74,15 +74,18 @@ VECTOR VECTOR::normalize(){
 float VECTOR::dot(const VECTOR& v) const{
     return x * v.x + y * v.y + z * v.z;
 }
-float VECTOR::crossZ(const VECTOR& v) const{
-    return x * v.y - y * v.x;
-}
 VECTOR VECTOR::cross(const VECTOR& v) const{
     return VECTOR(
         y * v.z - z * v.y,
         z * v.x - x * v.z,
         x * v.y - y * v.x
     );
+}
+float VECTOR::crossZ(const VECTOR& v) const {
+    return x * v.y - y * v.x;
+}
+float VECTOR::crossY(const VECTOR& v) const {
+    return x * v.z - z * v.x;
 }
 
 //ÇRéüå≥ÉxÉNÉgÉãÇÃàÍî ä÷êî-------------------------------------------------------
@@ -100,15 +103,18 @@ VECTOR normalize( const VECTOR& a ){
 float dot( const VECTOR& a, const VECTOR& b){
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
-float crossZ(const VECTOR& a, const VECTOR& b){
-    return a.x * b.y - a.y * b.x;
-}
 VECTOR cross( const VECTOR& a, const VECTOR& b ){
     return VECTOR(
         a.y * b.z - a.z * b.y,
         a.z * b.x - a.x * b.z,
         a.x * b.y - a.y * b.x
     );
+}
+float crossZ(const VECTOR& a, const VECTOR& b) {
+    return a.x * b.y - a.y * b.x;
+}
+float crossY(const VECTOR& a, const VECTOR& b) {
+    return a.x * b.z - a.z * b.x;
 }
 
 

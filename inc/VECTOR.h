@@ -20,12 +20,14 @@ public:
     VECTOR limmit(float maxMag);
     VECTOR normalize();
     float dot(const VECTOR& v)const;
-    float crossZ(const VECTOR& v)const;
     VECTOR cross(const VECTOR& v)const;
+    float crossZ(const VECTOR& v)const;//äOêœZê¨ï™ÇÃÇ›åvéZ(ÇQÇcóp)
+    float crossY(const VECTOR& v)const;//äOêœYê¨ï™ÇÃÇ›åvéZ(ÇQÇcóp)
 };
 
 VECTOR operator* (float f, const VECTOR& v);// VECTOR = float * VECTOR
 VECTOR normalize( const VECTOR& a );
 float dot( const VECTOR& a, const VECTOR& b );
-float crossZ(const VECTOR& a, const VECTOR& b);//äOêœZê¨ï™ÇÃÇ›åvéZ(ÇQÇcóp)
 VECTOR cross( const VECTOR& a, const VECTOR& b );
+float crossZ(const VECTOR& a, const VECTOR& b);
+float crossY(const VECTOR& a, const VECTOR& b);

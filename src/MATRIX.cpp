@@ -21,24 +21,24 @@ void MATRIX::scaling(float x, float y, float z) {
     _41 = 0;     _42 = 0;     _43 = 0;     _44 = 1;    
 }
 void MATRIX::rotateZ(float angle){
-    float c = cos(angle);    
-    float s = sin(angle);    
+    float c = Cos(angle);    
+    float s = Sin(angle);    
     _11 = c;     _12 =-s;     _13 = 0;     _14 = 0;    
     _21 = s;     _22 = c;     _23 = 0;     _24 = 0;    
     _31 = 0;     _32 = 0;     _33 = 1;     _34 = 0;    
     _41 = 0;     _42 = 0;     _43 = 0;     _44 = 1;    
 }
 void MATRIX::rotateY(float angle) {
-    float c = cos(angle);    
-    float s = sin(angle);    
+    float c = Cos(angle);    
+    float s = Sin(angle);    
     _11 = c;     _12 = 0;     _13 = s;     _14 = 0;    
     _21 = 0;     _22 = 1;     _23 = 0;     _24 = 0;    
     _31 =-s;     _32 = 0;     _33 = c;     _34 = 0;    
     _41 = 0;     _42 = 0;     _43 = 0;     _44 = 1;    
 }
 void MATRIX::rotateX(float angle) {
-    float c = cos(angle);    
-    float s = sin(angle);    
+    float c = Cos(angle);    
+    float s = Sin(angle);    
     _11 = 1;     _12 = 0;     _13 = 0;     _14 = 0;    
     _21 = 0;     _22 = c;     _23 =-s;     _24 = 0;    
     _31 = 0;     _32 = s;     _33 = c;     _34 = 0;    
@@ -55,7 +55,7 @@ void MATRIX::camera(const VECTOR& camPos, const VECTOR& lookat, const VECTOR& up
     _41 = 0;      _42 = 0;      _43 = 0;      _44 = 1;
 }
 void MATRIX::pers(float angle, float aspect, float n, float f) {
-    float s = 1.0f / tan(angle * 0.5f);
+    float s = 1.0f / Tan(angle * 0.5f);
     float a = f / (-f + n);
     float b = a * n;
     _11 = s / aspect;   _12 = 0;        _13 = 0;            _14 = 0;
@@ -91,8 +91,8 @@ void MATRIX::mulScaling(const VECTOR& a) {
     _31 *= a.x;  _32 *= a.y;  _33 *= a.z;
 }
 void MATRIX::mulRotateX(float r) {
-    float c = cos(r);
-    float s = sin(r);
+    float c = Cos(r);
+    float s = Sin(r);
     float tmp;
     //1çsñ⁄
     tmp = _12 * c + _13 * s;
@@ -108,8 +108,8 @@ void MATRIX::mulRotateX(float r) {
     _32 = tmp;
 }
 void MATRIX::mulRotateY(float r) {
-    float c = cos(r);
-    float s = sin(r);
+    float c = Cos(r);
+    float s = Sin(r);
     float tmp;
     //1çsñ⁄
     tmp = _11 * c - _13 * s;
@@ -125,8 +125,8 @@ void MATRIX::mulRotateY(float r) {
     _31 = tmp;
 }
 void MATRIX::mulRotateZ(float r) {
-    float c = cos(r);
-    float s = sin(r);
+    float c = Cos(r);
+    float s = Sin(r);
     float tmp;
     //1çsñ⁄
     tmp = _11 * c + _12 * s;
@@ -179,4 +179,3 @@ VECTOR MATRIX::operator*(const VECTOR& v) const {
     //projà»äOÇÃä|ÇØéZ
     return tmp;
 }
-

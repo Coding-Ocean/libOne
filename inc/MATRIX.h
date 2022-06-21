@@ -1,5 +1,4 @@
 #pragma once
-//#include"VECTOR.h"
 class VECTOR;
 
 class MATRIX {
