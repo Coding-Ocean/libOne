@@ -47,6 +47,7 @@
     <ClInclude Include="inc\MATRIX.h" />
     <ClInclude Include="inc\NAME.h" />
     <ClInclude Include="inc\package.h" />
+    <ClInclude Include="inc\QUATERNION.h" />
     <ClInclude Include="inc\rand.h" />
     <ClInclude Include="inc\SHADER\LAMBERT.h" />
     <ClInclude Include="inc\SHADER\SHADER.h" />
