@@ -24,6 +24,8 @@ void mathImage(int img, const class VECTOR& p, float angle = 0, float scale = 1)
 void mathArrow(const class VECTOR& sp, const class VECTOR& ep, 
 	const struct COLOR& c, float strokeW, float size = 30.0f);
 void mathText(class let l, const class VECTOR& p, enum TEXT_MODE mode, const struct COLOR& c, float size=30);
+void mathBracket(const class VECTOR& sp, const class VECTOR& ep, float r,
+	const struct COLOR& c, float strokeW);
 void mathArc(float startAngle, float centralAngle, float radius, const struct COLOR& c, float strokeW);
 extern float mathMouseX;
 extern float mathMouseY;

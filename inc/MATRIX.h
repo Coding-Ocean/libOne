@@ -25,6 +25,7 @@ public:
     void mulTranslate(float x, float y, float z = 0);
     void mulTranslate(const VECTOR& t);
     void mulScaling(float x, float y, float z = 1);
+    void mulScaling(const VECTOR& s);
     void mulRotateZ(float angle);
     void mulRotateY(float angle);
     void mulRotateX(float angle);

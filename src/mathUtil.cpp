@@ -131,6 +131,46 @@ void mathArc(float startAngle, float centralAngle, float radius) {
         y1 = y2;
     }
 }
+void mathBracket(const VECTOR& sp,const VECTOR& ep, float r,
+    const struct COLOR& c, float strokeW)
+{
+    strokeWeight(strokeW);
+    stroke(c);
+    VECTOR v = ep - sp;
+    VECTOR nv = normalize(v);
+    VECTOR sc = sp + nv * r;
+    VECTOR ec = ep - nv * r;
+    VECTOR mp = sp + v / 2 - VECTOR(-nv.y, nv.x) * r;
+    angleMode(DEGREES);
+    float angle = 90;
+    float num = 10;
+    //•ªŠ„‚µ‚½Šp‚Ì‘å‚«‚³
+    float divAngle = angle / num;
+    //•ªŠ„”•ª‚Ìü‚ğˆø‚­
+    float x1, y1, x2, y2, a;
+    x1 = sc.x + -nv.x * r * Cos(9) + -nv.y * r * -Sin(9);
+    y1 = sc.y + -nv.x * r * Sin(9) + -nv.y * r * Cos(9);
+    for (int i = 2; i <= num; i++) {
+        a = 9 * i;
+        x2 = sc.x + -nv.x * r * Cos(a) + -nv.y * r * -Sin(a);
+        y2 = sc.y + -nv.x * r * Sin(a) + -nv.y * r * Cos(a);
+        mathLine(x1, y1, x2, y2);
+        x1 = x2;
+        y1 = y2;
+    }
+    x1 = ec.x + -nv.x * r * Cos(a) + -nv.y * r * -Sin(a);
+    y1 = ec.y + -nv.x * r * Sin(a) + -nv.y * r * Cos(a);
+    mathLine(x2, y2, x1, y1);
+    for (int i = 1; i < num; i++) {
+        a = 90 + divAngle * i;
+        x2 = ec.x + -nv.x * r * Cos(a) + -nv.y * r * -Sin(a);
+        y2 = ec.y + -nv.x * r * Sin(a) + -nv.y * r * Cos(a);
+        mathLine(x1, y1, x2, y2);
+        x1 = x2;
+        y1 = y2;
+    }
+    mathPoint(mp, c, 20);
+}
 void mathPoint(const class VECTOR& p, const struct COLOR& c, float strokeW){
     strokeWeight(strokeW);
     stroke(c);

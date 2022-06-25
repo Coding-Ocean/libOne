@@ -93,6 +93,12 @@ void MATRIX::mulScaling( float x, float y, float z ){
 	_21 *= x;    _22 *= y;    _23 *= z;
 	_31 *= x;    _32 *= y;    _33 *= z;
 }
+void MATRIX::mulScaling(const VECTOR& s)
+{
+    _11 *= s.x;    _12 *= s.y;    _13 *= s.z;
+    _21 *= s.x;    _22 *= s.y;    _23 *= s.z;
+    _31 *= s.x;    _32 *= s.y;    _33 *= s.z;
+}
 void MATRIX::mulRotateX(float r) {
     float c = Cos(r);
     float s = Sin(r);
