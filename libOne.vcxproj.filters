@@ -40,6 +40,12 @@
     <Filter Include="ヘッダー ファイル\ex\shader">
       <UniqueIdentifier>{8c825297-4e3f-4d58-ba97-86eed46d106b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\ex\converter">
+      <UniqueIdentifier>{d2a260ea-636e-451e-9b50-0a7e670df129}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ex\converter">
+      <UniqueIdentifier>{40ec7330-8256-47ba-a606-43637fe834c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\window.h">
@@ -183,6 +189,18 @@
     <ClInclude Include="inc\QUATERNION.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="inc\CONVERTER\fileUtil.h">
+      <Filter>ソース ファイル\ex\converter</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONVERTER\CONVERT_MA.h">
+      <Filter>ソース ファイル\ex\converter</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONVERTER\convertUtil.h">
+      <Filter>ソース ファイル\ex\converter</Filter>
+    </ClInclude>
+    <ClInclude Include="inc\CONVERTER\fbxCommon.h">
+      <Filter>ソース ファイル\ex\converter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\window.cpp">
@@ -304,6 +322,18 @@
     </ClCompile>
     <ClCompile Include="src\WSTR.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONVERTER\CONVERT_MA.cpp">
+      <Filter>ヘッダー ファイル\ex\converter</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONVERTER\convertUtil.cpp">
+      <Filter>ヘッダー ファイル\ex\converter</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONVERTER\fbxCommon.cpp">
+      <Filter>ヘッダー ファイル\ex\converter</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CONVERTER\fileUtil.cpp">
+      <Filter>ヘッダー ファイル\ex\converter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -35,6 +35,10 @@
     <ClInclude Include="inc\CONTAINER\TREE_ORIGIN.h" />
     <ClInclude Include="inc\CONTAINER\VERTEX_BUFFER.h" />
     <ClInclude Include="inc\CONTAINER\VERTEX_FORMATS.h" />
+    <ClInclude Include="inc\CONVERTER\convertUtil.h" />
+    <ClInclude Include="inc\CONVERTER\CONVERT_MA.h" />
+    <ClInclude Include="inc\CONVERTER\fbxCommon.h" />
+    <ClInclude Include="inc\CONVERTER\fileUtil.h" />
     <ClInclude Include="inc\DATABASE.h" />
     <ClInclude Include="inc\DATA_ELEM.h" />
     <ClInclude Include="inc\FILE_BUFFER.h" />
@@ -83,6 +87,10 @@
     <ClCompile Include="src\CONTAINER\TREE.cpp" />
     <ClCompile Include="src\CONTAINER\TREE_ORIGIN.cpp" />
     <ClCompile Include="src\CONTAINER\VERTEX_BUFFER.cpp" />
+    <ClCompile Include="src\CONVERTER\convertUtil.cpp" />
+    <ClCompile Include="src\CONVERTER\CONVERT_MA.cpp" />
+    <ClCompile Include="src\CONVERTER\fbxCommon.cpp" />
+    <ClCompile Include="src\CONVERTER\fileUtil.cpp" />
     <ClCompile Include="src\DATABASE.cpp" />
     <ClCompile Include="src\DATA_ELEM.cpp" />
     <ClCompile Include="src\FILE_BUFFER.cpp" />
@@ -240,6 +248,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -326,9 +335,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>FBX SDK\2016.1.2\include;inc</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -341,6 +350,12 @@
       <Command>If Exist ..\appOne copy ..\libOne\lib\x64\debug\*.* ..\appOne\libOne\lib\64\deb
 If Exist ..\appOne xcopy ..\libOne\inc\*.* ..\appOne\libOne\inc /e /y</Command>
     </PostBuildEvent>
+    <Lib>
+      <AdditionalDependencies>libfbxsdk.lib</AdditionalDependencies>
+    </Lib>
+    <Lib>
+      <AdditionalLibraryDirectories>FBX SDK\2016.1.2\lib\vs2015\x64\debug</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
