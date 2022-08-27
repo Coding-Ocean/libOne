@@ -96,7 +96,7 @@ void mathCircle(float x, float y, float r) {
     circle(Cx + x * Unit, Cy - y * Unit, r * Unit);
 }
 void mathRect(float x, float y, float w, float h, float angle) {
-    rect(Cx + x * Unit, Cy - y * Unit, w * Unit, h * Unit, angle);
+    rect(Cx + x * Unit, Cy - y * Unit, w * Unit, h * Unit, -angle);
 }
 void mathLine(float sx, float sy, float ex, float ey) {
     line(Cx + sx * Unit, Cy - sy * Unit, Cx + ex * Unit, Cy - ey * Unit);
