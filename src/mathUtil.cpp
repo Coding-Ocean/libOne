@@ -8,10 +8,15 @@ static float Cx = 0;
 static float Cy = 0;
 static float Unit = 0;
 static float MaxScaleX = 0;
+static float MinScaleX = 0;
 extern float mathMouseX = 0;
 extern float mathMouseY = 0;
 float maxScaleX() {
     return MaxScaleX;
+}
+float minScaleX()
+{
+    return MinScaleX;
 }
 float maxScaleY() {
     return Cy / Unit;
@@ -89,6 +94,61 @@ void mathAxis(float maxScaleX, float bright){
     }
     mathMouse();
 }
+
+void mathAxis(float ox, float oy, float unit, float bright) 
+{
+    Cx = ox;
+    Cy = oy;
+
+    if (unit < 1)unit = 1;
+    Unit = unit;
+    MaxScaleX = (Width-Cx)/Unit;
+    MinScaleX = -Cx / Unit;
+
+    if (AxisMode == DRAW) {
+        strokeWeight(1);
+        stroke(bright);
+        fill(bright);
+        //axis X
+        line(0, Cy, Width, Cy);
+        //axis y
+        line(Cx, 0, Cx, Height);
+        TEXT_MODE preTextMode = getTextMode();
+        textMode(BCENTER);
+        textSize(20);
+        float l = 5;
+        //scale x
+        int cnt = 1;
+        for (float x = Cx+Unit; x < Width; x += Unit) {
+            line(x, Cy - l, x, Cy + l);
+            text(cnt, x, Cy + 15);
+            cnt++;
+        }
+        cnt = -1;
+        for (float x = Cx - Unit; x > 0; x -= Unit) {
+            line(x, Cy - l, x, Cy + l);
+            text(cnt, x-10, Cy + 15);
+            cnt--;
+        }
+        //scale y
+        cnt = 1;
+        for (float y = Cy-Unit; y > 0; y -= Unit) {
+            line(Cx - l, y, Cx + l, y);
+            text(cnt, Cx - 15, y);
+            cnt++;
+        }
+        cnt = -1;
+        for (float y = Cy + Unit; y < height; y += Unit) {
+            line(Cx - l, y, Cx + l, y);
+            text(cnt, Cx - 25, y);
+            cnt--;
+        }
+        text("0", Cx - 15, Cy + 15);
+        textMode(preTextMode);
+    }
+    mathMouse();
+}
+
 void mathPoint(float x, float y) {
     point(Cx + x * Unit, Cy - y * Unit);
 }

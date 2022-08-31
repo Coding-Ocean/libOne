@@ -1,10 +1,12 @@
 #pragma once
 #include"let.h"
 float maxScaleX();
+float minScaleX();
 float maxScaleY();
 enum AXIS_MODE { DRAW, NODRAW };
 void axisMode(AXIS_MODE mode);
 void mathAxis(float maxScaleX=1.1f, float bright=0);
+void mathAxis(float ox, float oy, float unit, float bright=0);
 void mathPoint(float x, float y);
 void mathCircle(float x, float y, float diameter);
 void mathRect(float x, float y, float w, float h, float angle = 0);
