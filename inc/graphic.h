@@ -83,6 +83,7 @@ void initGraphic(int baseWidth, int baseHeight);
 void freeGraphic();
 void changeSize();
 void present();
+void refreshCntnr();
 
 //extention
 #define VERTEX_BUFFER_OBJ struct ID3D11Buffer

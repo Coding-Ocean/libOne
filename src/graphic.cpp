@@ -181,7 +181,10 @@ struct CNTNR {
     }
 };
 CNTNR* Cntnr = 0;
-
+void refreshCntnr() {
+    SAFE_DELETE(Cntnr);
+    Cntnr = new CNTNR;
+}
 void freeGraphic() {
     if (Context) Context->ClearState();
 
