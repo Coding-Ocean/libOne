@@ -720,7 +720,7 @@ void createCircleVertexPosBuffer(){
         WARNING(FAILED(hr), "CreateVertexBuffer Circle", "");
     }
     {
-        const int num = 64;
+        const int num = 120;
         float rad = 3.141592f * 2 / num;
         VECTOR circleVertices[num];
         circleVertices[0] = VECTOR(0.5f, 0, 0.0f);
@@ -1306,7 +1306,7 @@ void circle(float x, float y, float diameter){
     }
     else {
         Context->IASetVertexBuffers(0, 1, &CircleLLVertexPosBuffer, &stride, &offset);
-        numAngles = 64;
+        numAngles = 120;
         Context->Draw(numAngles, 0);
     }
 

@@ -32,6 +32,15 @@ void mathMouse() {
         mathMouseY = -(inValue(MOUSE_Y) - ClientHeight / 2.0f) / (ClientWidth / 2.0f / MaxScaleX);
     }
 }
+void mathMouse2() {
+//    float aspect = Width / Height;
+//    if ((float)ClientWidth / ClientHeight > aspect) {
+//    }
+//    else {
+    mathMouseX =  (inValue(MOUSE_X) - Cx - (ClientWidth-Width)/2)/Unit;
+    mathMouseY = -(inValue(MOUSE_Y) - Cy )/Unit;
+//    }
+}
 AXIS_MODE AxisMode = DRAW;
 void axisMode(AXIS_MODE mode) {
     AxisMode = mode;
@@ -146,7 +155,7 @@ void mathAxis(float ox, float oy, float unit, float bright)
         text("0", Cx - 15, Cy + 15);
         textMode(preTextMode);
     }
-    mathMouse();
+    mathMouse2();
 }
 
 void mathPoint(float x, float y) {
@@ -211,7 +220,7 @@ void mathBracket(const VECTOR& sp,const VECTOR& ep, float r,
     x1 = sc.x + -nv.x * r * Cos(9) + -nv.y * r * -Sin(9);
     y1 = sc.y + -nv.x * r * Sin(9) + -nv.y * r * Cos(9);
     for (int i = 2; i <= num; i++) {
-        a = 9 * i;
+        a = 9.0f * i;
         x2 = sc.x + -nv.x * r * Cos(a) + -nv.y * r * -Sin(a);
         y2 = sc.y + -nv.x * r * Sin(a) + -nv.y * r * Cos(a);
         mathLine(x1, y1, x2, y2);
