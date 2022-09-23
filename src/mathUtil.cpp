@@ -127,29 +127,33 @@ void mathAxis(float ox, float oy, float unit, float bright)
         textSize(20);
         float l = 5;
         //scale x
-        int cnt = 1;
+        int cnt = 1,ofst=0;
         for (float x = Cx+Unit; x < Width; x += Unit) {
+            ofst = cnt >= 10 ? 5 : 0;
             line(x, Cy - l, x, Cy + l);
-            text(cnt, x, Cy + 15);
+            text(cnt, x - ofst, Cy + 15 );
             cnt++;
         }
         cnt = -1;
         for (float x = Cx - Unit; x > 0; x -= Unit) {
+            ofst = cnt <= -10 ? 15 : 10;
             line(x, Cy - l, x, Cy + l);
-            text(cnt, x-10, Cy + 15);
+            text(cnt, x-ofst, Cy + 15);
             cnt--;
         }
         //scale y
         cnt = 1;
         for (float y = Cy-Unit; y > 0; y -= Unit) {
+            ofst = cnt >= 10 ? 25 : 15;
             line(Cx - l, y, Cx + l, y);
-            text(cnt, Cx - 15, y);
+            text(cnt, Cx - ofst, y);
             cnt++;
         }
         cnt = -1;
         for (float y = Cy + Unit; y < height; y += Unit) {
+            ofst = cnt <= -10 ? 35 : 25;
             line(Cx - l, y, Cx + l, y);
-            text(cnt, Cx - 25, y);
+            text(cnt, Cx - ofst, y);
             cnt--;
         }
         text("0", Cx - 15, Cy + 15);

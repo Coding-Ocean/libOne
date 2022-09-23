@@ -1845,7 +1845,8 @@ void print(let textInfo) {
 }
 void print(let textInfo, const COLOR& c, float size) {
     textMode(TOP);
-    textSize(size);
+    PrintSize = size;
+    textSize(PrintSize);
     fill(c);
     text(textInfo, PrintPosX, PrintPosY);
     PrintPosY += size+size*0.1f;
