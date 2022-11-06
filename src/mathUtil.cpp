@@ -160,6 +160,7 @@ void mathAxis(float ox, float oy, float unit, float bright)
         textMode(preTextMode);
     }
     mathMouse2();
+    fill(255);
 }
 
 void mathPoint(float x, float y) {
@@ -257,7 +258,7 @@ void mathCircle(const class VECTOR& p, float r,
     mathCircle(p.x, p.y, r);
 }
 void mathRect(const class VECTOR& p, float w, float h, float angle,
-    RECT_MODE mode, const COLOR& fillC, const struct COLOR& strokeC, float strokeW){
+    enum RECT_MODE mode, const struct COLOR& fillC, const struct COLOR& strokeC, float strokeW){
     strokeWeight(strokeW);
     stroke(strokeC);
     fill(fillC);

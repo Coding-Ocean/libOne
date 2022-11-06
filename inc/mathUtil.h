@@ -19,8 +19,8 @@ void mathArc(float startAngle, float centralAngle, float radius);
 void mathPoint(const class VECTOR& p, const struct COLOR& c, float strokeW);
 void mathCircle(const class VECTOR& p, float diameter, 
 	const struct COLOR& fillC, const struct COLOR& c, float strokeW);
-void mathRect(const class VECTOR& p, float w, float h, float angle, 
-	enum RECT_MODE mode, const struct COLOR& fillC, const struct COLOR& c, float strokeW);
+void mathRect(const class VECTOR& p, float w, float h, float angle,
+	enum RECT_MODE mode, const struct COLOR& fillC, const struct COLOR& strokeC, float strokeW);
 void mathLine(const class VECTOR& sp, const class VECTOR& ep, const struct COLOR& c, float strokeW);
 void mathImage(int img, const class VECTOR& p, float angle = 0, float scale = 1);
 void mathArrow(const class VECTOR& sp, const class VECTOR& ep, 

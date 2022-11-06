@@ -1327,6 +1327,30 @@ void circle(float x, float y, float diameter){
         DrawEndPointFlag = true;
     }
 }
+void point(const VECTOR& p, const COLOR& c, float sw){
+    stroke(c);
+    strokeWeight(sw);
+    point(p.x, p.y);
+}
+void line(const VECTOR& p1, const VECTOR& p2, const COLOR& c, float sw){
+    stroke(c);
+    strokeWeight(sw);
+    line(p1.x, p1.y, p2.x, p2.y);
+}
+void circle(const VECTOR& p, float diameter, const COLOR& fc, const COLOR& sc, float sw){
+    fill(fc);
+    stroke(sc);
+    strokeWeight(sw);
+    circle(p.x, p.y, diameter);
+}
+void rect(const VECTOR& p, float w, float h, float angle, 
+    RECT_MODE mode, const COLOR& fc, const COLOR& sc, float sw){
+    rectMode(mode);
+    fill(fc);
+    stroke(sc);
+    strokeWeight(sw);
+    rect(p.x, p.y, w, h, angle);
+}
 void shape(int idx, float x, float y, float r, float size) {
     WARNING((size_t)idx >= Cntnr->shapes.size(), "shape番号オーバー", "");
     CNTNR::SHAPE& sh = Cntnr->shapes.at(idx);
@@ -1397,6 +1421,7 @@ void shape(int idx, const class MATRIX& world) {
         DrawEndPointFlag = true;
     }
 }
+
 int loadImage(const char* filename){
     //重複ロードを避ける
     auto it = Cntnr->textureMap.find(filename);

@@ -42,6 +42,15 @@ void arc(float x, float y, float startAngle, float angle, float radius);
 void rect(float x, float y, float w, float h);
 void rect(float x, float y, float w, float h, float angle);
 void circle(float x, float y, float diameter);
+void point(const class VECTOR& p,
+	const struct COLOR& c, float strokeW);
+void line(const class VECTOR& p1, const class VECTOR& p2,
+	const struct COLOR& strokeColor, float strkWeight);
+void circle(const class VECTOR& p, float diameter,
+	const struct COLOR& fillColor, const struct COLOR& strokeColor, float strokeW);
+void rect(const class VECTOR& p, float w, float h, float angle,
+	enum RECT_MODE mode, 
+	const struct COLOR& fillColor, const struct COLOR& strokeColor, float strokeW);
 
 struct SHAPE_VERTEX { float x, y; };
 int createShape(struct SHAPE_VERTEX* vertices, int numVertices);
