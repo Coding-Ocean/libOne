@@ -1337,6 +1337,11 @@ void line(const VECTOR& p1, const VECTOR& p2, const COLOR& c, float sw){
     strokeWeight(sw);
     line(p1.x, p1.y, p2.x, p2.y);
 }
+void arrow(const VECTOR& s, const VECTOR& e, const COLOR& strokeColor, float strokeW) {
+    stroke(strokeColor);
+    strokeWeight(strokeW);
+    arrow(s.x, s.y, e.x, e.y);
+}
 void circle(const VECTOR& p, float diameter, const COLOR& fc, const COLOR& sc, float sw){
     fill(fc);
     stroke(sc);
@@ -1620,6 +1625,11 @@ void image(int idx, float x, float y, float a, float s) {
     Context->VSSetShader(ImageVertexShader, NULL, 0);
     Context->PSSetShader(ImagePixelShader, NULL, 0);
     Context->Draw(4, 0);
+}
+void image(int idx, const VECTOR& p, float angle, float size, RECT_MODE mode)
+{
+    rectMode(mode);
+    image(idx, p.x, p.y, angle, size);
 }
 void triangle3D(const VECTOR& p0, const VECTOR& p1, const VECTOR& p2, 
     const COLOR& c0, const COLOR& c1, const COLOR& c2) {
