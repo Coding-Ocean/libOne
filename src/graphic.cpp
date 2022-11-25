@@ -720,7 +720,7 @@ void createCircleVertexPosBuffer(){
         WARNING(FAILED(hr), "CreateVertexBuffer Circle", "");
     }
     {
-        const int num = 120;
+        const int num = 64;
         float rad = 3.141592f * 2 / num;
         VECTOR circleVertices[num];
         circleVertices[0] = VECTOR(0.5f, 0, 0.0f);
@@ -1186,7 +1186,7 @@ void point(float x, float y){
     }
     else {
         Context->IASetVertexBuffers(0, 1, &CircleLLVertexPosBuffer, &stride, &offset);
-        Context->Draw(64, 0);
+        Context->Draw(90, 0);
     }
 }
 void rectMode(RECT_MODE mode){
@@ -1306,11 +1306,12 @@ void circle(float x, float y, float diameter){
     }
     else {
         Context->IASetVertexBuffers(0, 1, &CircleLLVertexPosBuffer, &stride, &offset);
-        numAngles = 120;
+        numAngles = 64;
         Context->Draw(numAngles, 0);
     }
 
     if (StrokeWeight > 0) {
+        if(diameter>=900)numAngles *= 2;
         float rad = 3.141592f * 2 / numAngles;
         float radius = diameter / 2;
         DrawEndPointFlag = false;
