@@ -8,5 +8,6 @@ constexpr auto full = true;
 //for beginner
 #define program() void gmain()
 #define loop() while(msgProc())
+#define repeat() while(msgProc())
 #define notQuit msgProc()
 #define pause() while(msgProc()){}

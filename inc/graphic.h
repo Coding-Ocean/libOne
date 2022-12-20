@@ -34,6 +34,7 @@ void fill(const struct COLOR& c);
 void fill(float r, float g, float b);
 void fill(float r, float g, float b, float a);
 void fill(float c);
+void noFill();
 
 void point(float x, float y);
 void line(float sx, float sy, float ex, float ey);

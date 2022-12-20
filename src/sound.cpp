@@ -200,6 +200,14 @@ void releaseSound( int i ){
     SAFE_RELEASE( Dsb->at( i ) );
 }
 
+void releaseAllSound()
+{
+    for (unsigned i = 0; i < Dsb->size(); i++) {
+        SAFE_RELEASE(Dsb->at(i));
+    }
+    Dsb->clear();
+}
+
 /*
 //play( "xxxx.wav" );とするだけで読み込んで再生する。
 //ロードも自動。

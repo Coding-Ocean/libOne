@@ -1039,6 +1039,12 @@ void fill(float c) {
     FillColor.b = c;
     FillColor.a = 1;
 }
+void noFill() {
+    FillColor.r = 0;
+    FillColor.g = 0;
+    FillColor.b = 0;
+    FillColor.a = 0;
+}
 void imageColor(float r, float g, float b) {
     if (ColorMode == RGB) {
         MeshColor.r = r / ColorDenominator;
@@ -1186,7 +1192,7 @@ void point(float x, float y){
     }
     else {
         Context->IASetVertexBuffers(0, 1, &CircleLLVertexPosBuffer, &stride, &offset);
-        Context->Draw(90, 0);
+        Context->Draw(64, 0);
     }
 }
 void rectMode(RECT_MODE mode){
@@ -1205,19 +1211,21 @@ void rect(float x, float y, float w, float h) {
         World.mulScaling(w, h, 1);
         World.mulTranslate(-0.5f, 0, 0);
     }
-    // Update variables that change once per frame
-    Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
-    Context->UpdateSubresource(CbColor, 0, NULL, &FillColor, 0, 0);
-    Context->VSSetConstantBuffers(0, 1, &CbWorld);
-    Context->PSSetConstantBuffers(3, 1, &CbColor);
-    // Set vertex buffer
-    UINT stride = sizeof(VECTOR), offset = 0;
-    Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
-    Context->IASetInputLayout(ShapeVertexLayout);
-    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-    Context->VSSetShader(ShapeVertexShader, NULL, 0);
-    Context->PSSetShader(ShapePixelShader, NULL, 0);
-    Context->Draw(4, 0);
+    if (FillColor.a > 0) {
+        // Update variables that change once per frame
+        Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
+        Context->UpdateSubresource(CbColor, 0, NULL, &FillColor, 0, 0);
+        Context->VSSetConstantBuffers(0, 1, &CbWorld);
+        Context->PSSetConstantBuffers(3, 1, &CbColor);
+        // Set vertex buffer
+        UINT stride = sizeof(VECTOR), offset = 0;
+        Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
+        Context->IASetInputLayout(ShapeVertexLayout);
+        Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+        Context->VSSetShader(ShapeVertexShader, NULL, 0);
+        Context->PSSetShader(ShapePixelShader, NULL, 0);
+        Context->Draw(4, 0);
+    }
     //draw stroke
     if (StrokeWeight > 0) {
         DrawEndPointFlag = false;
@@ -1253,19 +1261,21 @@ void rect(float x, float y, float w, float h, float r) {
     World.mulRotateZ(r);
     World.mulScaling(w, h, 1);
     World.mulTranslate(-0.5f, 0, 0);
-    // Update variables that change once per frame
-    Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
-    Context->UpdateSubresource(CbColor, 0, NULL, &FillColor, 0, 0);
-    Context->VSSetConstantBuffers(0, 1, &CbWorld);
-    Context->PSSetConstantBuffers(3, 1, &CbColor);
-    // Set vertex buffer
-    UINT stride = sizeof(VECTOR), offset = 0;
-    Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
-    Context->IASetInputLayout(ShapeVertexLayout);
-    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-    Context->VSSetShader(ShapeVertexShader, NULL, 0);
-    Context->PSSetShader(ShapePixelShader, NULL, 0);
-    Context->Draw(4, 0);
+    if (FillColor.a > 0) {
+        // Update variables that change once per frame
+        Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
+        Context->UpdateSubresource(CbColor, 0, NULL, &FillColor, 0, 0);
+        Context->VSSetConstantBuffers(0, 1, &CbWorld);
+        Context->PSSetConstantBuffers(3, 1, &CbColor);
+        // Set vertex buffer
+        UINT stride = sizeof(VECTOR), offset = 0;
+        Context->IASetVertexBuffers(0, 1, &RectVertexPosBuffer, &stride, &offset);
+        Context->IASetInputLayout(ShapeVertexLayout);
+        Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+        Context->VSSetShader(ShapeVertexShader, NULL, 0);
+        Context->PSSetShader(ShapePixelShader, NULL, 0);
+        Context->Draw(4, 0);
+    }
     if (StrokeWeight > 0) {
         DrawEndPointFlag = false;
         VECTOR lt = World * VECTOR(0.0f, 0.5f, 0.0f);
@@ -1280,38 +1290,48 @@ void rect(float x, float y, float w, float h, float r) {
     }
 }
 void circle(float x, float y, float diameter){
-    World.identity();
-    World.mulTranslate(x, y, 0);
-    World.mulScaling(diameter, diameter, 1);
+    int numAngles = 0;
+    if (FillColor.a > 0) {
+        World.identity();
+        World.mulTranslate(x, y, 0);
+        World.mulScaling(diameter, diameter, 1);
 
-    // Update variables that change once per frame
-    Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
-    Context->UpdateSubresource(CbColor, 0, NULL, &FillColor, 0, 0);
-    Context->VSSetConstantBuffers(0, 1, &CbWorld);
-    Context->PSSetConstantBuffers(3, 1, &CbColor);
+        // Update variables that change once per frame
+        Context->UpdateSubresource(CbWorld, 0, NULL, &World, 0, 0);
+        Context->UpdateSubresource(CbColor, 0, NULL, &FillColor, 0, 0);
+        Context->VSSetConstantBuffers(0, 1, &CbWorld);
+        Context->PSSetConstantBuffers(3, 1, &CbColor);
 
-    // Set vertex buffer
-    UINT stride = sizeof(VECTOR), offset = 0;
-    Context->IASetInputLayout(ShapeVertexLayout);
-    Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+        // Set vertex buffer
+        UINT stride = sizeof(VECTOR), offset = 0;
+        Context->IASetInputLayout(ShapeVertexLayout);
+        Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-    Context->VSSetShader(ShapeVertexShader, NULL, 0);
-    Context->PSSetShader(ShapePixelShader, NULL, 0);
+        Context->VSSetShader(ShapeVertexShader, NULL, 0);
+        Context->PSSetShader(ShapePixelShader, NULL, 0);
 
-    int numAngles;
-    if (diameter <= 100) {
-        Context->IASetVertexBuffers(0, 1, &CircleLVertexPosBuffer, &stride, &offset);
-        numAngles = 32;
-        Context->Draw(numAngles, 0);
+        if (diameter <= 100) {
+            Context->IASetVertexBuffers(0, 1, &CircleLVertexPosBuffer, &stride, &offset);
+            numAngles = 32;
+            Context->Draw(numAngles, 0);
+        }
+        else {
+            Context->IASetVertexBuffers(0, 1, &CircleLLVertexPosBuffer, &stride, &offset);
+            numAngles = 64;
+            Context->Draw(numAngles, 0);
+        }
     }
-    else {
-        Context->IASetVertexBuffers(0, 1, &CircleLLVertexPosBuffer, &stride, &offset);
-        numAngles = 64;
-        Context->Draw(numAngles, 0);
-    }
-
+    //—ÖŠs
     if (StrokeWeight > 0) {
-        if(diameter>=900)numAngles *= 2;
+        if (diameter <= 100) {
+            numAngles = 32;
+        }
+        else if (diameter < 900) {
+            numAngles = 64;
+        }
+        else {
+            numAngles = 120;
+        }
         float rad = 3.141592f * 2 / numAngles;
         float radius = diameter / 2;
         DrawEndPointFlag = false;

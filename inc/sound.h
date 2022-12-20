@@ -2,8 +2,9 @@
 
 //初期化開放系
 void initSound();
-void freeSound();//全ての音を開放
-void releaseSound( int soundIdx );//ひとつの音だけ開放
+void freeSound();//全ての音およびサウンドシステムを開放
+void releaseSound(int soundIdx);//ひとつの音だけ開放
+void releaseAllSound();//全ての音を開放
 
 //ロード
 int loadSound( const char* filename );
