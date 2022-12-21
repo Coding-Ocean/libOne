@@ -13,6 +13,10 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+libOne.idb
+libOne.lib
+libOne.pdb
+
 # Build results
 [Dd]ebugPublic/
 [Rr]elease/
