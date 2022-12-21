@@ -8,7 +8,7 @@ void releaseAllSound();//全ての音を開放
 
 //ロード
 int loadSound( const char* filename );
-int duplicateSound( int i );
+int duplicateSound( int soundIdx );
 
 //出力系
 void playSound( int soundIdx );
