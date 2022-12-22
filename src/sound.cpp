@@ -218,6 +218,7 @@ void releaseAllSound()
         SAFE_RELEASE(Dsb->at(i));
     }
     Dsb->clear();
+    Filenames->clear();
 }
 
 /*
