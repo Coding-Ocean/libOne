@@ -11,6 +11,7 @@ using namespace std;
 
 static IDirectSound8* Ds = 0;
 static vector<IDirectSoundBuffer*>* Dsb = 0;
+static vector<string>* Filenames = 0;
 
 //DirectSound初期化
 void initSound(){
@@ -24,9 +25,11 @@ void initSound(){
     WARNING( FAILED( hr ), "協調レベル設定失敗","" );
 	//データ
     Dsb = new vector<IDirectSoundBuffer*>;
+    Filenames = new vector<string>;
 }
 
 void freeSound(){
+    SAFE_DELETE(Filenames);
     if( Dsb ){
         for( unsigned i = 0; i < Dsb->size(); i++ ){
             SAFE_RELEASE( Dsb->at( i ) );
@@ -39,12 +42,19 @@ void freeSound(){
 
 //パッケージ読み込み対応版
 int loadSound(const char* fileName) {
+    //読み込みの重複をさける
+    unsigned i;
+    for (i = 0; i<Filenames->size(); i++) {
+        if (Filenames->at(i) == fileName) {
+            return i;
+        }
+    }
     //ファイルまたはパッケージから読み込み
     int waveDataSize = 0;
     char* waveData = 0;
     if (packageDataExists() == false) {
         //パッケージデータがないので、普通にファイルから読み込む
-        FILE* fp;
+        FILE* fp=0;
         fopen_s(&fp, fileName, "rb");
         WARNING(fp == 0, "ロードエラー", fileName);
         struct stat info;
@@ -148,9 +158,11 @@ int loadSound(const char* fileName) {
     }
     if (idx == Dsb->size()) {
         Dsb->push_back(dsb);
+        Filenames->push_back(fileName);
     }
     else {
         Dsb->at(idx) = dsb;
+        Filenames->at(idx) = fileName;
     }
     return idx;
 }
