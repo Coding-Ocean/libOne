@@ -22,6 +22,7 @@ TEXT_MODE getTextMode();
 void clear(const struct COLOR& c);
 void clear(float r, float g, float b);
 void clear(float c=0);
+void clearByHex(unsigned c);
 
 void stroke(const struct COLOR& c);
 void stroke(float r, float g, float b);

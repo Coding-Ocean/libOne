@@ -958,6 +958,14 @@ void clear(float c) {
     float clearColor[4] = { c, c, c, 1.0f };
     clear(clearColor);
 }
+void clearByHex(unsigned c) {
+    float clearColor[4]{};
+    clearColor[0] = (c >> 16) / ColorDenominator;
+    clearColor[1] = ((c & 0x00ff00) >> 8) / ColorDenominator;
+    clearColor[2] = (c & 0x0000ff) / ColorDenominator;
+    clearColor[3] = 1.0f;
+    clear(clearColor);
+}
 
 void stroke(float r, float g, float b) {
     if (ColorMode == RGB) {
