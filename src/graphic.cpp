@@ -1158,7 +1158,7 @@ void arc(float px, float py, float startAngle, float angle, float radius) {
 
     float sx = Cos(startAngle) * radius;
     float sy = -Sin(startAngle) * radius;
-    line(px, py, px + sx, py + sy);
+    //line(px, py, px + sx, py + sy);
     float ex = 0, ey = 0;
     for (int i = 0; i < num; i++) {
         ex = Cos(startAngle + divAngle * (i + 1)) * radius;
@@ -1167,7 +1167,7 @@ void arc(float px, float py, float startAngle, float angle, float radius) {
         sx = ex;
         sy = ey;
     }
-    line(px, py, px + ex, py + ey);
+    //line(px, py, px + ex, py + ey);
 }
 void point(float x, float y){
     World.identity();

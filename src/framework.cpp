@@ -2,7 +2,7 @@
 #pragma comment(lib, "imm32.lib" )
 #pragma comment(lib, "d3d11.lib") 
 #pragma comment(lib, "dsound.lib" )
-
+#pragma comment(lib, "Xinput.lib" )
 #include<crtdbg.h>
 #include<tchar.h>
 #include<Windows.h>
