@@ -187,8 +187,8 @@ static int e(const char *str)
    #define e(x,y)  e(x)
 #endif
 
-#define epf(x,y)   ((float *) (e(x,y)?NULL:NULL))
-#define epuc(x,y)  ((unsigned char *) (e(x,y)?NULL:NULL))
+#define epf(x,y)   ((float *) (e(x,y)?nullptr:nullptr))
+#define epuc(x,y)  ((unsigned char *) (e(x,y)?nullptr:nullptr))
 
 void stbi_image_free(void *retval_from_stbi_load)
 {
@@ -429,10 +429,10 @@ stbi_inline static uint8 get8u(stbi *s)
 static void skip(stbi *s, int n)
 {
    if (s->io.read) {
-      int blen = s->img_buffer_end - s->img_buffer;
-      if (blen < n) {
+      ptrdiff_t blen = s->img_buffer_end - s->img_buffer;
+      if (blen < (ptrdiff_t)n) {
          s->img_buffer = s->img_buffer_end;
-         (s->io.skip)(s->io_user_data, n - blen);
+         (s->io.skip)(s->io_user_data, n - (int)blen);
          return;
       }
    }
@@ -442,14 +442,14 @@ static void skip(stbi *s, int n)
 static int getn(stbi *s, stbi_uc *buffer, int n)
 {
    if (s->io.read) {
-      int blen = s->img_buffer_end - s->img_buffer;
-      if (blen < n) {
+      ptrdiff_t blen = s->img_buffer_end - s->img_buffer;
+      if (blen < (ptrdiff_t)n) {
          int res, count;
 
-         memcpy(buffer, s->img_buffer, blen);
-         
-         count = (s->io.read)(s->io_user_data, (char*) buffer + blen, n - blen);
-         res = (count == (n-blen));
+         memcpy(buffer, s->img_buffer, (size_t)blen);
+
+         count = (s->io.read)(s->io_user_data, (char*) buffer + blen, n - (int)blen);
+         res = (count == (n - (int)blen));
          s->img_buffer = s->img_buffer_end;
          return res;
       }
