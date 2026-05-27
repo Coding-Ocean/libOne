@@ -1508,7 +1508,7 @@ int loadImage(const char* filename){
     stbi_image_free(pixels);
     ID3D11Buffer* texCoord = 0;
 
-    Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
+    Cntnr->textures.emplace_back(obj, static_cast<float>(texWidth), static_cast<float>(texHeight), texCoord);
     int textureIdx = int(Cntnr->textures.size()) - 1;
     Cntnr->textureMap.emplace(filename, textureIdx);
     return textureIdx;
@@ -1572,7 +1572,7 @@ int loadImageFromRes(const char* str) {
     stbi_image_free(pixels);
     FreeResource(hMem);
     ID3D11Buffer* texCoord = 0;
-    Cntnr->textures.emplace_back(obj, texWidth, texHeight, texCoord);
+    Cntnr->textures.emplace_back(obj, static_cast<float>(texWidth), static_cast<float>(texHeight), texCoord);
     return int(Cntnr->textures.size()) - 1;
 }
 int cutImage(int idx, int left, int top, int w, int h){
@@ -1604,7 +1604,7 @@ int cutImage(int idx, int left, int top, int w, int h){
     HRESULT hr = Device->CreateBuffer(&bd, &InitData, &texCoord);
     WARNING(FAILED(hr), "CreateVertexBuffer Image","");
 
-    Cntnr->textures.emplace_back(texObj, w, h, texCoord);
+    Cntnr->textures.emplace_back(texObj, static_cast<float>(w), static_cast<float>(h), texCoord);
     return int(Cntnr->textures.size()) - 1;
 }
 void divideImage(int img, int cols, int rows, int w, int h, int* imgs) {

@@ -369,5 +369,8 @@
     <None Include="shader\LambertCB.hlsli">
       <Filter>シェーダー</Filter>
     </None>
+    <None Include=".github\upgrades\scenarios\cppbuildtoolsupgrade\assessment.md" />
+    <None Include=".github\upgrades\scenarios\cppbuildtoolsupgrade\plan.md" />
+    <None Include=".github\upgrades\scenarios\cppbuildtoolsupgrade\tasks.md" />
   </ItemGroup>
 </Project>
