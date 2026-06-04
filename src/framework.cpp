@@ -79,6 +79,32 @@ bool msgProc() {
     }
     return true;
 }
+
+bool FirstTime = true;
+bool msgProcDelta() {
+    MSG msg;
+    while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+        if (msg.message == WM_QUIT) {
+            return false;
+        }
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    present();
+    printStart();
+    getInputState();
+    if (EscapeKeyValid) {
+        if (isTrigger(KEY_ESCAPE)) {
+            closeWindow();
+        }
+    }
+    if (FirstTime) {
+        initDeltaTime();
+        FirstTime = false;
+    }
+    setDeltaTime();
+    return true;
+}
 bool quit() {
     MSG msg;
     while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
@@ -93,4 +119,31 @@ bool quit() {
     printStart();
     getInputState();
     return false;
+}
+void background(float r, float g, float b){
+    clear();
+    noStroke();
+    fill(r, g, b);
+    rectMode(CORNER);
+    rect(0, 0, width, height);
+    strokeWeight(1.0f);
+    fill(255);
+}
+bool noPresent()
+{
+    MSG msg;
+    while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+        if (msg.message == WM_QUIT) {
+            return false;
+        }
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    getInputState();
+    if (EscapeKeyValid) {
+        if (isTrigger(KEY_ESCAPE)) {
+            closeWindow();
+        }
+    }
+    return true;
 }
