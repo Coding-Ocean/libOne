@@ -73,7 +73,7 @@ COLOR StrokeColor(0.0f, 0.0f, 0.0f, 1.0f);
 COLOR FillColor(1.0f, 1.0f, 1.0f, 1.0f);
 COLOR MeshColor(1.0f, 1.0f, 1.0f, 1.0f);
 float StrokeWeight = 1;
-int TextSize = 20;
+int TextSize = 50;
 COLOR_MODE ColorMode = RGB;
 RECT_MODE RectMode = CORNER;
 TEXT_MODE TextMode = BOTTOM;
@@ -1900,22 +1900,32 @@ void printColor(float r, float g, float b) {
     fill(r, g, b);
 }
 void print(let textInfo) {
-    textMode(TOP);
+    //現在のテキストサイズ、テキストモードを取っておく
+    int textsize = TextSize;
+    TEXT_MODE textmode = TextMode;
+    //textを使ってprintする
     textSize(PrintSize);
+    textMode(TOP);
     text(textInfo, PrintPosX, PrintPosY);
     PrintPosY += PrintSize;
-    textMode(BOTTOM);
-    textSize((float)TextSize);
+    //テキストサイズとテキストモードを元に戻す
+    textSize((float)textsize);
+    textMode(textmode);
 }
 void print(let textInfo, const COLOR& c, float size) {
+    //現在のテキストサイズ、テキストモードを取っておく
+    int textsize = TextSize;
+    TEXT_MODE textmode = TextMode;
+    //textを使ってprintする
     textMode(TOP);
     PrintSize = size;
     textSize(PrintSize);
     fill(c);
     text(textInfo, PrintPosX, PrintPosY);
     PrintPosY += size+size*0.1f;
-    textMode(BOTTOM);
-    textSize((float)TextSize);
+    //テキストサイズとテキストモードを元に戻す
+    textSize((float)textsize);
+    textMode(textmode);
 }
 //extention
 #include "CONTAINER/VERTEX_FORMATS.h"
