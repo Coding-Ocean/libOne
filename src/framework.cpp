@@ -54,12 +54,30 @@ void window(const char* caption, float width, float height, bool fullscreen) {
     initSound();
 }
 
+//エスケープキーで終了しないメッセージプロシージャ
+bool quit() {
+    MSG msg;
+    while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+        if (msg.message == WM_QUIT) {
+            return true;
+        }
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    present();
+    printStart();
+    getInputState();
+    return false;
+}
+
 bool EscapeKeyValid = true;
 //エスケープキーによるウィンドウ終了を無効化
 void disableEscapeKey()
 {
     EscapeKeyValid = false;
 }
+
 bool msgProc() {
     MSG msg;
     while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
@@ -69,6 +87,7 @@ bool msgProc() {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+
     present();
     printStart();
     getInputState();
@@ -80,6 +99,7 @@ bool msgProc() {
     return true;
 }
 
+//initDeltaTime,setDeltaTimeを隠す
 bool FirstTime = true;
 bool msgProcDelta() {
     MSG msg;
@@ -105,32 +125,15 @@ bool msgProcDelta() {
     setDeltaTime();
     return true;
 }
-bool quit() {
-    MSG msg;
-    while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
-        if (msg.message == WM_QUIT) {
-            return true;
-        }
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+
+//pause用
+bool msgProcPause()
+{
+    //pauseを削除していなくても正常に動くようにした
+    if (FirstTime == false) {
+        return false;
     }
 
-    present();
-    printStart();
-    getInputState();
-    return false;
-}
-void background(float r, float g, float b){
-    clear();
-    noStroke();
-    fill(r, g, b);
-    rectMode(CORNER);
-    rect(0, 0, width, height);
-    strokeWeight(1.0f);
-    fill(255);
-}
-bool noPresent()
-{
     MSG msg;
     while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
         if (msg.message == WM_QUIT) {
@@ -139,6 +142,9 @@ bool noPresent()
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+
+    //なぜかおかしくなるので、ここでpresentするのをやめた。
+
     getInputState();
     if (EscapeKeyValid) {
         if (isTrigger(KEY_ESCAPE)) {

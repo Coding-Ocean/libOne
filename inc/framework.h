@@ -5,12 +5,11 @@ bool msgProc();
 bool msgProcDelta();
 bool quit();
 void disableEscapeKey();
-void background(float r, float g, float b);
-bool noPresent();
+bool msgProcPause();
 constexpr auto full = true;
 //for beginner
-#define notQuit msgProc()
 #define program() void gmain()
+#define notQuit msgProc()
 #define loop() while(msgProc())
 #define repeat() while(msgProcDelta())
-#define pause() present();while(noPresent()){Sleep(1);}
+#define pause() present();while(msgProcPause()){Sleep(1);}

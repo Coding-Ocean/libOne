@@ -92,6 +92,9 @@ void printColor(float r, float g, float b);
 void print(let textInfo);
 void print(let textInfo, const COLOR& c, float size);
 
+void background(float r, float g, float b);
+void background(const struct COLOR& c);
+
 //for framework
 void initGraphic(int baseWidth, int baseHeight);
 void freeGraphic();

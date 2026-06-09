@@ -1927,6 +1927,29 @@ void print(let textInfo, const COLOR& c, float size) {
     textSize((float)textsize);
     textMode(textmode);
 }
+void background(float r, float g, float b) {
+    clear();
+    if (r == 0 && g == 0 && b == 0)
+        return;
+    noStroke();
+    fill(r, g, b);
+    rectMode(CORNER);
+    rect(0, 0, width, height);
+    strokeWeight(1.0f);
+    fill(255);
+}
+void background(const struct COLOR& c) {
+    clear();
+    if (c.r == 0 && c.g == 0 && c.b == 0)
+        return;
+    noStroke();
+    fill(c.r, c.g, c.b);
+    rectMode(CORNER);
+    rect(0, 0, width, height);
+    strokeWeight(1.0f);
+    fill(255);
+}
+
 //extention
 #include "CONTAINER/VERTEX_FORMATS.h"
 #include "CONTAINER/VERTEX_BUFFER.h"
