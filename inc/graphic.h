@@ -83,6 +83,7 @@ void text(double n, float x, float y);
 void text(int n, float x, float y);
 void text(let n, float x, float y);
 void text(let l, const VECTOR& p, TEXT_MODE mode, const COLOR& c, float size);
+void text_f(float x, float y, const char* format, ...);
 
 void printStart();
 void printSize(float size);
@@ -91,6 +92,7 @@ void printPosY(float y);
 void printColor(float r, float g, float b);
 void print(let textInfo);
 void print(let textInfo, const COLOR& c, float size);
+void print_f(const char* format, ...);
 
 void background(float r, float g, float b);
 void background(const struct COLOR& c);

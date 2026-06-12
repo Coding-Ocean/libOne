@@ -1880,6 +1880,17 @@ void text(let l, const VECTOR& p, TEXT_MODE mode, const COLOR& c, float size) {
     else
         text((double)l, p.x, p.y);
 }
+void text_f(float x, float y, const char* format, ...)
+{
+    char str[256];
+    va_list args;
+    va_start(args, format);
+    vsprintf_s(str, format, args);
+    va_end(args);
+
+    text(str, x, y);
+}
+
 //print function
 float PrintSize = 50;
 float PrintPosX = 0;
@@ -1923,6 +1934,26 @@ void print(let textInfo, const COLOR& c, float size) {
     fill(c);
     text(textInfo, PrintPosX, PrintPosY);
     PrintPosY += size+size*0.1f;
+    //テキストサイズとテキストモードを元に戻す
+    textSize((float)textsize);
+    textMode(textmode);
+}
+void print_f(const char* format, ...)
+{
+    char str[256];
+    va_list args;
+    va_start(args, format);
+    vsprintf_s(str, format, args);
+    va_end(args);
+    
+    //現在のテキストサイズ、テキストモードを取っておく
+    int textsize = TextSize;
+    TEXT_MODE textmode = TextMode;
+    //textを使ってprintする
+    textSize(PrintSize);
+    textMode(TOP);
+    text(str, PrintPosX, PrintPosY);
+    PrintPosY += PrintSize;
     //テキストサイズとテキストモードを元に戻す
     textSize((float)textsize);
     textMode(textmode);
