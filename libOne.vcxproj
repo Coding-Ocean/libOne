@@ -210,6 +210,8 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">res\%(Filename).cso</ObjectFileOutput>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableDebuggingInformation>
     </FxCompile>
     <FxCompile Include="shader\TriangleVertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -217,6 +219,8 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">res\%(Filename).cso</ObjectFileOutput>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DisableOptimizations>
+      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</EnableDebuggingInformation>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
