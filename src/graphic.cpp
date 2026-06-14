@@ -299,7 +299,7 @@ void createDevice() {
     hDXGISwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 #ifndef _DEBUG//リリースモードの時
     if (Windowed == false) {
-        //hDXGISwapChainDesc.Windowed = FALSE;
+        hDXGISwapChainDesc.Windowed = FALSE;
     }
 #endif
     hr = hpDXGIFactory->CreateSwapChain(Device, &hDXGISwapChainDesc, &SwapChain);
