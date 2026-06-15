@@ -101,7 +101,26 @@ void getInputState(){
 void getInput(){
     getInputState();
 }
+//マウス移動ベクトルを返す
+float getMouseVx()
+{
+    return float(-InputState[!Now][MOUSE_X] + InputState[Now][MOUSE_X]);
+}
+//マウス移動ベクトルを返す
+float getMouseVy()
+{
+    return float(InputState[!Now][MOUSE_Y] - InputState[Now][MOUSE_Y]);
+}
+//マウス位置をセット
+void setMousePos(float x, float y)
+{
+    InputState[Now][MOUSE_X] = (short)x;
+    InputState[Now][MOUSE_Y] = (short)y;
 
+    POINT pt{ (short)x, (short)y };
+    ClientToScreen(HWnd, &pt);
+    SetCursorPos(pt.x, pt.y);
+}
 void getJoy(){
    	JOYINFOEX joy1;
 	joy1.dwSize = sizeof( JOYINFOEX );

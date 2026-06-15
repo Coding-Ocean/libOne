@@ -42,3 +42,8 @@ extern float MouseY;
 #define mouseX MouseX
 #define mouseY MouseY
 
+float getMouseVx();
+float getMouseVy();
+void setMousePos(float x, float y);
+#define mouseVx getMouseVx()
+#define mouseVy getMouseVy()
