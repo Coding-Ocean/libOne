@@ -5,7 +5,7 @@ extern LPCTSTR CLASS_NAME;
 extern int ClientWidth;
 extern int ClientHeight;
 extern unsigned ActiveWindow;
-extern int MouseDelta;
+extern int MouseWheel;
 extern bool Windowed;
 extern float DeltaTime;
 
@@ -15,6 +15,7 @@ void initWindow(const char* caption, int clientWidth = 0, int clientHeight = 0);
 void closeWindow();
 
 #define delta DeltaTime
+#define mouseWheel MouseWheel
 void initDeltaTime();
 void setDeltaTime();
 unsigned getTime();

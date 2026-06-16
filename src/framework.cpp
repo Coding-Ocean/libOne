@@ -56,6 +56,8 @@ void window(const char* caption, float width, float height, bool fullscreen) {
 
 //エスケープキーで終了しないメッセージプロシージャ
 bool quit() {
+    MouseWheel = 0;//ここで初期化したくないのだが、仕方ない
+
     MSG msg;
     while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
         if (msg.message == WM_QUIT) {
@@ -79,6 +81,7 @@ void disableEscapeKey()
 }
 
 bool msgProc() {
+    MouseWheel = 0;//ここで初期化したくないのだが、仕方ない
     MSG msg;
     while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
         if (msg.message == WM_QUIT) {
@@ -102,6 +105,7 @@ bool msgProc() {
 //initDeltaTime,setDeltaTimeを隠す
 bool FirstTime = true;
 bool msgProcDelta() {
+    MouseWheel = 0;//ここで初期化したくないのだが、仕方ない
     MSG msg;
     while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
         if (msg.message == WM_QUIT) {

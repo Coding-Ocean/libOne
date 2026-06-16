@@ -8,7 +8,7 @@ extern int ClientHeight = 0;
 extern bool Windowed = true;
 extern float Aspect = 0;
 extern unsigned ActiveWindow = 0;
-extern int MouseDelta = 0;
+extern int MouseWheel = 0;
 extern HWND HWnd = 0;
 unsigned ThreadId = 0;
 int CursorFlag = 1;
@@ -24,7 +24,7 @@ LRESULT CALLBACK winProc( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp ) {
         }
         return 0;
     case WM_MOUSEWHEEL:
-        MouseDelta = GET_WHEEL_DELTA_WPARAM( wp );
+        MouseWheel = GET_WHEEL_DELTA_WPARAM(wp) / WHEEL_DELTA;
         return 0;
     case WM_ACTIVATE:
         ActiveWindow = wp & 0xFFFF;
