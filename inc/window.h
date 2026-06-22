@@ -19,6 +19,7 @@ void closeWindow();
 void initDeltaTime();
 void setDeltaTime();
 unsigned getTime();
+bool intervalTimer(float interval, float* wait);
 
 bool isMainThread();
 void hideCursor();

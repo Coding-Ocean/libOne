@@ -130,6 +130,15 @@ unsigned getTime()
 {
     return timeGetTime();
 }
+bool intervalTimer(float interval, float* wait)
+{
+    *wait -= delta;
+    if (*wait <= 0) {
+        *wait = interval;
+        return true;
+    }
+    return false;
+}
 
 bool isMainThread() 
 {
