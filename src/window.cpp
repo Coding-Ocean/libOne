@@ -104,6 +104,8 @@ void initWindow( const char* caption, int clientWidth, int clientHeight ){
     HIMC hIMC = ImmGetContext( HWnd );
     ImmSetOpenStatus( hIMC, FALSE );
     ImmReleaseContext( HWnd, hIMC );
+    
+    setFixedDeltaTime();
 
     ShowWindow( HWnd, SW_SHOW );
 }
@@ -129,6 +131,15 @@ void setDeltaTime()
 unsigned getTime()
 {
     return timeGetTime();
+}
+
+float FixedDeltaTime = 0;
+void setFixedDeltaTime()
+{
+    DEVMODE dm = { 0 };
+    dm.dmSize = sizeof(DEVMODE);
+    EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm);
+    FixedDeltaTime = 1.0f / dm.dmDisplayFrequency;
 }
 
 bool isMainThread() 
