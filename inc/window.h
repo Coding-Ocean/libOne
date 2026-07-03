@@ -1,3 +1,4 @@
+#pragma once
 #include<tchar.h>
 #include<Windows.h>
 extern HWND HWnd;
@@ -20,9 +21,13 @@ void initDeltaTime();
 void setDeltaTime();
 unsigned getTime();
 
-#define fixed_delta FixedDeltaTime
+#define fixedDelta FixedDeltaTime
 void setFixedDeltaTime();
+
+bool intervalTimer(float& waitTime, float intervalTime);
 
 bool isMainThread();
 void hideCursor();
 void showCursor();
+
+void printInfo();

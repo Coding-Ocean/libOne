@@ -1,5 +1,6 @@
 #include "WSTR.h"
 #include "graphic.h"
+#include "input.h"
 #include "window.h"
 
 extern LPCTSTR CLASS_NAME = _T("GameWindow");
@@ -110,6 +111,8 @@ void initWindow( const char* caption, int clientWidth, int clientHeight ){
     ShowWindow( HWnd, SW_SHOW );
 }
 
+
+
 void closeWindow() 
 {
     PostMessage(HWnd, WM_CLOSE, 0, 0);
@@ -142,6 +145,17 @@ void setFixedDeltaTime()
     FixedDeltaTime = 1.0f / dm.dmDisplayFrequency;
 }
 
+bool intervalTimer(float& waitTime, float intervalTime)
+{
+    waitTime -= FixedDeltaTime;
+    if (waitTime <= 0)
+    {
+        waitTime = intervalTime;
+        return true;
+    }
+    return false;
+}
+
 bool isMainThread() 
 {
     return (GetCurrentThreadId() == ThreadId);
@@ -163,4 +177,12 @@ void showCursor()
         CursorFlag = 1;
         ShowCursor(true);
     }
+}
+
+void printInfo()
+{
+    print_f("width:%.f height:%.f", width, height);
+    print_f("mouseX:%.f mouseY:%.f", mouseX, mouseY);
+    print_f("fixedDelta:%f", fixedDelta);
+    print_f("delta:%f", delta);
 }
