@@ -299,7 +299,7 @@ void createDevice() {
     hDXGISwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 #ifndef _DEBUG//リリースモードの時
     if (Windowed == false) {
-        hDXGISwapChainDesc.Windowed = FALSE;
+        //hDXGISwapChainDesc.Windowed = FALSE;
     }
 #endif
     hr = hpDXGIFactory->CreateSwapChain(Device, &hDXGISwapChainDesc, &SwapChain);
@@ -1964,8 +1964,10 @@ void background(float r, float g, float b) {
         return;
     noStroke();
     fill(r, g, b);
-    rectMode(CORNER);
-    rect(0, 0, width, height);
+    if(RectMode == CORNER)
+        rect(0, 0, width, height);
+    else
+        rect(width/2, height/2, width, height);
     strokeWeight(1.0f);
     fill(255);
 }
@@ -1975,8 +1977,10 @@ void background(const struct COLOR& c) {
         return;
     noStroke();
     fill(c.r, c.g, c.b);
-    rectMode(CORNER);
-    rect(0, 0, width, height);
+    if (RectMode == CORNER)
+        rect(0, 0, width, height);
+    else
+        rect(width / 2, height / 2, width, height);
     strokeWeight(1.0f);
     fill(255);
 }

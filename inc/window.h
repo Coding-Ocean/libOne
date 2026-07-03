@@ -1,3 +1,4 @@
+#pragma once
 #include<tchar.h>
 #include<Windows.h>
 extern HWND HWnd;
@@ -8,6 +9,7 @@ extern unsigned ActiveWindow;
 extern int MouseWheel;
 extern bool Windowed;
 extern float DeltaTime;
+extern float FixedDeltaTime;
 
 //clientWidthとclientHeightを省略するとフルスクリーンモードになる
 void initWindow(const char* caption, int clientWidth = 0, int clientHeight = 0);
@@ -21,6 +23,13 @@ void setDeltaTime();
 unsigned getTime();
 bool intervalTimer(float interval, float* wait);
 
+#define fixedDelta FixedDeltaTime
+void setFixedDeltaTime();
+
+bool intervalTimer(float& waitTime, float intervalTime);
+
 bool isMainThread();
 void hideCursor();
 void showCursor();
+
+void printInfo();
